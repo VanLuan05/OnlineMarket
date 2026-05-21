@@ -1,0 +1,1066 @@
+﻿@{
+    ViewBag.Title = "Blog - Tin Tức Trái Cây";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- CSS cho Blog -->
+<style>
+    :root {
+        --primary-color: #2e8b57;
+        --secondary-color: #ff6b6b;
+        --accent-color: #4ecdc4;
+        --dark-color: #2c3e50;
+        --light-color: #f8f9fa;
+        --text-color: #333;
+        --text-light: #6c757d;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    /* Blog Hero Section */
+    .blog-hero {
+        background: linear-gradient(135deg, rgba(46, 139, 87, 0.9), rgba(78, 205, 196, 0.8)),
+                    url('@Url.Content("~/Content/img/blog/hero-bg.jpg")') center/cover no-repeat;
+        color: white;
+        padding: 100px 0 60px;
+        text-align: center;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-hero:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom/cover no-repeat;
+    }
+
+    .blog-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        opacity: 0.95;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Animated Heading */
+    .heading {
+        text-align: center;
+        margin: 60px 0;
+        position: relative;
+    }
+
+    .heading .title-text {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        position: relative;
+        padding: 0 30px;
+        display: inline-block;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .heading .title-text:before,
+    .heading .title-text:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 2px;
+    }
+
+    .heading .title-text:before {
+        right: 100%;
+        margin-right: 20px;
+    }
+
+    .heading .title-text:after {
+        left: 100%;
+        margin-left: 20px;
+    }
+
+    /* Blog Content */
+    .blog-content {
+        padding: 30px 0 80px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+
+    /* Blog Filter */
+    .blog-filter {
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        padding: 0 20px;
+    }
+
+    .filter-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 12px 25px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 50px;
+        font-weight: 600;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+
+    .filter-btn i {
+        font-size: 0.9rem;
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Blog Card */
+    .blog-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-15px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .blog-card:hover .blog-image:after {
+        opacity: 0.3;
+    }
+
+    /* Blog Image */
+    .blog-image {
+        height: 250px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+
+    .blog-card:hover .blog-image img {
+        transform: scale(1.1);
+    }
+
+    .blog-image:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        mix-blend-mode: multiply;
+    }
+
+    /* Category Badge */
+    .category-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: var(--secondary-color);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    /* Blog Info */
+    .blog-info {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    .blog-date {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .blog-read-time {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .blog-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 15px;
+        line-height: 1.4;
+        flex-grow: 1;
+        transition: color 0.3s ease;
+    }
+
+    .blog-card:hover .blog-title {
+        color: var(--primary-color);
+    }
+
+    .blog-excerpt {
+        color: var(--text-light);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Blog Footer */
+    .blog-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+    }
+
+    .blog-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .author-info h5 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--dark-color);
+    }
+
+    .author-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+
+    /* Read More Button */
+    .read-more-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .read-more-btn:hover {
+        transform: translateX(10px);
+        box-shadow: 0 8px 25px rgba(46, 139, 87, 0.3);
+    }
+
+    /* Pagination */
+    .blog-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 60px;
+        padding: 20px;
+    }
+
+    .pagination-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .pagination-btn:hover,
+    .pagination-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    /* Featured Post */
+    .featured-post {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+    }
+
+    .featured-image {
+        height: 400px;
+    }
+
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .featured-content {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .featured-badge {
+        background: var(--secondary-color);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        display: inline-block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        width: fit-content;
+    }
+
+    .featured-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    /* Newsletter */
+    .newsletter-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        padding: 60px 20px;
+        border-radius: 20px;
+        margin: 80px auto 40px;
+        max-width: 800px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newsletter-section:before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') center/cover no-repeat;
+        animation: float 20s linear infinite;
+    }
+
+    @@keyframes float {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .newsletter-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .newsletter-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 15px;
+        max-width: 500px;
+        margin: 30px auto 0;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .newsletter-btn {
+        background: var(--dark-color);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .newsletter-btn:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    /* Loading Animation */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        display: none;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 992px) {
+        .featured-post {
+            grid-template-columns: 1fr;
+        }
+
+        .featured-image {
+            height: 300px;
+        }
+
+        .blog-hero h1 {
+            font-size: 2.8rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .blog-grid {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+        }
+
+        .blog-hero {
+            padding: 80px 0 40px;
+        }
+
+        .blog-hero h1 {
+            font-size: 2.2rem;
+        }
+
+        .heading .title-text {
+            font-size: 2.2rem;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .filter-container {
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .blog-footer {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .featured-title {
+            font-size: 1.8rem;
+        }
+
+        .heading .title-text {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<!-- Blog Hero Section -->
+<section class="blog-hero">
+    <div class="container">
+        <h1>Khám Phá Thế Giới Trái Cây</h1>
+        <p>Cập nhật những kiến thức bổ ích, công thức chế biến độc đáo và tin tức mới nhất về thế giới trái cây tươi ngon</p>
+        <div class="search-box" style="max-width: 500px; margin: 0 auto;">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tìm kiếm bài viết..." style="border-radius: 25px 0 0 25px; padding: 15px 25px; border: none;">
+                <button class="btn btn-primary" style="border-radius: 0 25px 25px 0; padding: 15px 30px;">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Content -->
+<main class="blog-content">
+    <!-- Animated Heading -->
+    <div class="heading">
+        <span class="title-text">TIN TỨC MỚI NHẤT</span>
+    </div>
+
+    <!-- Blog Filter -->
+    <div class="blog-filter">
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-th-large"></i> Tất cả
+            </button>
+            <button class="filter-btn" data-filter="health">
+                <i class="fas fa-heartbeat"></i> Sức khỏe
+            </button>
+            <button class="filter-btn" data-filter="nutrition">
+                <i class="fas fa-apple-alt"></i> Dinh dưỡng
+            </button>
+            <button class="filter-btn" data-filter="import">
+                <i class="fas fa-globe-asia"></i> Nhập khẩu
+            </button>
+            <button class="filter-btn" data-filter="recipe">
+                <i class="fas fa-utensils"></i> Công thức
+            </button>
+            <button class="filter-btn" data-filter="tips">
+                <i class="fas fa-lightbulb"></i> Mẹo vặt
+            </button>
+        </div>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="blog-grid">
+        <!-- Featured Post -->
+        <article class="featured-post" data-category="health">
+            <div class="featured-image">
+                <img src="@Url.Content("~/Content/img/blog/Trái Cây và Sức Khỏe Tim Mạch.png")" alt="Trái cây và sức khỏe tim mạch">
+                <span class="featured-badge">Bài viết nổi bật</span>
+            </div>
+            <div class="featured-content">
+                <span class="category-badge">Sức khỏe</span>
+                <h2 class="featured-title">Trái Cây và Sức Khỏe Tim Mạch: Bí Quyết Tự Nhiên Để Bảo Vệ Trái Tim Bạn</h2>
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 15/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 5 phút đọc</span>
+                </div>
+                <p class="blog-excerpt">Tim là cơ quan quan trọng hàng đầu trong cơ thể, chịu trách nhiệm bơm máu và cung cấp oxy cho toàn bộ hệ thống. Một chế độ ăn uống lành mạnh, giàu trái cây tươi, có thể giúp bạn bảo vệ và tăng cường sức khỏe tim mạch một cách tự nhiên.</p>
+                <div class="blog-footer">
+                    <div class="blog-author">
+                        <div class="author-avatar">LT</div>
+                        <div class="author-info">
+                            <h5>Dr. Lan Trinh</h5>
+                            <p>Chuyên gia dinh dưỡng</p>
+                        </div>
+                    </div>
+                    <a href="@Url.Action("BlogDetail", "Home", new { id = 1 })" class="read-more-btn">
+                        Đọc ngay <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Regular Blog Posts -->
+        <article class="blog-card" data-category="health">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/Lợi ích vượt trội của quả vú sữa.png")" alt="Lợi ích vượt trội của quả vú sữa">
+                <span class="category-badge">Sức khỏe</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 12/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 4 phút đọc</span>
+                </div>
+                <h3 class="blog-title">Lợi Ích Vượt Trội Của Quả Vú Sữa - Trái Cây Việt Nam Được Thế Giới Ưa Chuộng</h3>
+                <p class="blog-excerpt">Vú sữa là loại trái cây được người Việt Nam sử dụng hàng trăm năm trước. Theo Cục Bảo vệ thực vật, đây là một trong những loại trái cây có giá trị dinh dưỡng cao nhất.</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">NH</div>
+                    <div class="author-info">
+                        <h5>Ngọc Hà</h5>
+                        <p>Chuyên gia ẩm thực</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("BlogDetail", "Home", new { id = 2 })" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <article class="blog-card" data-category="nutrition">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/Trái Cây Dinh Dưỡng.png")" alt="Trái cây dinh dưỡng">
+                <span class="category-badge">Dinh dưỡng</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 10/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 6 phút đọc</span>
+                </div>
+                <h3 class="blog-title">3 Loại Trái Cây Tăng Dinh Dưỡng Khi Nấu Chín - Bí Quyết Vàng Cho Sức Khỏe</h3>
+                <p class="blog-excerpt">Không chỉ tươi, nhiều loại trái cây khi nấu chín lại trở thành "thần dược" giúp tăng cường dinh dưỡng và hỗ trợ nhiều bệnh lý khác nhau.</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">TH</div>
+                    <div class="author-info">
+                        <h5>Trần Hương</h5>
+                        <p>Đầu bếp dinh dưỡng</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("BlogDetail", "Home", new { id = 3 })" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <article class="blog-card" data-category="import">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/Trái Cây nhập khẩu.png")" alt="các loại trái cây nhập khẩu">
+                <span class="category-badge">Nhập khẩu</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 08/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 5 phút đọc</span>
+                </div>
+                <h3 class="blog-title">6 Loại Trái Cây Nhập Khẩu Giúp Tăng Cường Sức Khỏe Mùa Hè</h3>
+                <p class="blog-excerpt">Mùa hè đang đến gần, việc bổ sung trái cây vào chế độ ăn uống hằng ngày là cách tuyệt vời để duy trì sức khỏe và tăng cường hệ miễn dịch.</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">QT</div>
+                    <div class="author-info">
+                        <h5>Quốc Thịnh</h5>
+                        <p>Nhà nhập khẩu</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("BlogDetail", "Home", new { id = 4 })" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <article class="blog-card" data-category="tips">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/Mua trái cây nhập khẩu.png")" alt="mua trái cây nhập khẩu ở đâu?">
+                <span class="category-badge">Mẹo vặt</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 05/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 7 phút đọc</span>
+                </div>
+                <h3 class="blog-title">Mua Trái Cây Nhập Khẩu Ở Đâu Chất Lượng Và Uy Tín Nhất Tại TP HCM?</h3>
+                <p class="blog-excerpt">Mua trái cây nhập khẩu, hoa quả nhập khẩu, trái cây Việt Nam chuẩn xuất khẩu ở đâu ngon, chất lượng và an toàn nhất? Cùng khám phá ngay!</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">MT</div>
+                    <div class="author-info">
+                        <h5>Minh Tuấn</h5>
+                        <p>Chuyên gia tiêu dùng</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("BlogDetail", "Home", new { id = 5 })" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <article class="blog-card" data-category="health">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/Lợi ích Táo Xanh.png")" alt="Lợi Ích Táo Xanh">
+                <span class="category-badge">Sức khỏe</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 03/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 4 phút đọc</span>
+                </div>
+                <h3 class="blog-title">9 Lợi Ích Không Ngờ Của Táo Xanh Cho Sức Khỏe</h3>
+                <p class="blog-excerpt">Nhiều người tiêu dùng Việt đã quen thuộc với các loại trái cây nhập khẩu, đặc biệt là các loại Apple có vỏ màu đỏ như táo Envy, táo Gala, táo Queen...</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">PT</div>
+                    <div class="author-info">
+                        <h5>Phương Thảo</h5>
+                        <p>Chuyên gia sức khỏe</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("BlogDetail", "Home", new { id = 6 })" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- Additional Blog Posts -->
+        <article class="blog-card" data-category="recipe">
+            <div class="blog-image">
+                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Smoothie trái cây">
+                <span class="category-badge">Công thức</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 01/12/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 3 phút đọc</span>
+                </div>
+                <h3 class="blog-title">5 Công Thức Smoothie Trái Cây Cho Ngày Hè Tươi Mát</h3>
+                <p class="blog-excerpt">Khám phá những công thức smoothie trái cây đơn giản, dễ làm nhưng vô cùng bổ dưỡng cho những ngày hè nóng bức.</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">AT</div>
+                    <div class="author-info">
+                        <h5>Anh Thư</h5>
+                        <p>Food Blogger</p>
+                    </div>
+                </div>
+                <a href="#" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <article class="blog-card" data-category="nutrition">
+            <div class="blog-image">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Trái cây mùa đông">
+                <span class="category-badge">Dinh dưỡng</span>
+            </div>
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> 28/11/2024</span>
+                    <span class="blog-read-time"><i class="far fa-clock"></i> 5 phút đọc</span>
+                </div>
+                <h3 class="blog-title">Top 7 Loại Trái Cây Nên Ăn Trong Mùa Đông Để Tăng Cường Miễn Dịch</h3>
+                <p class="blog-excerpt">Mùa đông là thời điểm cơ thể dễ bị bệnh nhất. Hãy bổ sung ngay những loại trái cây này để tăng cường hệ miễn dịch.</p>
+            </div>
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">DH</div>
+                    <div class="author-info">
+                        <h5>Đức Huy</h5>
+                        <p>Bác sĩ dinh dưỡng</p>
+                    </div>
+                </div>
+                <a href="#" class="read-more-btn">
+                    Xem thêm <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+    </div>
+
+    <!-- Loading Animation -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Đang tải thêm bài viết...</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="blog-pagination">
+        <button class="pagination-btn" onclick="prevPage()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <button class="pagination-btn">4</button>
+        <button class="pagination-btn" onclick="nextPage()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="newsletter-content">
+            <h2 class="newsletter-title">Đăng Ký Nhận Tin</h2>
+            <p>Nhận những bài viết mới nhất về trái cây, dinh dưỡng và sức khỏe trực tiếp vào hộp thư của bạn!</p>
+            <form class="newsletter-form">
+                <input type="email" class="newsletter-input" placeholder="Nhập email của bạn..." required>
+                <button type="submit" class="newsletter-btn">Đăng ký ngay</button>
+            </form>
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.9;">Cam kết không spam. Bạn có thể hủy đăng ký bất cứ lúc nào.</p>
+        </div>
+    </section>
+</main>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const blogCards = document.querySelectorAll('.blog-card, .featured-post');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Show loading animation
+                    document.getElementById('loading').style.display = 'block';
+
+                    // Filter blog cards
+                    setTimeout(() => {
+                        blogCards.forEach(card => {
+                            const category = card.getAttribute('data-category');
+
+                            if (filterValue === 'all' || category === filterValue) {
+                                card.style.display = 'block';
+                                setTimeout(() => {
+                                    card.style.opacity = '1';
+                                    card.style.transform = 'translateY(0)';
+                                }, 100);
+                            } else {
+                                card.style.opacity = '0';
+                                card.style.transform = 'translateY(20px)';
+                                setTimeout(() => {
+                                    card.style.display = 'none';
+                                }, 300);
+                            }
+                        });
+
+                        // Hide loading animation
+                        document.getElementById('loading').style.display = 'none';
+                    }, 500);
+                });
+            });
+
+            // Add hover effects
+            blogCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+
+            // Newsletter form submission
+            const newsletterForm = document.querySelector('.newsletter-form');
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+
+                // Simulate subscription
+                const submitBtn = this.querySelector('button');
+                const originalText = submitBtn.textContent;
+
+                submitBtn.textContent = 'Đang đăng ký...';
+                submitBtn.disabled = true;
+
+                setTimeout(() => {
+                    alert('Cảm ơn bạn đã đăng ký nhận tin! Chúng tôi sẽ gửi thông tin mới nhất đến email: ' + email);
+                    newsletterForm.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1500);
+            });
+
+            // Infinite scroll simulation
+            let currentPage = 1;
+            const loadingDiv = document.getElementById('loading');
+
+            function loadMorePosts() {
+                loadingDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    // In real application, this would be an AJAX call
+                    console.log('Loading page ' + (currentPage + 1));
+
+                    // Simulate adding new posts
+                    const blogGrid = document.querySelector('.blog-grid');
+                    const newPost = document.createElement('article');
+                    newPost.className = 'blog-card';
+                    newPost.innerHTML = `
+                        <div class="blog-image">
+                            <img src="https://images.unsplash.com/photo-1519996529931-28324d5a630e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Bài viết mới">
+                            <span class="category-badge">Mới</span>
+                        </div>
+                        <div class="blog-info">
+                            <div class="blog-meta">
+                                <span class="blog-date"><i class="far fa-calendar"></i> Hôm nay</span>
+                                <span class="blog-read-time"><i class="far fa-clock"></i> 3 phút đọc</span>
+                            </div>
+                            <h3 class="blog-title">Bài Viết Mới Được Thêm</h3>
+                            <p class="blog-excerpt">Đây là bài viết mới được tải thêm khi bạn cuộn xuống.</p>
+                        </div>
+                        <div class="blog-footer">
+                            <div class="blog-author">
+                                <div class="author-avatar">NM</div>
+                                <div class="author-info">
+                                    <h5>Ngọc Mai</h5>
+                                    <p>Biên tập viên</p>
+                                </div>
+                            </div>
+                            <a href="#" class="read-more-btn">Xem thêm <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    `;
+
+                    blogGrid.appendChild(newPost);
+                    loadingDiv.style.display = 'none';
+                    currentPage++;
+                }, 2000);
+            }
+
+            // Detect scroll to bottom
+            window.addEventListener('scroll', function() {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                    if (currentPage < 3) { // Limit to 3 pages for demo
+                        loadMorePosts();
+                    }
+                }
+            });
+
+            // Pagination buttons
+            const paginationBtns = document.querySelectorAll('.pagination-btn:not(:first-child):not(:last-child)');
+            paginationBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    loadMorePosts();
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            const searchBtn = document.querySelector('.search-box button');
+
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    blogCards.forEach(card => {
+                        const title = card.querySelector('.blog-title').textContent.toLowerCase();
+                        const excerpt = card.querySelector('.blog-excerpt').textContent.toLowerCase();
+
+                        if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+        });
+
+        function prevPage() {
+            alert('Chuyển đến trang trước');
+        }
+
+        function nextPage() {
+            alert('Chuyển đến trang tiếp theo');
+        }
+    </script>
+}

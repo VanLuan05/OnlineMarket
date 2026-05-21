@@ -1,0 +1,68 @@
+﻿<!-- Partial View cho chatbox -->
+<div id="chatbase-container"></div>
+
+<script>
+    // Chỉ tải chatbase khi người dùng click vào nút mở chat
+    function loadChatbase() {
+        if (!window.chatbaseLoaded) {
+            (function () {
+                if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+                    window.chatbase = (...arguments) => {
+                        if (!window.chatbase.q) {
+                            window.chatbase.q = []
+                        }
+                        window.chatbase.q.push(arguments)
+                    };
+                    window.chatbase = new Proxy(window.chatbase, {
+                        get(target, prop) {
+                            if (prop === "q") {
+                                return target.q
+                            }
+                            return (...args) => target(prop, ...args)
+                        }
+                    })
+                }
+
+                const onLoad = function () {
+                    const script = document.createElement("script");
+                    script.src = "https://www.chatbase.co/embed.min.js";
+                    script.id = "ZOPcsIkIn74PDTE4341Yf";
+                    script.domain = "www.chatbase.co";
+                    document.body.appendChild(script);
+                };
+
+                if (document.readyState === "complete") {
+                    onLoad()
+                } else {
+                    window.addEventListener("load", onLoad)
+                }
+            })();
+            window.chatbaseLoaded = true;
+        }
+    }
+
+    // Nếu bạn muốn có nút floating chat
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tạo nút floating chat
+        const chatButton = document.createElement('button');
+        chatButton.id = 'floating-chat-button';
+        chatButton.className = 'btn btn-primary rounded-circle p-3';
+        chatButton.innerHTML = '<i class="fas fa-comment fa-lg"></i>';
+        chatButton.style.position = 'fixed';
+        chatButton.style.bottom = '20px';
+        chatButton.style.right = '20px';
+        chatButton.style.zIndex = '1000';
+        chatButton.style.boxShadow = '0 4px 15px rgba(0,123,255,0.3)';
+        chatButton.title = 'Mở chat hỗ trợ';
+
+        chatButton.addEventListener('click', function() {
+            loadChatbase();
+            // Kích hoạt chatbase widget nếu có API để mở
+            if (window.chatbase && typeof window.chatbase === 'function') {
+                window.chatbase('openChat');
+            }
+        });
+
+        document.body.appendChild(chatButton);
+    });
+</script>

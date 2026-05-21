@@ -1,0 +1,332 @@
+﻿@model List<DonHang>
+@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    
+    var customer = ViewBag.Customer as NguoiDung;
+    var totalOrders = ViewBag.TotalOrders ?? 0;
+    var selectedStatus = ViewBag.SelectedStatus as string;
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-shopping-cart mr-2"></i>Lịch sử đơn hàng
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Customers", "Account")">Khách hàng</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("CustomerDetails", "Account", new { id = customer.MAND })">@customer.HOTEN</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Đơn hàng</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("CustomerDetails", new { id = customer.MAND })" class="btn btn-secondary">
+                <i class="fas fa-user mr-1"></i> Thông tin
+            </a>
+            <a href="@Url.Action("Customers", "Account")" class="btn btn-light ml-2">
+                <i class="fas fa-arrow-left mr-1"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Customer Info Summary -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-left-primary shadow">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-md-2 text-center">
+                            <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center mb-2" 
+                                 style="width: 60px; height: 60px;">
+                                <i class="fas fa-user fa-2x text-white"></i>
+                            </div>
+                            <h6 class="font-weight-bold mb-0">@customer.HOTEN</h6>
+                            <small class="text-muted">#@customer.MAND</small>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Tổng đơn hàng
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@totalOrders</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Đã hoàn thành
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Model.Count(o => o.TRANG_THAI == "Hoàn thành")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Đang xử lý
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Model.Count(o => o.TRANG_THAI == "Chờ xác nhận" || o.TRANG_THAI == "Đã xác nhận" || o.TRANG_THAI == "Đang giao")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Đã hủy
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Model.Count(o => o.TRANG_THAI == "Đã hủy")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <form method="get" action="@Url.Action("CustomerOrders", new { id = customer.MAND })" class="form-inline">
+                        <div class="form-group mr-3">
+                            <label class="mr-2">Lọc theo trạng thái:</label>
+                            <select name="status" class="form-control" onchange="this.form.submit()">
+                                @foreach (var statusItem in ViewBag.StatusList)
+                                {
+                                    <option value="@statusItem.Value" @(statusItem.Value == selectedStatus ? "selected" : "")>
+                                        @statusItem.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        @if (!string.IsNullOrEmpty(selectedStatus))
+                        {
+                            <a href="@Url.Action("CustomerOrders", new { id = customer.MAND })" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Xóa lọc
+                            </a>
+                        }
+                    </form>
+                </div>
+                <div class="col-md-4 text-right">
+                    <span class="badge badge-primary">
+                        @Model.Count đơn hàng @(!string.IsNullOrEmpty(selectedStatus) ? "(" + selectedStatus + ")" : "")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-receipt mr-1"></i> Danh sách đơn hàng
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Sản phẩm</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Phương thức TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                var statusClass = "bg-secondary";
+                                if (order.TRANG_THAI == "Chờ xác nhận") { statusClass = "bg-warning"; }
+                                else if (order.TRANG_THAI == "Đã xác nhận") { statusClass = "bg-info"; }
+                                else if (order.TRANG_THAI == "Đang giao") { statusClass = "bg-primary"; }
+                                else if (order.TRANG_THAI == "Hoàn thành") { statusClass = "bg-success"; }
+                                else if (order.TRANG_THAI == "Đã hủy") { statusClass = "bg-danger"; }
+                                
+                                <tr>
+                                    <td>#@order.MADH</td>
+                                    <td>
+                                        @order.NGAYDAT.ToString()
+                                        <br>
+                                        <small class="text-muted">@order.NGAYDAT.ToString()</small>
+                                    </td>
+                                    <td>
+                                        @if (order.ChiTietDonHangs != null && order.ChiTietDonHangs.Any())
+                                        {
+                                            <div>
+                                                <strong>@order.ChiTietDonHangs.Count sản phẩm</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    @string.Join(", ", order.ChiTietDonHangs.Take(2).Select(ct => ct.SanPham?.TENSP))
+                                                    @if (order.ChiTietDonHangs.Count > 2)
+                                                    {
+                                                        <span>...</span>
+                                                    }
+                                                </small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có sản phẩm</span>
+                                        }
+                                    </td>
+                                    <td class="text-success font-weight-bold">
+                                        @order.TongThanhToan.ToString()đ
+                                    </td>
+                                    <td>
+                                        <span class="badge @statusClass">@order.TRANG_THAI</span>
+                                    </td>
+                                    <td>
+                                        <small>@order.HinhThucThanhToan</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="@Url.Action("OrderDetails", new { id = order.MADH })" 
+                                               class="btn btn-info" title="Chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("PrintInvoice", new { id = order.MADH })" 
+                                               target="_blank" class="btn btn-secondary" title="In hóa đơn">
+                                                <i class="fas fa-print"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Summary Stats -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Tổng chi tiêu
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @{
+                                                var totalSpent = Model
+                                                    .Where(o => o.TRANG_THAI == "Hoàn thành")
+                                                    .Sum(o => o.TongThanhToan) ?? 0;
+                                            }
+                                            @totalSpent.ToString("N0")đ
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Giá trị đơn trung bình
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @{
+                                                var completedOrders = Model.Where(o => o.TRANG_THAI == "Hoàn thành").ToList();
+                                                var avgOrderValue = completedOrders.Any() ? 
+                                                    completedOrders.Average(o => o.TongThanhToan ?? 0) : 0;
+                                            }
+                                            @avgOrderValue.ToString("N0")đ
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Đơn hàng gần nhất
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @if (Model.Any())
+                                            {
+                                                var latestOrder = Model.OrderByDescending(o => o.NGAYDAT).First();
+                                                @latestOrder.NGAYDAT.ToString()
+                                            }
+                                            else
+                                            {
+                                                <span>N/A</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-cart fa-3x text-gray-300 mb-3"></i>
+                    <h5 class="text-gray-500">Không có đơn hàng nào</h5>
+                    <p class="text-muted">
+                        @if (!string.IsNullOrEmpty(selectedStatus))
+                        {
+                            <span>Không có đơn hàng với trạng thái "@selectedStatus"</span>
+                        }
+                        else
+                        {
+                            <span>Khách hàng này chưa có đơn hàng nào</span>
+                        }
+                    </p>
+                    @if (!string.IsNullOrEmpty(selectedStatus))
+                    {
+                        <a href="@Url.Action("CustomerOrders", new { id = customer.MAND })" class="btn btn-primary">
+                            <i class="fas fa-list mr-1"></i> Xem tất cả đơn hàng
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // DataTable initialization
+            $('#ordersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json'
+                },
+                order: [[1, 'desc']],
+                pageLength: 10
+            });
+        });
+    </script>
+}

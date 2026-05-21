@@ -1,0 +1,206 @@
+﻿@model OnlineMarket.Models.KhuyenMaiEditViewModel
+
+
+@{
+    ViewBag.Title = "Chỉnh sửa khuyến mãi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-edit"></i> Chỉnh sửa khuyến mãi: @Model.TENKM</h2>
+
+    @using (Html.BeginForm("Edit", "AdminKhuyenMai", FormMethod.Post, new { id = "editForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.MAKM)
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Thông tin khuyến mãi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Mã khuyến mãi *</label>
+                                    @Html.TextBoxFor(m => m.TENKM, new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(m => m.TENKM)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Loại khuyến mãi *</label>
+                                    @Html.DropDownListFor(m => m.LOAI, new SelectList(new[]
+                                    {
+                                        new { Value = "Percentage", Text = "Giảm giá theo phần trăm" },
+                                        new { Value = "Fixed", Text = "Giảm giá cố định" },
+                                        new { Value = "Freeship", Text = "Miễn phí vận chuyển" }
+                                    }, "Value", "Text", Model.LOAI), new { @class = "form-control", id = "loaiSelect", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Mô tả</label>
+                            @Html.TextAreaFor(m => m.MOTA, new { @class = "form-control", rows = "3" })
+                        </div>
+
+                        <!-- Phần trăm giảm -->
+                        <div id="percentageSection" class="row" style="display: none;">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Phần trăm giảm (%)</label>
+                                    @Html.TextBoxFor(m => m.PHANTRAMGIAM, new { @class = "form-control", type = "number", min = "1", max = "100" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Giá trị tối đa (VNĐ)</label>
+                                    @Html.TextBoxFor(m => m.GIATRITOIDA, new { @class = "form-control", type = "number", min = "0" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Giá trị giảm cố định -->
+                        <div id="fixedSection" class="row" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label>Giá trị giảm (VNĐ)</label>
+                                    @Html.TextBoxFor(m => m.GIATRIGIAM, new { @class = "form-control", type = "number", min = "0" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Điều kiện áp dụng (VNĐ)</label>
+                                    @Html.TextBoxFor(m => m.DIEUKIENAPDUNG, new { @class = "form-control", type = "number", min = "0" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Số lần sử dụng tối đa</label>
+                                    @Html.TextBoxFor(m => m.SOLANSUDUNG, new { @class = "form-control", type = "number", min = "1" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Thời gian hiệu lực -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="far fa-calendar-alt"></i> Thời gian hiệu lực</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label>Ngày bắt đầu *</label>
+                            @Html.TextBoxFor(m => m.NGAYBATDAU, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                            @Html.ValidationMessageFor(m => m.NGAYBATDAU)
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Ngày kết thúc *</label>
+                            @Html.TextBoxFor(m => m.NGAYKETTHUC, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+                            @Html.ValidationMessageFor(m => m.NGAYKETTHUC)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="fas fa-cog"></i> Cài đặt</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label>Trạng thái *</label>
+                            @Html.DropDownListFor(m => m.TRANGTHAI, new SelectList(new[]
+                            {
+                                new { Value = "Active", Text = "Active (Kích hoạt)" },
+                                new { Value = "Inactive", Text = "Inactive (Tạm ngừng)" },
+                                new { Value = "Expired", Text = "Expired (Hết hạn)" }
+                            }, "Value", "Text", Model.TRANGTHAI), new { @class = "form-control", required = "required" })
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Cập nhật
+                        </button>
+                        <a href="@Url.Action("Index", "AdminKhuyenMai")" class="btn btn-light w-100 mt-2">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Hiển thị/ẩn các trường theo loại khuyến mãi
+            $('#loaiSelect').change(function () {
+                updateFormFields();
+            });
+
+            // Gọi lần đầu khi load trang
+            updateFormFields();
+        });
+
+        function updateFormFields() {
+            var loai = $('#loaiSelect').val();
+
+            // Ẩn tất cả các section
+            $('#percentageSection').hide();
+            $('#fixedSection').hide();
+
+            // Hiển thị section tương ứng
+            if (loai === 'Percentage') {
+                $('#percentageSection').show();
+            } else if (loai === 'Fixed') {
+                $('#fixedSection').show();
+            }
+        }
+
+        // Validate form
+        $('#editForm').submit(function (e) {
+            var loai = $('#loaiSelect').val();
+            var isValid = true;
+            var message = '';
+
+            if (loai === 'Percentage') {
+                var phanTram = $('#PHANTRAMGIAM').val();
+                if (phanTram && (phanTram < 1 || phanTram > 100)) {
+                    isValid = false;
+                    message = 'Phần trăm giảm phải từ 1 đến 100%';
+                }
+            } else if (loai === 'Fixed') {
+                var giaTri = $('#GIATRIGIAM').val();
+                if (giaTri && giaTri <= 0) {
+                    isValid = false;
+                    message = 'Giá trị giảm phải lớn hơn 0';
+                }
+            }
+
+            // Kiểm tra ngày
+            var ngayBatDau = new Date($('#NGAYBATDAU').val());
+            var ngayKetThuc = new Date($('#NGAYKETTHUC').val());
+
+            if (ngayKetThuc <= ngayBatDau) {
+                isValid = false;
+                message = 'Ngày kết thúc phải sau ngày bắt đầu!';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                alert(message);
+            }
+        });
+    </script>
+}

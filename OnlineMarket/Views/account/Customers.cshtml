@@ -1,0 +1,322 @@
+﻿@model List<OnlineMarket.Models.CustomerViewModel>
+@{
+    ViewBag.Title = "Quản lý Khách hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-users mr-2"></i>Quản lý Người dùng
+        </h1>
+        <div>
+            <button type="button" class="btn btn-info" id="refreshStats">
+                <i class="fas fa-sync-alt"></i> Làm mới
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng số người dùng
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCustomers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Khách hàng
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.CustomerRoleCount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Quản trị viên
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.AdminRoleCount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" action="@Url.Action("Customers")" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="search" value="@ViewBag.Search"
+                           placeholder="Tìm theo tên, email, SĐT, username...">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" name="role">
+                        <option value="">Tất cả vai trò</option>
+                        @if (ViewBag.Roles != null)
+                        {
+                            foreach (var role in ViewBag.Roles)
+                            {
+                                <option value="@role" @(ViewBag.Role == role ? "selected" : "")>@role</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" name="sortBy">
+                        <option value="newest" @(ViewBag.SortBy == "newest" ? "selected" : "")>Mới nhất</option>
+                        <option value="oldest" @(ViewBag.SortBy == "oldest" ? "selected" : "")>Cũ nhất</option>
+                        <option value="name_asc" @(ViewBag.SortBy == "name_asc" ? "selected" : "")>Tên A-Z</option>
+                        <option value="name_desc" @(ViewBag.SortBy == "name_desc" ? "selected" : "")>Tên Z-A</option>
+                        <option value="most_orders" @(ViewBag.SortBy == "most_orders" ? "selected" : "")>Nhiều đơn nhất</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search mr-1"></i> Tìm kiếm
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="@Url.Action("Customers")" class="btn btn-secondary w-100">
+                        <i class="fas fa-times mr-1"></i> Xóa
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-list mr-1"></i> Danh sách người dùng
+            </h6>
+            <span class="badge badge-primary">@Model.Count người dùng</span>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="customersTable" width="100%" cellspacing="0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Mã ND</th>
+                                <th>Thông tin</th>
+                                <th>Tài khoản</th>
+                                <th>Thống kê</th>
+                                <th>Vai trò</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var customer in Model)
+                            {
+                                <tr>
+                                    <td>#@customer.MAND</td>
+                                    <td>
+                                        <div>
+                                            <strong class="d-block">@customer.HOTEN</strong>
+                                            <small class="text-muted">
+                                                <i class="fas fa-envelope mr-1"></i>@customer.EMAIL
+                                                <br>
+                                                <i class="fas fa-phone mr-1"></i>@customer.SODIENTHOAI
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code>@customer.TENDANGNHAP</code>
+                                        <br>
+                                        <small class="text-muted">Địa chỉ: @customer.DIACHI</small>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <div class="mb-1">
+                                                <span class="badge badge-info">@customer.TotalOrders đơn</span>
+                                            </div>
+                                            <div class="text-success small">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                                @customer.TotalSpent.ToString("N0")đ
+                                            </div>
+                                            @if (customer.LastOrderDate.HasValue)
+                                            {
+                                                <div class="text-muted small">
+                                                    ĐH cuối: @customer.LastOrderDate.Value.ToString("dd/MM")
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @(customer.VAITRO == "Account" ? "badge-danger" : "badge-primary")">
+                                            @customer.VAITRO
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="@Url.Action("CustomerDetails", new { id = customer.MAND })"
+                                               class="btn btn-info" title="Chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("CustomerEdit", new { id = customer.MAND })"
+                                               class="btn btn-warning" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("CustomerOrders", new { id = customer.MAND })"
+                                               class="btn btn-primary" title="Đơn hàng">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-secondary change-role"
+                                                    data-id="@customer.MAND"
+                                                    data-current-role="@customer.VAITRO"
+                                                    title="Thay đổi vai trò">
+                                                <i class="fas fa-user-cog"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
+                    <h5 class="text-gray-500">Không tìm thấy người dùng</h5>
+                    <p class="text-muted">Thử lại với từ khóa tìm kiếm khác</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Change Role Modal -->
+<div class="modal fade" id="changeRoleModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thay đổi vai trò</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Chọn vai trò mới:</label>
+                    <select id="newRoleSelect" class="form-control">
+                        <option value="Customer">Khách hàng</option>
+                        <option value="Account">Quản trị viên</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmChangeRole">Thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // DataTable initialization
+            $('#customersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Vietnamese.json'
+                },
+                order: [[0, 'desc']],
+                pageLength: 25
+            });
+
+            // Change role
+            $('.change-role').click(function() {
+                var customerId = $(this).data('id');
+                var currentRole = $(this).data('current-role');
+
+                $('#changeRoleModal').data('id', customerId);
+                $('#newRoleSelect').val(currentRole);
+                $('#changeRoleModal').modal('show');
+            });
+
+            $('#confirmChangeRole').click(function() {
+                var customerId = $('#changeRoleModal').data('id');
+                var newRole = $('#newRoleSelect').val();
+
+                $.ajax({
+                    url: '@Url.Action("ChangeCustomerRole")',
+                    type: 'POST',
+                    data: {
+                        id: customerId,
+                        newRole: newRole
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update UI
+                            var row = $('button[data-id="' + customerId + '"]').closest('tr');
+                            var badge = row.find('.badge');
+
+                            badge.removeClass('badge-danger badge-primary')
+                                 .addClass(newRole === 'Admin' ? 'badge-danger' : 'badge-primary')
+                                 .text(newRole);
+
+                            // Update button data
+                            $('button[data-id="' + customerId + '"]').data('current-role', newRole);
+
+                            Swal.fire('Thành công!', response.message, 'success');
+                            $('#changeRoleModal').modal('hide');
+                        } else {
+                            Swal.fire('Lỗi!', response.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            // Refresh stats
+            $('#refreshStats').click(function() {
+                $.ajax({
+                    url: '@Url.Action("GetCustomerStats")',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            // Update stats cards here if needed
+                            Swal.fire('Đã cập nhật!', 'Thông tin thống kê đã được làm mới', 'success');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

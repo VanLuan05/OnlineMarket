@@ -1,0 +1,189 @@
+﻿@model OnlineMarket.Models.ImportKhuyenMaiViewModel
+@{
+    ViewBag.Title = "Import nhiều mã khuyến mãi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-file-import"></i> Import nhiều mã khuyến mãi</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-upload"></i> Import mã</h5>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Import", "AdminKhuyenMai", FormMethod.Post, new { id = "importForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group mb-3">
+                            <label>Danh sách mã (mỗi mã một dòng) *</label>
+                            @Html.TextAreaFor(m => m.MaList, new
+                            {
+                                @class = "form-control",
+                                rows = "10",
+                                placeholder = "Nhập mỗi mã khuyến mãi trên một dòng:\nVOUCHER123\nSALE50\nFREESHIP2024\n...",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(m => m.MaList)
+                            <small class="text-muted">Mỗi dòng là một mã khuyến mãi duy nhất</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Loại khuyến mãi *</label>
+                                    @Html.DropDownListFor(m => m.LOAI, new SelectList(new[]
+                                    {
+                                        new { Value = "Percentage", Text = "Giảm giá theo phần trăm" },
+                                        new { Value = "Fixed", Text = "Giảm giá cố định" },
+                                        new { Value = "Freeship", Text = "Miễn phí vận chuyển" }
+                                    }, "Value", "Text", Model.LOAI), new { @class = "form-control", id = "loaiSelect", required = "required" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="percentageField" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label>Phần trăm giảm (%)</label>
+                                        @Html.TextBoxFor(m => m.PHANTRAMGIAM, new { @class = "form-control", type = "number", min = "1", max = "100" })
+                                    </div>
+                                </div>
+                                <div id="fixedField" style="display: none;">
+                                    <div class="form-group mb-3">
+                                        <label>Giá trị giảm (VNĐ)</label>
+                                        @Html.TextBoxFor(m => m.GIATRIGIAM, new { @class = "form-control", type = "number", min = "0" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Điều kiện áp dụng (VNĐ)</label>
+                                    @Html.TextBoxFor(m => m.DIEUKIENAPDUNG, new { @class = "form-control", type = "number", min = "0" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label>Số lần sử dụng tối đa (mỗi mã)</label>
+                                    @Html.TextBoxFor(m => m.SOLANSUDUNG, new { @class = "form-control", type = "number", min = "1", value = "1" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-upload"></i> Import mã
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Hướng dẫn</h5>
+                </div>
+                <div class="card-body">
+                    <h6><i class="fas fa-lightbulb"></i> Ví dụ định dạng:</h6>
+                    <pre class="bg-light p-2 border rounded">
+SALE10
+VOUCHER50K
+FREESHIP2024
+WELCOME100
+HAPPY2024</pre>
+
+                    <h6 class="mt-3"><i class="fas fa-check-circle"></i> Lưu ý:</h6>
+                    <ul class="small">
+                        <li>Mỗi mã phải là duy nhất</li>
+                        <li>Không được trùng với mã đã có</li>
+                        <li>Mã sẽ tự động được tạo với các thông số giống nhau</li>
+                        <li>Ngày bắt đầu: Hôm nay</li>
+                        <li>Ngày kết thúc: 30 ngày sau</li>
+                        <li>Trạng thái: Active</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Hiển thị/ẩn các trường theo loại khuyến mãi
+            $('#loaiSelect').change(function () {
+                updateFormFields();
+            });
+
+            // Gọi lần đầu khi load trang
+            updateFormFields();
+        });
+
+        function updateFormFields() {
+            var loai = $('#loaiSelect').val();
+
+            // Ẩn tất cả các field
+            $('#percentageField').hide();
+            $('#fixedField').hide();
+
+            // Hiển thị field tương ứng
+            if (loai === 'Percentage') {
+                $('#percentageField').show();
+                $('#PHANTRAMGIAM').prop('required', true);
+                $('#GIATRIGIAM').prop('required', false);
+            } else if (loai === 'Fixed') {
+                $('#fixedField').show();
+                $('#PHANTRAMGIAM').prop('required', false);
+                $('#GIATRIGIAM').prop('required', true);
+            } else {
+                $('#PHANTRAMGIAM').prop('required', false);
+                $('#GIATRIGIAM').prop('required', false);
+            }
+        }
+
+        // Validate form
+        $('#importForm').submit(function (e) {
+            var loai = $('#loaiSelect').val();
+            var maList = $('#MaList').val().trim();
+
+            if (!maList) {
+                e.preventDefault();
+                alert('Vui lòng nhập danh sách mã!');
+                return;
+            }
+
+            // Đếm số dòng
+            var lines = maList.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) {
+                e.preventDefault();
+                alert('Vui lòng nhập ít nhất một mã!');
+                return;
+            }
+
+            // Kiểm tra loại
+            if (loai === 'Percentage') {
+                var phanTram = $('#PHANTRAMGIAM').val();
+                if (!phanTram || phanTram < 1 || phanTram > 100) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập phần trăm giảm từ 1 đến 100%');
+                    return;
+                }
+            } else if (loai === 'Fixed') {
+                var giaTri = $('#GIATRIGIAM').val();
+                if (!giaTri || giaTri <= 0) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập giá trị giảm lớn hơn 0');
+                    return;
+                }
+            }
+
+            if (!confirm(`Bạn sẽ tạo ${lines.length} mã khuyến mãi. Tiếp tục?`)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

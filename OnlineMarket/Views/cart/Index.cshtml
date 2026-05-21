@@ -1,0 +1,182 @@
+﻿@model List<OnlineMarket.GioHang>
+
+@{
+    ViewBag.Title = "Giỏ Hàng - Fruit Store";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang Chủ</a></li>
+                <li class="breadcrumb-item active">Giỏ Hàng</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Cart Section -->
+<section class="cart-section py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                Giỏ Hàng Của Bạn
+                                <span class="badge bg-primary ms-2" id="cart-item-count">@(Model.Sum(m => m.SOLUONG) ?? 0)</span>
+                            </h4>
+                            @if (Model.Any())
+                            {
+                                <button class="btn btn-outline-danger btn-sm" id="clear-cart-btn">
+                                    <i class="fas fa-trash"></i> Xóa Tất Cả
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table cart-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="60px"></th>
+                                            <th>Sản Phẩm</th>
+                                            <th width="120px">Đơn Giá</th>
+                                            <th width="150px">Số Lượng</th>
+                                            <th width="120px">Thành Tiền</th>
+                                            <th width="80px"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            var thanhTien = (item.SanPham.GIA * item.SOLUONG) ?? 0;
+                                            <tr class="cart-item" data-cart-id="@item.MAGH">
+                                                <td>
+                                                    <img src="@item.SanPham.URL_ANH"
+                                                         alt="@item.SanPham.TENSP"
+                                                         class="img-fluid rounded"
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-1">@item.SanPham.TENSP</h6>
+                                                    <small class="text-muted">@item.SanPham.DONVITINH</small>
+                                                    @if (item.SanPham.SOLUONGTON < 10)
+                                                    {
+                                                        <div class="text-warning small">
+                                                            <i class="fas fa-exclamation-triangle"></i>
+                                                            Chỉ còn @item.SanPham.SOLUONGTON sản phẩm
+                                                        </div>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div class="product-price">
+                                                        <strong class="text-danger">@string.Format("{0:N0}đ", item.SanPham.GIA)</strong>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="quantity-controls">
+                                                        <div class="input-group input-group-sm">
+                                                            <button class="btn btn-outline-secondary quantity-decrease" type="button">-</button>
+                                                            <input type="number" class="form-control text-center quantity-input"
+                                                                   value="@item.SOLUONG" min="1" max="@item.SanPham.SOLUONGTON"
+                                                                   data-cart-id="@item.MAGH">
+                                                            <button class="btn btn-outline-secondary quantity-increase" type="button">+</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong class="text-danger thanh-tien">@string.Format("{0:N0}đ", thanhTien)</strong>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-outline-danger btn-sm remove-item"
+                                                            data-cart-id="@item.MAGH"
+                                                            title="Xóa sản phẩm">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <h4>Giỏ hàng của bạn đang trống</h4>
+                                <p class="text-muted mb-4">Hãy thêm một vài sản phẩm ngon lành vào giỏ hàng!</p>
+                                <a href="@Url.Action("Index", "Shop")" class="btn btn-primary">
+                                    <i class="fas fa-store"></i> Mua Sắm Ngay
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card order-summary-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-receipt"></i> Tóm Tắt Đơn Hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-summary">
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Tổng tiền:</span>
+                                <strong class="text-danger" id="summary-tongtien">@string.Format("{0:N0}đ", ViewBag.TongTien ?? 0)</strong>
+                            </div>
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Phí vận chuyển:</span>
+                                <strong id="summary-phivanchuyen">@string.Format("{0:N0}đ", ViewBag.PhiVanChuyen ?? 0)</strong>
+                            </div>
+                            <div class="summary-item d-flex justify-content-between mb-3">
+                                <span>VAT (8%):</span>
+                                <strong id="summary-vat">@string.Format("{0:N0}đ", ViewBag.VAT ?? 0)</strong>
+                            </div>
+                            <hr>
+                            <div class="summary-total d-flex justify-content-between mb-4">
+                                <span class="h5">Tổng thanh toán:</span>
+                                <strong class="h5 text-danger" id="summary-tongthanhtoan">@string.Format("{0:N0}đ", ViewBag.TongThanhToan ?? 0)</strong>
+                            </div>
+
+                            @if (ViewBag.TongTien > 0)
+                            {
+                                <div class="shipping-note mb-3">
+                                    <div class="alert alert-info">
+                                        <small>
+                                            <i class="fas fa-shipping-fast"></i>
+                                            <strong>Miễn phí vận chuyển</strong> cho đơn hàng từ 500.000đ
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="@Url.Action("Checkout", "cart")" class="btn btn-success btn-lg">
+                                        <i class="fas fa-credit-card"></i> Thanh Toán Ngay
+                                    </a>
+                                    <a href="@Url.Action("Index", "Shop")" class="btn btn-outline-primary">
+                                        <i class="fas fa-arrow-left"></i> Tiếp Tục Mua Sắm
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script src="@Url.Content("~/Scripts/cart.js")"></script>
+}

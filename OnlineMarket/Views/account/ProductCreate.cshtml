@@ -1,0 +1,546 @@
+﻿@model SanPham
+@{
+    ViewBag.Title = "Thêm Sản phẩm mới";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-plus-circle mr-2"></i>Thêm Sản phẩm mới
+        </h1>
+        <a href="@Url.Action("Products", "Account")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left mr-1"></i> Quay lại
+        </a>
+    </div>
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle mr-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Error Messages -->
+    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-box mr-1"></i>Thông tin sản phẩm
+            </h6>
+            <span class="badge badge-primary">Thêm mới</span>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("ProductCreate", "Account", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data", id = "productForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <!-- Left Column: Basic Information -->
+                    <div class="col-lg-6">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-info-circle mr-2"></i>Thông tin cơ bản
+                        </h5>
+
+                        <!-- Product Name -->
+                        <div class="form-group">
+                            <label for="TENSP" class="font-weight-bold">
+                                Tên sản phẩm <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextBoxFor(m => m.TENSP, new
+                            {
+                                @class = "form-control",
+                                placeholder = "Nhập tên sản phẩm...",
+                                required = "required",
+                                maxlength = "200"
+                            })
+                            @Html.ValidationMessageFor(m => m.TENSP, "", new { @class = "text-danger small" })
+                            <small class="form-text text-muted">Tên sản phẩm nên rõ ràng, dễ hiểu (tối đa 200 ký tự)</small>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label for="MADM" class="font-weight-bold">
+                                Danh mục <span class="text-danger">*</span>
+                            </label>
+                            @Html.DropDownListFor(m => m.MADM,
+                                new SelectList(ViewBag.Categories, "MADM", "TENDM"),
+                                "-- Chọn danh mục --",
+                                new
+                                     {
+                                    @class = "form-control select2",
+                                    required = "required",
+                                    style = "width: 100%;"
+                                })
+                            @Html.ValidationMessageFor(m => m.MADM, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <!-- Price -->
+                        <div class="form-group">
+                            <label for="GIA" class="font-weight-bold">
+                                Giá bán <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                @Html.TextBoxFor(m => m.GIA, new
+                                {
+                                    @class = "form-control",
+                                    type = "number",
+                                    min = "0",
+                                    step = "1000",
+                                    placeholder = "0",
+                                    required = "required"
+                                })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.GIA, "", new { @class = "text-danger small" })
+                            <small class="form-text text-muted">Nhập giá bán của sản phẩm (đơn vị: VND)</small>
+                        </div>
+
+
+                        <!-- Quantity -->
+                        <div class="form-group">
+                            <label for="SOLUONGTON" class="font-weight-bold">
+                                Số lượng tồn kho <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextBoxFor(m => m.SOLUONGTON, new
+                            {
+                                @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                placeholder = "0",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(m => m.SOLUONGTON, "", new { @class = "text-danger small" })
+                            <small class="form-text text-muted">Số lượng sản phẩm có sẵn trong kho</small>
+                        </div>
+
+                        <!-- Unit -->
+                        <div class="form-group">
+                            <label for="DONVITINH" class="font-weight-bold">
+                                Đơn vị tính
+                            </label>
+                            @Html.TextBoxFor(m => m.DONVITINH, new
+                            {
+                                @class = "form-control",
+                                placeholder = "gam, kg",
+                                maxlength = "20"
+                            })
+                            
+                        </div>
+
+                        <!-- Promotion -->
+                        <div class="form-group">
+                            <label for="MAKM" class="font-weight-bold">
+                                Khuyến mãi
+                            </label>
+                            @{
+                                var promotions = ViewBag.Promotions as List<KHUYENMAI>;
+                                var activePromotions = promotions?.Where(p => p.TRANGTHAI == "ACTIVE" &&
+                                                                             p.NGAYBATDAU <= DateTime.Now &&
+                                                                             p.NGAYKETTHUC >= DateTime.Now).ToList();
+                            }
+                            @if (activePromotions != null && activePromotions.Any())
+                            {
+                                @Html.DropDownListFor(m => m.MAKM,
+                                    new SelectList(activePromotions, "MAKM", "TENKM"),
+                                    "-- Chọn khuyến mãi --",
+                                    new
+                                         {
+                                        @class = "form-control select2",
+                                        style = "width: 100%;",
+                                        id = "promotionSelect"
+                                    })
+                                <small class="form-text text-muted">Chọn khuyến mãi để áp dụng cho sản phẩm</small>
+
+                                <!-- Promotion Details -->
+                                <div id="promotionDetails" class="mt-2 p-3 bg-light rounded d-none">
+                                    <h6 class="text-success mb-2">
+                                        <i class="fas fa-gift mr-1"></i>Thông tin khuyến mãi
+                                    </h6>
+                                    <div id="promotionInfo"></div>
+                                </div>
+                            }
+                            else
+                            {
+                                <select class="form-control" disabled>
+                                    <option>Không có khuyến mãi nào</option>
+                                </select>
+                                <small class="form-text text-muted">Hiện tại không có khuyến mãi nào đang hoạt động</small>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Additional Information -->
+                    <div class="col-lg-6">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-image mr-2"></i>Hình ảnh & Mô tả
+                        </h5>
+
+                        <!-- Product Image -->
+                        <div class="form-group">
+                            <label class="font-weight-bold d-block">
+                                Hình ảnh sản phẩm <span class="text-danger">*</span>
+                            </label>
+
+                            <!-- Image Preview -->
+                            <div class="image-upload-wrapper mb-3">
+                                <div id="imagePreview" class="image-preview-container text-center mb-3">
+                                    <div class="image-preview-placeholder bg-light rounded border p-5">
+                                        <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-0">Chưa có hình ảnh</p>
+                                        <small class="text-muted">Ảnh sẽ hiển thị ở đây</small>
+                                    </div>
+                                    <img id="previewImage" class="img-fluid rounded d-none" style="max-height: 200px;" />
+                                </div>
+
+                                <!-- Upload Button -->
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="imageFile" name="imageFile" accept="img/*" required>
+                                    <label class="custom-file-label" for="img" id="imageFileName">
+                                        <i class="fas fa-upload mr-1"></i> Chọn hình ảnh
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Chọn hình ảnh sản phẩm (JPG, PNG, GIF). Kích thước đề xuất: 600x600px
+                                </small>
+                                @Html.ValidationMessage("img", "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <!-- Product Description -->
+                        <div class="form-group">
+                            <label for="MOTA" class="font-weight-bold">
+                                Mô tả sản phẩm
+                            </label>
+                            @Html.TextAreaFor(m => m.MOTA, new
+                            {
+                                @class = "form-control",
+                                rows = "6",
+                                placeholder = "Mô tả chi tiết về sản phẩm..."
+                            })
+                            <small class="form-text text-muted">
+                                Mô tả chi tiết sản phẩm
+                            </small>
+                        </div>
+
+                     
+
+                    </div>
+                </div>
+
+                <!-- Advanced Options (Accordion) -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="accordion" id="advancedOptions">
+                            <div class="card">
+                                <div class="card-header" id="headingAdvanced">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link text-decoration-none" type="button"
+                                                data-toggle="collapse" data-target="#collapseAdvanced"
+                                                aria-expanded="false" aria-controls="collapseAdvanced">
+                                            <i class="fas fa-cog mr-2"></i>Tùy chọn nâng cao
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapseAdvanced" class="collapse" aria-labelledby="headingAdvanced" data-parent="#advancedOptions">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Status -->
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="TRANGTHAI" class="font-weight-bold">Trạng thái</label>
+                                                    @Html.DropDownListFor(m => m.TRANGTHAI,
+                                                        new List<SelectListItem>
+                                                        {
+                                                            new SelectListItem { Text = "Còn hàng", Value = "Còn hàng", Selected = true },
+                                                            new SelectListItem { Text = "Hết hàng", Value = "Hết hàng" },
+                                                            new SelectListItem { Text = "Ngừng kinh doanh", Value = "Ngừng kinh doanh" },
+                                                            new SelectListItem { Text = "Đang về hàng", Value = "Đang về hàng" }
+                                                        },
+                                                        new { @class = "form-control" })
+                                                </div>
+                                            </div>
+
+                                         
+
+                                          
+                                          
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             
+
+                <!-- Submit Buttons -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save mr-2"></i> Lưu sản phẩm
+                                </button>
+                                <button type="submit" name="action" value="save_and_new" class="btn btn-success btn-lg ml-2">
+                                    <i class="fas fa-plus-circle mr-2"></i> Lưu & Thêm mới
+                                </button>
+                            </div>
+                            <div>
+                                <button type="reset" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-redo mr-2"></i> Đặt lại
+                                </button>
+                                <a href="@Url.Action("Products", "Account")" class="btn btn-light btn-lg ml-2">
+                                    <i class="fas fa-times mr-2"></i> Hủy bỏ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+   
+</div>
+
+<!-- Styles -->
+<style>
+    .image-preview-container {
+        min-height: 200px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        transition: border-color 0.3s;
+    }
+
+        .image-preview-container:hover {
+            border-color: #4e73df;
+        }
+
+    .image-preview-placeholder {
+        cursor: pointer;
+    }
+
+    .custom-file-label::after {
+        content: "Duyệt...";
+    }
+
+    .price-preview {
+        background: #f8f9fc;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #4e73df;
+    }
+
+    .select2-container .select2-selection--single {
+        height: calc(1.5em + 0.75rem + 2px) !important;
+        border: 1px solid #d1d3e2 !important;
+        border-radius: 0.35rem !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: calc(1.5em + 0.75rem) !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + 0.75rem + 2px) !important;
+    }
+
+    .form-control:focus, .custom-file-input:focus ~ .custom-file-label {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+
+    .accordion .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .accordion .btn-link {
+        color: #4e73df;
+        font-weight: 600;
+    }
+
+        .accordion .btn-link:hover {
+            text-decoration: none;
+            color: #2e59d9;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            $('.select2').select2({
+                placeholder: "Chọn một tùy chọn",
+                allowClear: true
+            });
+
+            // Image upload preview
+            $('#imageFile').change(function() {
+                var fileName = $(this).val().split('\\').pop();
+                $('#imageFileName').html('<i class="fas fa-image mr-1"></i>' + fileName);
+
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#previewImage').attr('src', e.target.result).removeClass('d-none');
+                        $('.image-preview-placeholder').addClass('d-none');
+                        $('#previewProductImage').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Click to upload
+            $('.image-preview-placeholder').click(function() {
+                $('#imageFile').click();
+            });
+
+            // Real-time preview
+            $('#TENSP').on('input', function() {
+                $('#previewProductName').text($(this).val() || 'Tên sản phẩm');
+            });
+
+            $('#MOTA').on('input', function() {
+                $('#previewDescription').text($(this).val() || 'Mô tả sản phẩm sẽ hiển thị ở đây...');
+            });
+
+            $('#GIA').on('input', function() {
+                var price = $(this).val() ? parseInt($(this).val()).toLocaleString('vi-VN') : '0';
+                $('#previewPrice').text(price + ' ₫');
+            });
+
+           
+
+            $('#MADM').change(function() {
+                var selectedText = $(this).find('option:selected').text();
+                if (selectedText && selectedText !== '-- Chọn danh mục --') {
+                    $('#previewCategory').text(selectedText);
+                } else {
+                    $('#previewCategory').text('Chưa chọn danh mục');
+                }
+            });
+
+            $('#TRANGTHAI').change(function() {
+                var status = $(this).val();
+                var badgeClass = 'badge-success';
+
+                if (status === 'Hết hàng') badgeClass = 'badge-danger';
+                else if (status === 'Ngừng kinh doanh') badgeClass = 'badge-warning';
+                else if (status === 'Đang về hàng') badgeClass = 'badge-info';
+
+                $('#previewStatus').removeClass().addClass('badge ' + badgeClass).text(status);
+            });
+
+            // Promotion change handler
+            $('#promotionSelect').change(function() {
+                var promotionId = $(this).val();
+                if (promotionId) {
+                    // Load promotion details via AJAX
+                    $.ajax({
+                        url: '@Url.Action("GetPromotionDetails", "Account")',
+                        type: 'GET',
+                        data: { id: promotionId },
+                        success: function(response) {
+                            if (response.success) {
+                                var html = `
+                                    <p class="mb-1"><strong>${response.data.name}</strong></p>
+                                    <p class="mb-1 text-success">
+                                        Giảm ${response.data.type === 'PERCENTAGE' ? response.data.value + '%' : response.data.value.toLocaleString('vi-VN') + '₫'}
+                                    </p>
+                                    <p class="mb-0 text-muted small">
+                                        ${response.data.description}
+                                    </p>
+                                `;
+                                $('#promotionInfo').html(html);
+                                $('#promotionDetails').removeClass('d-none');
+                            }
+                        }
+                    });
+                } else {
+                    $('#promotionDetails').addClass('d-none');
+                }
+            });
+
+            // Form validation
+            $('#productForm').submit(function(e) {
+                // Check if image is selected
+                if (!$('#imageFile').val()) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thiếu hình ảnh',
+                        text: 'Vui lòng chọn hình ảnh cho sản phẩm!',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return false;
+                }
+
+                // Check category
+                if (!$('#MADM').val()) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Thiếu danh mục',
+                        text: 'Vui lòng chọn danh mục cho sản phẩm!',
+                        confirmButtonColor: '#4e73df'
+                    });
+                    return false;
+                }
+
+                // Show loading
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng chờ trong giây lát',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            });
+
+            // Reset form
+            $('button[type="reset"]').click(function() {
+                // Reset preview
+                $('#previewProductName').text('Tên sản phẩm');
+                $('#previewDescription').text('Mô tả sản phẩm sẽ hiển thị ở đây...');
+                $('#previewPrice').text('0 ₫');
+                $('#previewOriginalPrice').hide();
+                $('#previewDiscount').addClass('d-none');
+                $('#previewCategory').text('Chưa chọn danh mục');
+                $('#previewStatus').removeClass().addClass('badge badge-success').text('Còn hàng');
+                $('#previewProductImage').attr('src', 'https://via.placeholder.com/300x300?text=Chưa+có+hình+ảnh');
+
+                // Reset image preview
+                $('#previewImage').addClass('d-none');
+                $('.image-preview-placeholder').removeClass('d-none');
+                $('#imageFileName').html('<i class="fas fa-upload mr-1"></i> Chọn hình ảnh');
+
+                // Reset promotion
+                $('#promotionDetails').addClass('d-none');
+            });
+        });
+    </script>
+}

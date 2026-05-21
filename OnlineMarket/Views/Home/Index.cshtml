@@ -1,0 +1,172 @@
+﻿@model List<SanPham>
+@{
+    ViewBag.Title = "Trang Chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section id="hero-banner" style="width: 100%">
+    @Html.Action("BannerPartial", "Home")
+</section>
+
+<section id="feature" class="section-p1">
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f1.png")">
+        <h6>Miễn phí vận chuyển</h6>
+    </div>
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f2.png")">
+        <h6>Đặt hàng trực tuyến</h6>
+    </div>
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f3.png")">
+        <h6>Tiết kiệm tiền</h6>
+    </div>
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f4.png")">
+        <h6>Khuyến mãi</h6>
+    </div>
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f5.png")">
+        <h6>Bán vui vẻ</h6>
+    </div>
+    <div class="fe-box">
+        <img src="@Url.Content("~/Content/img/features/f6.png")">
+        <h6>Hỗ trợ 24/7</h6>
+    </div>
+</section>
+<section id="product1">
+    <a href="#"><img src="~/Content/img/hotdeal-farmersmarket.jpg"></a>
+    <hr>
+    <div class="pro-container">
+        @foreach (var item in Model)
+        {
+        <div class="pro">
+            <img src="@item.URL_ANH">
+            <div class="des">
+                <h5>@item.TENSP</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>@item.GIA</h4>
+            </div>
+            <a href="#" class="cart" onclick="showAddToCartModal(1, 'Xoài cát chu loại 1 (I0004839)', 85000, 'img/xoai_cat_chu.webp')"><i class="fa-solid fa-cart-plus"></i></a>
+        </div>
+        }
+    </div>
+</section>
+@*<section id = "product1" >
+    < h4 > Dâu Tây Các Loại</h4>
+    <hr>
+    <div class="pro-container">
+        <div class="pro">
+            <img src = "img/DauTay/dau_tay_han_quoc_330g.webp" alt="">
+            <div class="des">
+                <h5>Dâu Hàn Quốc 330g(I0004752)</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>199,000đ</h4>
+            </div>
+            <a href = "#" class="cart" onclick="showAddToCartModal(9, 'Dâu Hàn Quốc 330g (I0004752)', 199000, 'img/DauTay/dau_tay_han_quoc_330g.webp')"><i class="fa-solid fa-cart-plus"></i></a>
+        </div>
+    </div>
+    <a href = "traicaycacloai.html" >< button class="white">Xem tất cả</button></a>
+    </section>*@
+
+@*<section id = "product1" >
+    <h4 > Quà tặng trái cây</h4>
+    <hr>
+    <div class="pro-container">
+        <div class="pro">
+            <img src = "img/quà tặng/qt1.webp" alt="">
+            <div class="des">
+                <h5>Phần Quà Tangerine Gift Basket G03001</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>629,000đ</h4>
+            </div>
+            <a href = "#" class="cart" onclick="showAddToCartModal(17, 'Phần Quà Tangerine Gift Basket G03001', 629000, 'img/quà tặng/qt1.webp')"><i class="fa-solid fa-cart-plus"></i></a>
+        </div>
+    </div>
+    <a href = "traicaycacloai.html" >< button class="white">Xem tất cả</button></a>
+    </section>*@
+
+
+@*<section id = "product1" >
+    <h4 > Đi chợ</h4>
+    <hr>
+    <div class="pro-container">
+        <div class="pro">
+            <img src = "img/đi chợ/dc1.webp" alt="">
+            <div class="des">
+                <h5>[Tươi] Cá lóc kho tiêu Phạm Nghĩa 400g(I0020595)</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>135,000đ</h4>
+            </div>
+            <a href = "#" class="cart" onclick="showAddToCartModal(21, '[Tươi] Cá lóc kho tiêu Phạm Nghĩa 400g (I0020595)', 135000, 'img/đi chợ/dc1.webp')"><i class="fa-solid fa-cart-plus"></i></a>
+        </div>
+        <a href="traicaycacloai.html"><button class="white">Xem tất cả</button></a>
+    </section>*@
+
+
+<section id="sm-banner" class="section-p1">
+    <div class="banner-box">
+        <h2>Ưu Đãi</h2>
+        <h1>Cho các dịp lễ</h1>
+        <span>Giảm giá siêu hời cho các đơn hàng quà tặng</span>
+        <button class="white">Tìm hiểu thêm</button>
+    </div>
+    <div class="banner-box banner-box2">
+        <h2>Quà Tặng</h2>
+        <h1>Khách hàng VIP</h1>
+        <span>Đăng ký trở thành hội viên để nhận các ưu đãi đặc biệt</span>
+        <a href="phieudktv.html">
+            <button class="white">Tìm hiểu thêm</button>
+        </a>
+    </div>
+</section>
+<section id="banner3">
+    <div class="banner-box">
+        <h2>Mùa hoa quả</h2>
+        <span>Ăn thả ga không lo về giá</span>
+    </div>
+    <div class="banner-box banner-box2">
+        <h2>Thực phẩm tươi</h2>
+        <span>Nguồn thực phẩm nhập khẩu siêu chất lượng</span>
+    </div>
+    <div class="banner-box banner-box3">
+        <h2>Thực phẩm chế biến sẵn</h2>
+        <span>Bữa ăn gia đình đầm ấm đã được chế biến</span>
+    </div>
+</section>
+<section id="newsletter" class="section-p1 section-m1">
+    <div class="newstext">
+        <h4>Đăng Ký Nhận Thông Tin</h4>
+        <p>Nhận thông tin cập nhật mới nhất qua Email về cửa hàng của chúng tôi và <span>các ưu đãi đặc biệt</span></p>
+    </div>
+    <div class="form">
+        <input type="text" placeholder="Your email address">
+        <button class="normal" onclick="dk()">Đăng ký</button>
+    </div>
+</section>
+<script>
+    (function () { if (!window.chatbase || window.chatbase("getState") !== "initialized") { window.chatbase = (...arguments) => { if (!window.chatbase.q) { window.chatbase.q = [] } window.chatbase.q.push(arguments) }; window.chatbase = new Proxy(window.chatbase, { get(target, prop) { if (prop === "q") { return target.q } return (...args) => target(prop, ...args) } }) } const onLoad = function () { const script = document.createElement("script"); script.src = "https://www.chatbase.co/embed.min.js"; script.id = "ZOPcsIkIn74PDTE4341Yf"; script.domain = "www.chatbase.co"; document.body.appendChild(script) }; if (document.readyState === "complete") { onLoad() } else { window.addEventListener("load", onLoad) } })();
+</script>

@@ -1,0 +1,516 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FE31CBE8-A46A-4D34-B991-29088FD5330A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OnlineMarket</RootNamespace>
+    <AssemblyName>OnlineMarket</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44360</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="ChiTietDonHang.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminKhuyenMaiController.cs" />
+    <Compile Include="Controllers\BannerManageController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
+    <Compile Include="Controllers\BlogManageController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HoTroKHController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
+    <Compile Include="Controllers\ShopController.cs" />
+    <Compile Include="DanhGia.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DanhMuc.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiaChiNguoiDung.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DonHang.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GioHang.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="KHUYENMAI.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AdminKhuyenMaiViewModels.cs" />
+    <Compile Include="Models\Banner.cs" />
+    <Compile Include="Models\BlogPost.cs" />
+    <Compile Include="Models\CheckoutViewModel.cs" />
+    <Compile Include="Models\ProductModel.cs" />
+    <Compile Include="Models\TimelineItem.cs" />
+    <Compile Include="NguoiDung.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OnlineMarket.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OnlineMarket.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OnlineMarket.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OnlineMarket.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OnlineMarket.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SanPham.cs">
+      <DependentUpon>OnlineMarket.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-grid.css" />
+    <Content Include="Content\bootstrap-grid.min.css" />
+    <Content Include="Content\bootstrap-grid.rtl.css" />
+    <Content Include="Content\bootstrap-grid.rtl.min.css" />
+    <Content Include="Content\bootstrap-reboot.css" />
+    <Content Include="Content\bootstrap-reboot.min.css" />
+    <Content Include="Content\bootstrap-reboot.rtl.css" />
+    <Content Include="Content\bootstrap-reboot.rtl.min.css" />
+    <Content Include="Content\bootstrap-utilities.css" />
+    <Content Include="Content\bootstrap-utilities.min.css" />
+    <Content Include="Content\bootstrap-utilities.rtl.css" />
+    <Content Include="Content\bootstrap-utilities.rtl.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap.rtl.css" />
+    <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\css\blog.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\img\2023-01-15.jpg" />
+    <Content Include="Content\img\banner\b14.png" />
+    <Content Include="Content\img\banner\banner khách hàng.jpg" />
+    <Content Include="Content\img\banner\banner lễ.jpg" />
+    <Content Include="Content\img\banner\banner1.jpg" />
+    <Content Include="Content\img\banner\banner2.jpg" />
+    <Content Include="Content\img\banner\banner3.jpg" />
+    <Content Include="Content\img\banner\bn1.jpg" />
+    <Content Include="Content\img\banner\bn3.jpg" />
+    <Content Include="Content\img\banner\chebien.jpg" />
+    <Content Include="Content\img\banner\kh.jpg" />
+    <Content Include="Content\img\banner\khach-hang-vip-16891550581355.jpg" />
+    <Content Include="Content\img\banner\khtt.jpg" />
+    <Content Include="Content\img\banner\muahoaqua.jpg" />
+    <Content Include="Content\img\banner\Paleo-Diet-1024x538.jpg" />
+    <Content Include="Content\img\banner\thuc-pham-tuoi-song.jpeg" />
+    <Content Include="Content\img\banner\tuuoi.jpg" />
+    <Content Include="Content\img\blog\Cam Cara  Tại Úc.png" />
+    <Content Include="Content\img\blog\Cherry Mỹ.png" />
+    <Content Include="Content\img\blog\Chuối Lopang.png" />
+    <Content Include="Content\img\blog\Dâu Bạch Tuyết Hàn Quốc.png" />
+    <Content Include="Content\img\blog\Dâu tây Golden Hàn Quốc.png" />
+    <Content Include="Content\img\blog\Gói giỏ quà trái cây.png" />
+    <Content Include="Content\img\blog\Kiwi vàng new zaeland.png" />
+    <Content Include="Content\img\blog\Lê Hàn Quốc.png" />
+    <Content Include="Content\img\blog\Lợi ích Táo Xanh.png" />
+    <Content Include="Content\img\blog\Lợi ích vượt trội của quả vú sữa.png" />
+    <Content Include="Content\img\blog\Lựu Ấn Độ.png" />
+    <Content Include="Content\img\blog\Mua trái cây nhập khẩu.png" />
+    <Content Include="Content\img\blog\Nho Mẫu đơn Nhân Sâm.png" />
+    <Content Include="Content\img\blog\Nho xanh Mỹ.png" />
+    <Content Include="Content\img\blog\Quýt Úc Iron.png" />
+    <Content Include="Content\img\blog\Trái Cây Dinh Dưỡng.png" />
+    <Content Include="Content\img\blog\Trái Cây nhập khẩu.png" />
+    <Content Include="Content\img\blog\Trái Cây và Sức Khỏe Tim Mạch.png" />
+    <Content Include="Content\img\blog\Táo Envy New Mỹ.png" />
+    <Content Include="Content\img\blog\Táo Envy New Zealand.png" />
+    <Content Include="Content\img\blog\Táo xanh Granny   Smith Mỹ %281%29.png" />
+    <Content Include="Content\img\blog\Táo xanh Granny   Smith Mỹ %282%29.png" />
+    <Content Include="Content\img\blog\Táo xanh Granny   Smith Mỹ %283%29.png" />
+    <Content Include="Content\img\blog\Việt Quất zimbabwe.png" />
+    <Content Include="Content\img\blog\Vú Sữa Bơ Hồng.png" />
+    <Content Include="Content\img\blog\Vú Sữa Bắc Thảo.png" />
+    <Content Include="Content\img\blog\Vú Sữa Tím.png" />
+    <Content Include="Content\img\bo.jpg" />
+    <Content Include="Content\img\bolat.jpg" />
+    <Content Include="Content\img\buoi_da_xanh.jpg" />
+    <Content Include="Content\img\button%281%29.jpg" />
+    <Content Include="Content\img\cam-sanh.jpg" />
+    <Content Include="Content\img\carot.jpg" />
+    <Content Include="Content\img\cathu.jpg" />
+    <Content Include="Content\img\cherry-my.jpg" />
+    <Content Include="Content\img\chuoi-laba.jpg" />
+    <Content Include="Content\img\cocacola.jpg" />
+    <Content Include="Content\img\DauTay\dau_han_quoc.jpg" />
+    <Content Include="Content\img\DauTay\dau_han_quoc_330.jpg" />
+    <Content Include="Content\img\DauTay\dau_tay_han_quoc_250g.jpg" />
+    <Content Include="Content\img\DauTay\dau_tay_han_quoc_330g.jpg" />
+    <Content Include="Content\img\DauTay\hop_qua_dau_han_quoc.jpg" />
+    <Content Include="Content\img\DauTay\hop_qua_dau_han_quoc_002.jpg" />
+    <Content Include="Content\img\DauTay\viet_quat.jpg" />
+    <Content Include="Content\img\DauTay\viet_quat_premium_nam_phi.jpg" />
+    <Content Include="Content\img\dau_han_quoc.jpg" />
+    <Content Include="Content\img\dau_tay_baby.jpg" />
+    <Content Include="Content\img\dau_tay_dalat_1.jpg" />
+    <Content Include="Content\img\dau_tay_dalat_2.jpg" />
+    <Content Include="Content\img\dau_tay_donglanh.jpg" />
+    <Content Include="Content\img\dau_tay_hanquoc.jpg" />
+    <Content Include="Content\img\dau_tay_my.jpg" />
+    <Content Include="Content\img\dau_tay_newzealand.jpg" />
+    <Content Include="Content\img\dau_tay_nhat.jpg" />
+    <Content Include="Content\img\dau_tay_organic.png" />
+    <Content Include="Content\img\dau_tay_trangmieng.jpg" />
+    <Content Include="Content\img\dotaytrang.jpg" />
+    <Content Include="Content\img\dua-hau.jpg" />
+    <Content Include="Content\img\dua.jpg" />
+    <Content Include="Content\img\dua_hau_babylon.jpg" />
+    <Content Include="Content\img\dua_luoi.jpg" />
+    <Content Include="Content\img\features\f1.png" />
+    <Content Include="Content\img\features\f2.png" />
+    <Content Include="Content\img\features\f3.png" />
+    <Content Include="Content\img\features\f4.png" />
+    <Content Include="Content\img\features\f5.png" />
+    <Content Include="Content\img\features\f6.png" />
+    <Content Include="Content\img\gao.jpg" />
+    <Content Include="Content\img\heo.jpg" />
+    <Content Include="Content\img\hero.jpg" />
+    <Content Include="Content\img\hotdeal-farmersmarket.jpg" />
+    <Content Include="Content\img\khoaitaydalat.jpg" />
+    <Content Include="Content\img\logo.jpg" />
+    <Content Include="Content\img\mang-cut.jpg" />
+    <Content Include="Content\img\man_do_an_phuoc.jpg" />
+    <Content Include="Content\img\man_xanh_tam_hoa.jpg" />
+    <Content Include="Content\img\mayxay.jpg" />
+    <Content Include="Content\img\mi.jpg" />
+    <Content Include="Content\img\muoiiot.jpg" />
+    <Content Include="Content\img\nho_xanh.jpg" />
+    <Content Include="Content\img\nuocmam.jpg" />
+    <Content Include="Content\img\oi-khong-hat.jpg" />
+    <Content Include="Content\img\pay\app.jpg" />
+    <Content Include="Content\img\pay\pay.png" />
+    <Content Include="Content\img\pay\play.jpg" />
+    <Content Include="Content\img\pepsi.jpg" />
+    <Content Include="Content\img\phomaibocuoi.jpg" />
+    <Content Include="Content\img\phomaisoi.jpg" />
+    <Content Include="Content\img\quat.jpg" />
+    <Content Include="Content\img\quà tặng\qt1.jpg" />
+    <Content Include="Content\img\quà tặng\qt2.jpg" />
+    <Content Include="Content\img\quà tặng\qt3.jpg" />
+    <Content Include="Content\img\quà tặng\qt4.jpg" />
+    <Content Include="Content\img\quà tặng\qt5.jpg" />
+    <Content Include="Content\img\sau-rieng.jpg" />
+    <Content Include="Content\img\sau_rieng_com_huynh_lam.jpg" />
+    <Content Include="Content\img\section_hot_banner.jpg" />
+    <Content Include="Content\img\sonmoi.jpg" />
+    <Content Include="Content\img\sua.jpg" />
+    <Content Include="Content\img\tao-envy.jpg" />
+    <Content Include="Content\img\tpts.jpg" />
+    <Content Include="Content\img\trungga.jpg" />
+    <Content Include="Content\img\táo.jpg" />
+    <Content Include="Content\img\viet-quat.jpg" />
+    <Content Include="Content\img\xoai_cat_chu.jpg" />
+    <Content Include="Content\img\đi chợ\dc1.jpg" />
+    <Content Include="Content\img\đi chợ\dc2.jpg" />
+    <Content Include="Content\img\đi chợ\dc3.jpg" />
+    <Content Include="Content\img\đi chợ\dc4.jpg" />
+    <Content Include="Content\img\đi chợ\dc5.jpg" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="OnlineMarket.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>OnlineMarket.Context.cs</LastGenOutput>
+      <DependentUpon>OnlineMarket.edmx</DependentUpon>
+    </Content>
+    <Content Include="OnlineMarket.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>OnlineMarket.edmx</DependentUpon>
+      <LastGenOutput>OnlineMarket.cs</LastGenOutput>
+    </Content>
+    <Content Include="Scripts\bootstrap.bundle.js" />
+    <Content Include="Scripts\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\bootstrap.esm.js" />
+    <Content Include="Scripts\bootstrap.esm.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <EntityDeploy Include="OnlineMarket.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>OnlineMarket.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="OnlineMarket.edmx.diagram">
+      <DependentUpon>OnlineMarket.edmx</DependentUpon>
+    </Content>
+    <Content Include="ClassDiagram1.cd" />
+    <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\cart.js" />
+    <Content Include="Scripts\jquery-3.7.0.js" />
+    <Content Include="Scripts\jquery-3.7.0.min.js" />
+    <Content Include="Scripts\jquery-3.7.0.slim.js" />
+    <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shop\Index.cshtml" />
+    <Content Include="Views\Shop\Details.cshtml" />
+    <Content Include="Views\account\Login.cshtml" />
+    <Content Include="Views\account\Register.cshtml" />
+    <Content Include="Views\cart\Index.cshtml" />
+    <Content Include="Views\Shop\CreateReview.cshtml" />
+    <Content Include="Views\cart\Checkout.cshtml" />
+    <Content Include="Views\Order\History.cshtml" />
+    <Content Include="Views\Order\Tracking.cshtml" />
+    <Content Include="Views\cart\OrderSuccess.cshtml" />
+    <Content Include="Views\cart\OrderHistory.cshtml" />
+    <Content Include="Views\cart\OrderDetails.cshtml" />
+    <Content Include="Views\cart\OrderTracking.cshtml" />
+    <Content Include="Views\cart\Promotions.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\account\Dashboard.cshtml" />
+    <Content Include="Views\account\Products.cshtml" />
+    <Content Include="Views\account\Orders.cshtml" />
+    <Content Include="Views\account\OrderDetails.cshtml" />
+    <Content Include="Views\AdminKhuyenMai\Index.cshtml" />
+    <Content Include="Views\AdminKhuyenMai\Create.cshtml" />
+    <Content Include="Views\AdminKhuyenMai\Edit.cshtml" />
+    <Content Include="Views\AdminKhuyenMai\Statistics.cshtml" />
+    <Content Include="Views\AdminKhuyenMai\Import.cshtml" />
+    <Content Include="Views\account\Categories.cshtml" />
+    <Content Include="Views\account\CategoryCreate.cshtml" />
+    <Content Include="Views\account\CategoryEdit.cshtml" />
+    <Content Include="Views\account\Customers.cshtml" />
+    <Content Include="Views\account\CustomerEdit.cshtml" />
+    <Content Include="Views\account\CustomerOrders.cshtml" />
+    <Content Include="Views\account\CustomerDetails.cshtml" />
+    <Content Include="Views\account\CustomerAddresses.cshtml" />
+    <Content Include="Views\Home\Blog.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\HoTroKH\Chatbox.cshtml" />
+    <Content Include="Views\HoTroKH\Index.cshtml" />
+    <Content Include="Views\Shared\_ChatboxPartial.cshtml" />
+    <Content Include="Views\HoTroKH\GuiYeuCau.cshtml" />
+    <Content Include="Views\account\ProductCreate.cshtml" />
+    <Content Include="Views\account\ProductEdit.cshtml" />
+    <Content Include="Views\BannerManage\Index.cshtml" />
+    <Content Include="Views\BannerManage\Create.cshtml" />
+    <Content Include="Views\BannerManage\Edit.cshtml" />
+    <Content Include="Views\Shared\_BannerPartial.cshtml" />
+    <Content Include="Views\BlogManage\Create.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\BlogManage\Index.cshtml" />
+    <Content Include="Views\account\LoginAM.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\img\reviews\" />
+    <Folder Include="Views\Products\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap.rtl.min.css.map" />
+    <Content Include="Content\bootstrap.rtl.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="Content\bootstrap-utilities.rtl.css.map" />
+    <Content Include="Content\bootstrap-utilities.min.css.map" />
+    <Content Include="Content\bootstrap-utilities.css.map" />
+    <Content Include="Content\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="Content\bootstrap-reboot.rtl.css.map" />
+    <Content Include="Content\bootstrap-reboot.min.css.map" />
+    <Content Include="Content\bootstrap-reboot.css.map" />
+    <Content Include="Content\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="Content\bootstrap-grid.rtl.css.map" />
+    <Content Include="Content\bootstrap-grid.min.css.map" />
+    <Content Include="Content\bootstrap-grid.css.map" />
+    <None Include="packages.config" />
+    <Content Include="Scripts\bootstrap.min.js.map" />
+    <Content Include="Scripts\bootstrap.js.map" />
+    <Content Include="Scripts\bootstrap.esm.min.js.map" />
+    <Content Include="Scripts\bootstrap.esm.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
+    <Content Include="Scripts\jquery-3.7.0.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56153</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44360/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

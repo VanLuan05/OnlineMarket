@@ -1,0 +1,176 @@
+﻿@model OnlineMarket.SanPham
+@{
+    ViewBag.Title = "Viết Đánh Giá";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-star"></i> Viết Đánh Giá Sản Phẩm
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Hiển thị thông báo lỗi -->
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    <!-- Thông tin sản phẩm -->
+                    <div class="product-info mb-4 p-3 bg-light rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="@Url.Content("~/Content/img/" + (Model.URL_ANH ?? "default.jpg"))"
+                                     alt="@Model.TENSP" class="img-fluid rounded" style="height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-10">
+                                <h5 class="mb-1">@Model.TENSP</h5>
+                                <p class="text-muted mb-0">Mã SP: #@Model.MASP</p>
+                                <p class="text-success mb-0">@string.Format("{0:N0}đ", Model.GIA)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form đánh giá -->
+                    <form id="reviewForm" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="productId" value="@Model.MASP" />
+
+                        <!-- Đánh giá sao -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Chất lượng sản phẩm</label>
+                            <div class="rating-stars" id="ratingStars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="fas fa-star fa-2x star" data-rating="@i" style="cursor: pointer; color: #ddd; margin-right: 5px;"></i>
+                                }
+                            </div>
+                            <input type="hidden" id="rating" name="rating" value="5" required />
+                            <small class="text-muted">Chọn số sao để đánh giá (1 sao = Rất tệ, 5 sao = Rất tốt)</small>
+                        </div>
+
+                        <!-- Nội dung đánh giá -->
+                        <div class="mb-4">
+                            <label for="comment" class="form-label fw-bold">Nội dung đánh giá</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="5"
+                                      placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm..."
+                                      maxlength="1000" required></textarea>
+                            <small class="text-muted"><span id="charCount">0</span>/1000 ký tự</small>
+                        </div>
+
+                        <!-- Upload hình ảnh -->
+                        <div class="mb-4">
+                            <label for="reviewImage" class="form-label fw-bold">Hình ảnh đính kèm (tùy chọn)</label>
+                            <input type="file" class="form-control" id="reviewImage" name="image"
+                                   accept=".jpg,.jpeg,.png,.gif" />
+                            <small class="text-muted">Chấp nhận: JPG, PNG, GIF (tối đa 5MB)</small>
+                            <div id="imagePreview" class="mt-2"></div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success flex-fill">
+                                <i class="fas fa-paper-plane"></i> Gửi Đánh Giá
+                            </button>
+                            <a href="@Url.Action("Details", "Shop", new { id = Model.MASP })"
+                               class="btn btn-outline-secondary">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            let currentRating = 5;
+
+            // Xử lý đánh giá sao
+            $('.star').hover(function() {
+                const rating = $(this).data('rating');
+                highlightStars(rating);
+            }, function() {
+                highlightStars(currentRating);
+            });
+
+            $('.star').click(function() {
+                currentRating = $(this).data('rating');
+                $('#rating').val(currentRating);
+                highlightStars(currentRating);
+            });
+
+            function highlightStars(rating) {
+                $('.star').each(function() {
+                    const starRating = $(this).data('rating');
+                    if (starRating <= rating) {
+                        $(this).css('color', '#ffc107');
+                    } else {
+                        $(this).css('color', '#ddd');
+                    }
+                });
+            }
+
+            // Đếm ký tự
+            $('#comment').on('input', function() {
+                const count = $(this).val().length;
+                $('#charCount').text(count);
+            });
+
+            // Xem trước ảnh
+            $('#reviewImage').change(function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#imagePreview').html(
+                            `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`
+                        );
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Gửi form
+            $('#reviewForm').submit(function(e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('productId', $('#productId').val());
+                formData.append('rating', $('#rating').val());
+                formData.append('comment', $('#comment').val());
+
+                const imageFile = $('#reviewImage')[0].files[0];
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                $.ajax({
+                    url: '@Url.Action("CreateReview", "Shop")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = '@Url.Action("Details", "Shop", new { id = Model.MASP })';
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi gửi đánh giá!');
+                    }
+                });
+            });
+        });
+    </script>
+}

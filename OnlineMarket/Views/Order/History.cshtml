@@ -1,0 +1,104 @@
+﻿@model IEnumerable<OnlineMarket.DonHang>
+
+@{
+    ViewBag.Title = "Lịch Sử Đơn Hàng";
+}
+
+<div class="container mt-4">
+    <h2>📦 Lịch Sử Đơn Hàng</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4>Chưa có đơn hàng nào</h4>
+            <p>Bạn chưa có đơn hàng nào. Hãy <a href="@Url.Action("Index", "Shop")">mua sắm</a> ngay!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var donHang in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Đơn hàng #@donHang.MADH</h5>
+                            <span class="badge @GetStatusBadgeClass(donHang.TrangThaiChiTiet)">
+                                @donHang.TrangThaiChiTiet
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <small class="text-muted">Ngày đặt:</small>
+                                    <p class="mb-1">@donHang.NGAYDAT.ToString()</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Tổng tiền:</small>
+                                    <p class="mb-1 font-weight-bold">
+                                        @(donHang.TongThanhToan?.ToString("N0") ?? "0")đ
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">Địa chỉ giao hàng:</small>
+                                <p class="mb-1 small">@donHang.DIACHIGIAOHANG, @donHang.PhuongXa, @donHang.QuanHuyen, @donHang.TinhThanh</p>
+                            </div>
+                            <div class="mt-3">
+                                <a href="@Url.Action("Tracking", "Order", new { id = donHang.MADH })" class="btn btn-primary btn-sm">
+                                    📊 Theo dõi đơn hàng
+                                </a>
+                                <a href="@Url.Action("OrderDetails", "cart", new { id = donHang.MADH })" class="btn btn-outline-secondary btn-sm">
+                                    👁️ Chi tiết
+                                </a>
+                                @if (donHang.TrangThaiChiTiet == "Đang xử lý")
+                                {
+                                    <button class="btn btn-danger btn-sm btn-cancel-order" data-order-id="@donHang.MADH">
+                                        ❌ Hủy đơn
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-cancel-order').click(function () {
+                var orderId = $(this).data('order-id');
+                if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                    $.ajax({
+                        url: '@Url.Action("Cancel", "Order")',
+                        type: 'POST',
+                        data: { id: orderId },
+                        success: function (result) {
+                            if (result.success) {
+                                alert(result.message);
+                                location.reload();
+                            } else {
+                                alert(result.message);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+@* ĐỊNH NGHĨA FUNCTIONS TRONG VIEW *@
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        if (status == "Đang xử lý") return "badge-warning";
+        if (status == "Đang giao") return "badge-info";
+        if (status == "Hoàn tất") return "badge-success";
+        if (status == "Hủy") return "badge-danger";
+        return "badge-secondary";
+    }
+}

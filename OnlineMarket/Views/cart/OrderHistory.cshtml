@@ -1,0 +1,181 @@
+﻿@model IEnumerable<OnlineMarket.DonHang>
+
+@{
+    ViewBag.Title = "Đơn Hàng Của Tôi";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📦 Đơn Hàng Của Tôi</h2>
+        <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary">
+            🛒 Quay lại giỏ hàng
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="text-muted mb-3">
+                    <i class="fas fa-box-open" style="font-size: 4rem;"></i>
+                </div>
+                <h4 class="text-muted">Chưa có đơn hàng nào</h4>
+                <p class="text-muted">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                <a href="@Url.Action("Index", "Shop")" class="btn btn-primary btn-lg">
+                    🛍️ Mua sắm ngay
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var donHang in Model)
+            {
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Đơn hàng #@donHang.MADH</h5>
+                            <span class="badge @GetStatusBadgeClass(donHang.TrangThaiChiTiet)">
+                                @donHang.TrangThaiChiTiet
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <!-- Thông tin cơ bản -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Ngày đặt</small>
+                                    <p class="mb-0 font-weight-bold">@donHang.NGAYDAT.ToString()</p>
+                                </div>
+                               
+                            </div>
+
+                            <!-- Tiến trình đơn giản -->
+                            <div class="mb-3">
+                                <div class="progress" style="height: 8px;">
+                                    @if (donHang.TrangThaiChiTiet == "Hoàn tất")
+                                    {
+                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    }
+                                    else if (donHang.TrangThaiChiTiet == "Đang giao")
+                                    {
+                                        <div class="progress-bar bg-info" style="width: 75%"></div>
+                                    }
+                                    else if (donHang.TrangThaiChiTiet == "Đang xử lý")
+                                    {
+                                        <div class="progress-bar bg-warning" style="width: 50%"></div>
+                                    }
+                                    else if (donHang.TrangThaiChiTiet == "Hủy")
+                                    {
+                                        <div class="progress-bar bg-danger" style="width: 100%"></div>
+                                    }
+                                </div>
+                                <small class="text-muted">@GetProgressText(donHang.TrangThaiChiTiet)</small>
+                            </div>
+
+                            <!-- Thông tin sản phẩm (SỬA: Loại bỏ phần truy cập database) -->
+                            <div class="mb-3">
+                                <small class="text-muted">Số lượng sản phẩm</small>
+                                <p class="mb-0 font-weight-bold">
+                                    @donHang.ChiTietDonHangs.Count sản phẩm
+                                </p>
+                            </div>
+
+                            <!-- Thông tin giao hàng -->
+                            <div class="mb-3">
+                                <small class="text-muted">Giao đến</small>
+                                <p class="mb-0 small text-truncate" title="@donHang.DIACHIGIAOHANG, @donHang.PhuongXa, @donHang.QuanHuyen">
+                                    📍 @donHang.DIACHIGIAOHANG, @donHang.PhuongXa
+                                </p>
+                            </div>
+
+                            <!-- Tổng tiền -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <strong>Tổng thanh toán:</strong>
+                                <strong class="text-success">@(donHang.TongThanhToan.ToString())đ</strong>
+                            </div>
+
+                            <!-- Các nút hành động -->
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("OrderDetails", "Cart", new { id = donHang.MADH })" class="btn btn-primary btn-sm">
+                                    👁️ Xem chi tiết
+                                </a>
+                                @if (donHang.TrangThaiChiTiet == "Đang xử lý")
+                                {
+                                    <button class="btn btn-outline-danger btn-sm btn-cancel-order" data-order-id="@donHang.MADH">
+                                        ❌ Hủy đơn
+                                    </button>
+                                }
+                                else if (donHang.TrangThaiChiTiet == "Đang giao")
+                                {
+                                    <a href="@Url.Action("OrderTracking", "Cart", new { id = donHang.MADH })" class="btn btn-info btn-sm">
+                                        🚚 Theo dõi
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý hủy đơn hàng
+            $('.btn-cancel-order').click(function () {
+                var orderId = $(this).data('order-id');
+                if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                    $.ajax({
+                        url: '@Url.Action("CancelOrder", "Cart")',
+                        type: 'POST',
+                        data: { id: orderId },
+                        success: function (result) {
+                            if (result.success) {
+                                alert(result.message);
+                                location.reload();
+                            } else {
+                                alert(result.message);
+                            }
+                        },
+                        error: function () {
+                            alert('Có lỗi xảy ra khi hủy đơn hàng!');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+@functions {
+    // Lấy class badge theo trạng thái
+    public string GetStatusBadgeClass(string status)
+    {
+        if (status == "Đang xử lý") return "badge-warning";
+        if (status == "Đang giao") return "badge-info";
+        if (status == "Hoàn tất") return "badge-success";
+        if (status == "Hủy") return "badge-danger";
+        return "badge-secondary";
+    }
+
+    // Lấy text mô tả tiến trình - SỬA LỖI SWITCH
+    public string GetProgressText(string status)
+    {
+        switch (status)
+        {
+            case "Đang xử lý":
+                return "Đơn hàng đang được xử lý";
+            case "Đang giao":
+                return "Đơn hàng đang được giao";
+            case "Hoàn tất":
+                return "Giao hàng thành công";
+            case "Hủy":
+                return "Đơn hàng đã hủy";
+            default:
+                return "Đang cập nhật";
+        }
+    }
+}

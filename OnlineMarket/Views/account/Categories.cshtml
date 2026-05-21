@@ -1,0 +1,269 @@
+﻿@model List<OnlineMarket.Models.CategoryViewModel>
+@{
+    ViewBag.Title = "Quản lý Danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý Danh mục</h1>
+        <a href="@Url.Action("CategoryCreate")" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Thêm Danh mục
+        </a>
+    </div>
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    }
+
+    <!-- Search Bar -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="@Url.Action("Categories")" class="form-inline">
+                <div class="input-group w-100">
+                    <input type="text" class="form-control" name="search" value="@ViewBag.Search"
+                           placeholder="Tìm kiếm theo tên danh mục...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                        @if (!string.IsNullOrEmpty(ViewBag.Search))
+                        {
+                        <a href="@Url.Action("Categories")" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Xóa
+                        </a>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách Danh mục</h6>
+            <span class="badge badge-primary">Tổng: @Model.Count danh mục</span>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="15%">ID</th>
+                            <th width="60%">Tên Danh mục</th>
+                            <th width="25%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                            {
+                        <tr>
+                            <td>@category.MADM</td>
+                            <td>
+                                <strong>@category.TENDM</strong>
+                            </td>
+
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("CategoryEdit", new { id = category.MADM })"
+                                       class="btn btn-warning btn-sm" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-sm delete-category"
+                                            data-id="@category.MADM"
+                                            data-name="@category.TENDM"
+                                            data-count="@category.ProductCount"
+                                            title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                            }
+                    </tbody>
+                </table>
+            </div>
+            }
+            else
+            {
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-500">Không có danh mục nào</h5>
+                <p class="text-muted">Bắt đầu bằng cách thêm danh mục đầu tiên</p>
+                <a href="@Url.Action("CategoryCreate")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Thêm Danh mục
+                </a>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng số danh mục
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Danh mục có sản phẩm
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Count(c => c.ProductCount > 0)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Tổng sản phẩm
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Sum(c => c.ProductCount)
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa danh mục <strong id="categoryNameToDelete"></strong>?</p>
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="warningMessage"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteCategory">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xóa danh mục
+            $('.delete-category').click(function () {
+                var categoryId = $(this).data('id');
+                var categoryName = $(this).data('name');
+                var productCount = $(this).data('count');
+
+                $('#categoryNameToDelete').text(categoryName);
+
+                if (productCount > 0) {
+                    $('#warningMessage').html(
+                        'Không thể xóa danh mục này vì đang có <strong>' + productCount + ' sản phẩm</strong>.<br>' +
+                        'Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.'
+                    );
+                    $('#confirmDeleteCategory').prop('disabled', true).addClass('disabled');
+                } else {
+                    $('#warningMessage').text('Hành động này không thể hoàn tác.');
+                    $('#confirmDeleteCategory').prop('disabled', false).removeClass('disabled');
+                }
+
+                $('#deleteCategoryModal').data('id', categoryId).modal('show');
+            });
+
+            $('#confirmDeleteCategory').click(function () {
+                if ($(this).prop('disabled')) return;
+
+                var categoryId = $('#deleteCategoryModal').data('id');
+
+                $.ajax({
+                    url: '@Url.Action("CategoryDelete")',
+                    type: 'POST',
+                    data: { id: categoryId },
+                    success: function (response) {
+                        if (response.success) {
+                            showToast('success', response.message);
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showToast('error', response.message);
+                        }
+                        $('#deleteCategoryModal').modal('hide');
+                    },
+                    error: function () {
+                        showToast('error', 'Có lỗi xảy ra!');
+                        $('#deleteCategoryModal').modal('hide');
+                    }
+                });
+            });
+
+            // Toast notification function
+            function showToast(type, message) {
+                var toast = $('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">' +
+                    '<div class="toast-header">' +
+                    '<strong class="mr-auto">Thông báo</strong>' +
+                    '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>' +
+                    '<div class="toast-body">' + message + '</div>' +
+                    '</div>');
+
+                toast.addClass(type === 'success' ? 'bg-success text-white' : 'bg-danger text-white');
+                $('#toastContainer').append(toast);
+                toast.toast('show');
+            }
+        });
+    </script>
+}

@@ -1,0 +1,290 @@
+﻿@model OnlineMarket.DonHang
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.MADH;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice"></i> Chi tiết đơn hàng #@Model.MADH</h2>
+        <div>
+            <a href="@Url.Action("PrintInvoice", "Account", new { id = Model.MADH })"
+               target="_blank" class="btn btn-secondary">
+                <i class="fas fa-print"></i> In hóa đơn
+            </a>
+            <a href="@Url.Action("Orders", "Account")" class="btn btn-light">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thông tin đơn hàng -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Mã đơn hàng:</th>
+                                    <td>#@Model.MADH</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày đặt:</th>
+                                    <td>@Model.NGAYDAT.ToString()</td>
+                                </tr>
+                                <tr>
+                                    <th>Trạng thái:</th>
+                                    <td>
+                                        @{
+                                            var statusClass = "bg-secondary";
+                                            if (Model.TRANG_THAI == "Chờ xác nhận") { statusClass = "bg-warning"; }
+                                            else if (Model.TRANG_THAI == "Đã xác nhận") { statusClass = "bg-info"; }
+                                            else if (Model.TRANG_THAI == "Đang giao") { statusClass = "bg-primary"; }
+                                            else if (Model.TRANG_THAI == "Hoàn thành") { statusClass = "bg-success"; }
+                                            else if (Model.TRANG_THAI == "Đã hủy"){ statusClass = "bg-danger";
+                                        }
+                                        }
+                                        <span class="badge @statusClass">@Model.TRANG_THAI</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Hình thức thanh toán:</th>
+                                    <td>@Model.HinhThucThanhToan</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">Phương thức giao hàng:</th>
+                                    <td>@Model.PhuongThucGiaoHang</td>
+                                </tr>
+                                <tr>
+                                    <th>Phí giao hàng:</th>
+                                    <td>@Model.PhiGiaoHang.ToString()đ</td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng tiền:</th>
+                                    <td class="text-success">@Model.TONGTIEN.ToString()đ</td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng thanh toán:</th>
+                                    <td class="text-success fw-bold">@Model.TongThanhToan.ToString()đ</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sản phẩm -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-boxes"></i> Sản phẩm đã đặt</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detail in Model.ChiTietDonHangs)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@detail.SanPham.TENSP</strong>
+                                        <br>
+                                        <small class="text-muted">SKU: @detail.SanPham.MASP</small>
+                                    </td>
+                                    <td>@detail.THANHTIEN.ToString()đ</td>
+                                    <td>@detail.SOLUONG</td>
+                                    <td class="text-success">
+                                        @((detail.THANHTIEN * detail.SOLUONG).ToString())đ
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
+                                <td class="text-success">@Model.TONGTIEN.ToString()đ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Phí vận chuyển:</strong></td>
+                                <td>@Model.PhiGiaoHang.ToString()đ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Tổng thanh toán:</strong></td>
+                                <td class="text-success fw-bold">@Model.TongThanhToan.ToString()đ</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Thông tin giao hàng -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-truck"></i> Thông tin giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user"></i> Người nhận</h6>
+                            <p class="mb-1"><strong>@Model.HoTenNhanHang</strong></p>
+                            <p class="mb-1"><i class="fas fa-phone"></i> @Model.SDTNGUOINHAN</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-map-marker-alt"></i> Địa chỉ giao hàng</h6>
+                            <p class="mb-1">@Model.DIACHIGIAOHANG</p>
+                            <p class="mb-1">@Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline và cập nhật trạng thái -->
+        <div class="col-md-4">
+            <!-- Timeline -->
+            <!-- Tìm phần hiển thị timeline trong OrderDetails.cshtml -->
+            @if (ViewBag.Timeline != null)
+            {
+                <div class="timeline">
+                    @foreach (var item in (List<OnlineMarket.Models.OrderTimelineItem>)ViewBag.Timeline)
+                    {
+                        <div class="timeline-item @(item.IsCompleted ? "completed" : "") @(item.IsCurrent ? "current" : "")">
+                            <div class="timeline-icon">
+                                @item.Icon
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="font-weight-bold">@item.Title</h6>
+                                        <p class="mb-1">@item.Description</p>
+                                        @if (item.Date != null)
+                                        {
+                                        <small class="text-muted">
+                                            @item.Date.Value.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                        }
+                                    </div>
+                                    @if (item.IsCompleted)
+                                    {
+                                        <span class="badge badge-success">Hoàn thành</span>
+                                    }
+                                    else if (item.IsCurrent)
+                                    {
+                                        <span class="badge badge-primary">Đang xử lý</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Chờ xử lý</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Cập nhật trạng thái -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-edit"></i> Cập nhật trạng thái</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái mới</label>
+                        <select id="newStatus" class="form-control">
+                            <option value="Chờ xác nhận" @(Model.TRANG_THAI == "Chờ xác nhận" ? "selected" : "")>Chờ xác nhận</option>
+                            <option value="Đã xác nhận" @(Model.TRANG_THAI == "Đã xác nhận" ? "selected" : "")>Đã xác nhận</option>
+                            <option value="Đang giao" @(Model.TRANG_THAI == "Đang giao" ? "selected" : "")>Đang giao</option>
+                            <option value="Hoàn thành" @(Model.TRANG_THAI == "Hoàn thành" ? "selected" : "")>Hoàn thành</option>
+                            <option value="Đã hủy" @(Model.TRANG_THAI == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea id="statusNote" class="form-control" rows="3"
+                                  placeholder="Nhập ghi chú (nếu có)"></textarea>
+                    </div>
+                    <button id="updateStatusBtn" class="btn btn-primary w-100">
+                        <i class="fas fa-save"></i> Cập nhật trạng thái
+                    </button>
+                </div>
+            </div>
+
+            <!-- Xác nhận thanh toán -->
+            @if (Model.TRANG_THAI != "Hoàn thành" && Model.TRANG_THAI != "Đã hủy")
+            {
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">Xác nhận đơn hàng đã được thanh toán</p>
+                        <button id="confirmPaymentBtn" class="btn btn-success w-100">
+                            <i class="fas fa-check-circle"></i> Xác nhận thanh toán
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Cập nhật trạng thái
+        $('#updateStatusBtn').click(function () {
+            var newStatus = $('#newStatus').val();
+            var note = $('#statusNote').val();
+
+            if (confirm(`Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng thành "${newStatus}"?`)) {
+                $.ajax({
+                    url: '@Url.Action("UpdateOrderStatus", "Account")',
+                    type: 'POST',
+                    data: { orderId: @Model.MADH, status: newStatus, note: note },
+                    success: function (result) {
+                        if (result.success) {
+                            alert(result.message);
+                            location.reload();
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Xác nhận thanh toán
+        $('#confirmPaymentBtn').click(function () {
+            if (confirm('Xác nhận đơn hàng đã được thanh toán?')) {
+                $.ajax({
+                    url: '@Url.Action("ConfirmPayment", "Account")',
+                    type: 'POST',
+                    data: { orderId: @Model.MADH },
+                    success: function (result) {
+                        if (result.success) {
+                            alert(result.message);
+                            location.reload();
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

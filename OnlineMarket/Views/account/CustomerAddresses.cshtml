@@ -1,0 +1,363 @@
+﻿@model List<CustomerAddressViewModel>
+@{
+    ViewBag.Title = "Địa chỉ giao hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var customer = ViewBag.Customer as NguoiDung;
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-address-book mr-2"></i>Địa chỉ giao hàng
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Customers", "Account")">Khách hàng</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("CustomerDetails", "Account", new { id = customer.MAND })">@customer.HOTEN</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Địa chỉ</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("CustomerDetails", new { id = customer.MAND })" class="btn btn-secondary">
+                <i class="fas fa-user mr-1"></i> Thông tin
+            </a>
+            <a href="@Url.Action("CustomerOrders", new { id = customer.MAND })" class="btn btn-primary ml-2">
+                <i class="fas fa-shopping-cart mr-1"></i> Đơn hàng
+            </a>
+            <a href="@Url.Action("Customers", "Account")" class="btn btn-light ml-2">
+                <i class="fas fa-arrow-left mr-1"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Customer Info Summary -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card border-left-info shadow">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-md-2 text-center">
+                            <div class="rounded-circle bg-info d-inline-flex align-items-center justify-content-center mb-2"
+                                 style="width: 60px; height: 60px;">
+                                <i class="fas fa-user fa-2x text-white"></i>
+                            </div>
+                            <h6 class="font-weight-bold mb-0">@customer.HOTEN</h6>
+                            <small class="text-muted">#@customer.MAND</small>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Tổng số địa chỉ
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Địa chỉ chính
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Model.Count(a => a.IsPrimary)
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Từ đơn hàng
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        @Model.Count(a => a.IsFromOrder)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Addresses List -->
+    <div class="row">
+        @if (Model.Any())
+        {
+            foreach (var address in Model)
+            {
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm h-100 @(address.IsPrimary ? "border-left-success" : "border-left-primary")">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+                            <h6 class="m-0 font-weight-bold @(address.IsPrimary ? "text-success" : "text-primary")">
+                                <i class="fas fa-map-marker-alt mr-1"></i>Địa chỉ giao hàng
+                                @if (address.IsPrimary)
+                                {
+                                    <span class="badge badge-success ml-2">Địa chỉ chính</span>
+                                }
+                                @if (address.IsFromOrder)
+                                {
+                                    <span class="badge badge-info ml-2">Từ đơn hàng</span>
+                                }
+                            </h6>
+                            @if (!address.IsFromOrder)
+                            {
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
+                                        <a class="dropdown-item" href="#" onclick="editAddress()">
+                                            <i class="fas fa-edit text-warning mr-2"></i>Chỉnh sửa
+                                        </a>
+                                        @if (!address.IsPrimary)
+                                        {
+                                            <a class="dropdown-item" href="#" onclick="setPrimaryAddress()">
+                                                <i class="fas fa-check-circle text-success mr-2"></i>Đặt làm địa chỉ chính
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="font-weight-bold text-gray-800">
+                                    <i class="fas fa-user mr-2"></i>@address.HOTEN
+                                    @if (!string.IsNullOrEmpty(address.GIOITINH))
+                                    {
+                                        <span class="badge @(address.GIOITINH == "Nam" ? "badge-primary" : "badge-pink") ml-2">
+                                            @address.GIOITINH
+                                        </span>
+                                    }
+                                </h6>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone text-muted mr-2"></i>
+                                    <strong>@address.SODIENTHOAI</strong>
+                                </p>
+                                @if (address.IsFromOrder && address.OrderId.HasValue)
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas fa-shopping-cart text-muted mr-2"></i>
+                                        <small>
+                                            Đơn hàng:
+                                            <a href="@Url.Action("OrderDetails", new { id = address.OrderId.Value })">#@address.OrderId.Value</a>
+                                        </small>
+                                    </p>
+                                }
+                            </div>
+
+                            <div class="address-details">
+                                <h6 class="font-weight-bold text-gray-700 mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger mr-2"></i>Địa chỉ chi tiết
+                                </h6>
+                                <div class="pl-4">
+                                    <p class="mb-1">
+                                        <strong>Địa chỉ:</strong> @address.DIACHI
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(address.PHUONGXA))
+                                    {
+                                        <p class="mb-1">
+                                            <strong>Phường/Xã:</strong> @address.PHUONGXA
+                                        </p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(address.QUANHUYEN))
+                                    {
+                                        <p class="mb-1">
+                                            <strong>Quận/Huyện:</strong> @address.QUANHUYEN
+                                        </p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(address.TINHTHANH))
+                                    {
+                                        <p class="mb-1">
+                                            <strong>Tỉnh/Thành phố:</strong> @address.TINHTHANH
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(address.GHICHU))
+                            {
+                                <div class="mt-3">
+                                    <h6 class="font-weight-bold text-gray-700 mb-2">
+                                        <i class="fas fa-sticky-note text-warning mr-2"></i>Ghi chú
+                                    </h6>
+                                    <div class="bg-light p-3 rounded">
+                                        @address.GHICHU
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Address Additional Info -->
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            @if (address.IsFromOrder)
+                                            {
+                                                <span>Lần cuối sử dụng</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Loại địa chỉ</span>
+                                            }
+                                        </div>
+                                        <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                            @if (address.IsFromOrder && address.LastUsed.HasValue)
+                                            {
+                                                @address.LastUsed.Value.ToString("dd/MM/yyyy")
+                                            }
+                                            else if (address.IsPrimary)
+                                            {
+                                                <span class="text-success">Địa chỉ chính</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-primary">Địa chỉ phụ</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Nguồn
+                                        </div>
+                                        <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                            @if (address.IsFromOrder)
+                                            {
+                                                <span class="text-info">Đơn hàng</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-success">Hồ sơ</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-map-marker-alt fa-4x text-gray-300 mb-4"></i>
+                        <h4 class="text-gray-500">Không có địa chỉ giao hàng</h4>
+                        <p class="text-muted mb-4">Khách hàng này chưa có địa chỉ giao hàng nào</p>
+                        <p class="text-muted small">
+                            Địa chỉ sẽ được hiển thị khi khách hàng:
+                            <br>1. Cập nhật địa chỉ trong hồ sơ
+                            <br>2. Sử dụng địa chỉ khi đặt hàng
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Information Card -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle mr-2"></i>Thông tin
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="font-weight-bold text-primary mb-3">
+                                <i class="fas fa-user-circle mr-2"></i>Địa chỉ trong hồ sơ
+                            </h6>
+                            <div class="pl-3">
+                                <p class="mb-2">
+                                    <strong>Họ tên:</strong> @customer.HOTEN
+                                </p>
+                                <p class="mb-2">
+                                    <strong>SĐT:</strong> @customer.SODIENTHOAI
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Địa chỉ:</strong> @customer.DIACHI
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="font-weight-bold text-info mb-3">
+                                <i class="fas fa-shopping-cart mr-2"></i>Địa chỉ từ đơn hàng
+                            </h6>
+                            <div class="pl-3">
+                                <p class="mb-2">
+                                    Địa chỉ được lưu tự động từ các đơn hàng đã đặt
+                                </p>
+                                <p class="mb-0 text-muted">
+                                    <small>
+                                        <i class="fas fa-lightbulb mr-1"></i>
+                                        Có thể chỉnh sửa địa chỉ chính bằng cách sửa thông tin khách hàng
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge-pink {
+        background-color: #e83e8c;
+        color: white;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+    .address-details {
+        background-color: #f8f9fc;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        border-left: 4px solid #4e73df;
+    }
+
+    .dropdown-menu {
+        min-width: 10rem;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function editAddress() {
+            Swal.fire({
+                title: 'Chỉnh sửa địa chỉ',
+                text: 'Vui lòng chỉnh sửa địa chỉ trong phần "Chỉnh sửa thông tin khách hàng"',
+                icon: 'info',
+                confirmButtonText: 'Đến chỉnh sửa'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("CustomerEdit", new { id = customer.MAND })';
+                }
+            });
+        }
+
+        function setPrimaryAddress() {
+            Swal.fire({
+                title: 'Đặt làm địa chỉ chính',
+                text: 'Địa chỉ chính sẽ được cập nhật trong hồ sơ khách hàng',
+                icon: 'info',
+                confirmButtonText: 'Hiểu'
+            });
+        }
+    </script>
+}

@@ -1,0 +1,540 @@
+﻿@model CheckoutViewModel
+
+@{
+    ViewBag.Title = "Thanh Toán";
+}
+
+<div class="container mt-4">
+    <h2>Thanh Toán</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            @using (Html.BeginForm("PlaceOrder", "Cart", FormMethod.Post, new { id = "checkoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.DiscountCode)
+                @Html.HiddenFor(m => m.DiscountAmount)
+
+                <!-- Thông báo khuyến mãi -->
+                if (!string.IsNullOrEmpty(TempData["DiscountSuccess"] as string))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["DiscountSuccess"]
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                }
+
+                if (!string.IsNullOrEmpty(TempData["DiscountError"] as string))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["DiscountError"]
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                }
+
+                <!-- Phần áp dụng khuyến mãi -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tag"></i> Mã giảm giá & Khuyến mãi
+                            <button type="button" class="btn btn-sm btn-light float-right" data-toggle="collapse" data-target="#discountList">
+                                Xem mã khả dụng
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="discountCodeInput"
+                                           placeholder="Nhập mã giảm giá"
+                                           value="@Model.DiscountCode">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-primary" id="applyDiscountBtn">
+                                            <i class="fas fa-check"></i> Áp dụng
+                                        </button>
+                                        @if (!string.IsNullOrEmpty(Model.DiscountCode))
+                                        {
+                                            <button type="button" class="btn btn-danger ml-2" id="removeDiscountBtn">
+                                                <i class="fas fa-times"></i> Xóa mã
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                                <div id="discountMessage" class="mt-2 small"></div>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách mã khả dụng (Collapse) -->
+                        <div class="collapse mt-3" id="discountList">
+                            <div class="card card-body">
+                                <h6><i class="fas fa-gift"></i> Mã khuyến mãi khả dụng:</h6>
+                                if (Model.AvailableDiscounts != null && Model.AvailableDiscounts.Any())
+                                {
+                                <div class="row">
+                                    @foreach (var discount in Model.AvailableDiscounts)
+                                    {
+                                        <div class="col-md-6 mb-2">
+                                            <div class="discount-item border rounded p-2"
+                                                 style="cursor: pointer; background: #f8f9fa;"
+                                                 onclick="selectDiscount('@discount.TENKM', '@discount.PHANTRAMGIAM')">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong class="text-primary">@discount.TENKM</strong>
+                                                    @if (discount.PHANTRAMGIAM.HasValue)
+                                                    {
+                                                        <span class="badge badge-danger">
+                                                            Giảm @discount.PHANTRAMGIAM%
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <small class="text-muted">@discount.MOTA</small>
+                                                <br>
+                                                <small class="text-success">
+                                                    <i class="far fa-clock"></i>
+                                                    @if (discount.NGAYKETTHUC.HasValue)
+                                                    {
+                                                        <span>HSD: @discount.NGAYKETTHUC.Value.ToString("dd/MM/yyyy")</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Không giới hạn thời gian</span>
+                                                    }
+                                                </small>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                }
+                                else
+                                {
+                                <p class="text-muted text-center">Hiện không có mã khuyến mãi nào khả dụng</p>
+                                }
+
+                                <!-- Mã mặc định luôn có -->
+                                <hr>
+                                <h6><i class="fas fa-star"></i> Mã mặc định:</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <div class="discount-item border rounded p-2"
+                                             style="cursor: pointer; background: #fff3cd;"
+                                             onclick="selectDiscount('SALE10', 10)">
+                                            <strong class="text-danger">SALE10</strong>
+                                            <br>
+                                            <small class="text-muted">Giảm 10% cho đơn từ 100,000đ</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="discount-item border rounded p-2"
+                                             style="cursor: pointer; background: #fff3cd;"
+                                             onclick="selectDiscount('SALE20', 20)">
+                                            <strong class="text-danger">SALE20</strong>
+                                            <br>
+                                            <small class="text-muted">Giảm 20% cho đơn từ 200,000đ</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="discount-item border rounded p-2"
+                                             style="cursor: pointer; background: #fff3cd;"
+                                             onclick="selectDiscount('FREESHIP', 0)">
+                                            <strong class="text-danger">FREESHIP</strong>
+                                            <br>
+                                            <small class="text-muted">Miễn phí vận chuyển</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="discount-item border rounded p-2"
+                                             style="cursor: pointer; background: #fff3cd;"
+                                             onclick="selectDiscount('GIAM50K', 0)">
+                                            <strong class="text-danger">GIAM50K</strong>
+                                            <br>
+                                            <small class="text-muted">Giảm 50,000đ cho đơn từ 300,000đ</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin giao hàng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📦 Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Họ tên người nhận *</label>
+                                    @Html.TextBoxFor(m => m.HoTenNhanHang, new
+                                    {
+                                        @class = "form-control",
+                                        required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(m => m.HoTenNhanHang)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Số điện thoại *</label>
+                                    @Html.TextBoxFor(m => m.SoDienThoai, new
+                                    {
+                                        @class = "form-control",
+                                        required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(m => m.SoDienThoai)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Địa chỉ cụ thể *</label>
+                            @Html.TextBoxFor(m => m.DiaChi, new
+                            {
+                                @class = "form-control",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(m => m.DiaChi)
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tỉnh/Thành *</label>
+                                    @Html.TextBoxFor(m => m.TinhThanh, new
+                                    {
+                                        @class = "form-control",
+                                        required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(m => m.TinhThanh)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Quận/Huyện *</label>
+                                    @Html.TextBoxFor(m => m.QuanHuyen, new
+                                    {
+                                        @class = "form-control",
+                                        required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(m => m.QuanHuyen)
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Phường/Xã *</label>
+                                    @Html.TextBoxFor(m => m.PhuongXa, new
+                                    {
+                                        @class = "form-control",
+                                        required = "required"
+                                    })
+                                    @Html.ValidationMessageFor(m => m.PhuongXa)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hình thức thanh toán -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">💳 Hình thức thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="HinhThucThanhToan" value="COD" checked>
+                            <label class="form-check-label">
+                                💰 Thanh toán khi nhận hàng (COD)
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="HinhThucThanhToan" value="Chuyển khoản">
+                            <label class="form-check-label">
+                                🏦 Chuyển khoản ngân hàng
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phương thức giao hàng -->
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">🚚 Phương thức giao hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input shipping-method" type="radio" name="PhuongThucGiaoHang" value="Giao hàng tiêu chuẩn" checked>
+                            <label class="form-check-label">
+                                📦 Giao hàng tiêu chuẩn (2-3 ngày) - 20,000đ
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input shipping-method" type="radio" name="PhuongThucGiaoHang" value="Giao hàng nhanh">
+                            <label class="form-check-label">
+                                ⚡ Giao hàng nhanh (1 ngày) - 30,000đ
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">📝 Ghi chú đơn hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        @Html.TextAreaFor(m => m.GhiChu, new
+                        {
+                            @class = "form-control",
+                            rows = "3",
+                            placeholder = "Ghi chú cho đơn hàng (không bắt buộc)"
+                        })
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Phần tóm tắt đơn hàng -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Đơn hàng của bạn</h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                            <div>
+                                <small>@item.SanPham.TENSP</small>
+                                <br>
+                                <small class="text-muted">x @item.SOLUONG</small>
+                            </div>
+                            <span>@((item.SanPham.GIA * item.SOLUONG)?.ToString("N0"))đ</span>
+                        </div>
+                    }
+
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Tổng tiền:</strong>
+                        <strong>@Model.TongTien.ToString("N0")đ</strong>
+                    </div>
+
+                    <!-- Hiển thị giảm giá -->
+                    @if (Model.DiscountAmount > 0)
+                    {
+                        <div class="d-flex justify-content-between text-success">
+                            <span>Giảm giá:</span>
+                            <span id="discountDisplay">-@Model.DiscountAmount.ToString("N0")đ</span>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between">
+                        <span>Phí vận chuyển:</span>
+                        <span id="shippingFee">@Model.PhiVanChuyen.ToString("N0")đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>VAT (8%):</span>
+                        <span id="vatFee">@Model.VAT.ToString("N0")đ</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between text-success">
+                        <strong>Tổng thanh toán:</strong>
+                        <strong id="totalPayment">@Model.TongThanhToan.ToString("N0")đ</strong>
+                    </div>
+
+                    <button type="submit" form="checkoutForm" class="btn btn-primary btn-block mt-3 btn-lg">
+                        <i class="fas fa-check-circle"></i> Đặt hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Trong Checkout.cshtml - phần scripts
+$(document).ready(function () {
+    // Áp dụng mã giảm giá
+    $('#applyDiscountBtn').click(function () {
+        var discountCode = $('#discountCodeInput').val().trim();
+        if (!discountCode) {
+            $('#discountMessage').html('<span class="text-danger">Vui lòng nhập mã giảm giá!</span>');
+            return;
+        }
+
+        applyDiscountCode(discountCode);
+    });
+
+    // Xóa mã giảm giá
+    $(document).on('click', '#removeDiscountBtn', function () {
+        removeDiscount();
+    });
+
+    // Nhấn Enter để áp dụng mã
+    $('#discountCodeInput').keypress(function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $('#applyDiscountBtn').click();
+        }
+    });
+});
+
+// Hàm chọn mã từ danh sách
+function selectDiscount(code, percent) {
+    $('#discountCodeInput').val(code);
+    $('#applyDiscountBtn').click();
+}
+
+// Hàm áp dụng mã giảm giá
+function applyDiscountCode(discountCode) {
+    $('#discountMessage').html('<span class="text-info"><i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...</span>');
+
+    $.ajax({
+        url: '@Url.Action("ApplyDiscount", "Cart")',
+        type: 'POST',
+        data: { discountCode: discountCode },
+        success: function (result) {
+            if (result.success) {
+                // Cập nhật UI
+                $('#DiscountCode').val(discountCode);
+                $('#DiscountAmount').val(result.discountAmount);
+
+                // Cập nhật hiển thị
+                updateCheckoutSummary(result);
+
+                // Hiển thị thông báo
+                $('#discountMessage').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + result.message + '</span>');
+
+                // Hiển thị phần giảm giá
+                updateDiscountDisplay(result.discountAmount, discountCode);
+
+                // Hiển thị nút xóa mã
+                if ($('#removeDiscountBtn').length === 0) {
+                    $('#applyDiscountBtn').after(
+                        '<button type="button" class="btn btn-danger ml-2" id="removeDiscountBtn">' +
+                        '<i class="fas fa-times"></i> Xóa mã' +
+                        '</button>'
+                    );
+                }
+            } else {
+                $('#discountMessage').html('<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ' + result.message + '</span>');
+                $('#DiscountCode').val('');
+                $('#DiscountAmount').val(0);
+            }
+        },
+        error: function () {
+            $('#discountMessage').html('<span class="text-danger">Lỗi kết nối!</span>');
+        }
+    });
+}
+
+// Hàm xóa mã giảm giá
+function removeDiscount() {
+    $.ajax({
+        url: '@Url.Action("RemoveDiscount", "Cart")',
+        type: 'POST',
+        success: function (result) {
+            if (result.success) {
+                // Reset UI
+                resetDiscountUI(result);
+            }
+        }
+    });
+}
+
+// Hàm cập nhật tóm tắt đơn hàng
+function updateCheckoutSummary(result) {
+    $('#shippingFee').text(formatCurrency(result.phiVanChuyen) + 'đ');
+    $('#vatFee').text(formatCurrency(result.vat) + 'đ');
+    $('#totalPayment').text(formatCurrency(result.tongThanhToan) + 'đ');
+}
+
+// Hàm cập nhật hiển thị giảm giá
+function updateDiscountDisplay(discountAmount, discountCode) {
+    if (discountAmount > 0 || discountCode.toUpperCase() === 'FREESHIP') {
+        var displayText = '';
+        if (discountAmount > 0) {
+            displayText = '- ' + formatCurrency(discountAmount) + 'đ';
+        } else if (discountCode.toUpperCase() === 'FREESHIP') {
+            displayText = 'Miễn phí vận chuyển';
+        }
+
+        if ($('#discountDisplay').length === 0) {
+            $('<div class="d-flex justify-content-between text-success" id="discountRow">' +
+              '<span>Giảm giá:</span>' +
+              '<span id="discountDisplay">' + displayText + '</span>' +
+              '</div>').insertAfter('.card-body .d-flex:first');
+        } else {
+            $('#discountDisplay').text(displayText);
+        }
+    } else {
+        $('#discountRow').remove();
+    }
+}
+
+// Hàm reset UI khi xóa mã
+function resetDiscountUI(result) {
+    $('#discountCodeInput').val('');
+    $('#DiscountCode').val('');
+    $('#DiscountAmount').val(0);
+
+    // Cập nhật hiển thị
+    $('#shippingFee').text(formatCurrency(result.phiVanChuyen) + 'đ');
+    $('#vatFee').text(formatCurrency(result.vat) + 'đ');
+    $('#totalPayment').text(formatCurrency(result.tongThanhToan) + 'đ');
+
+    // Xóa dòng giảm giá
+    $('#discountRow').remove();
+
+    // Xóa nút xóa mã
+    $('#removeDiscountBtn').remove();
+
+    // Thông báo
+    $('#discountMessage').html('<span class="text-success"><i class="fas fa-check-circle"></i> ' + result.message + '</span>');
+}
+
+// Format tiền tệ
+function formatCurrency(number) {
+    if (!number) return '0';
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+        // Xử lý submit form
+        $('#checkoutForm').submit(function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            var submitButton = $(this).find('button[type="submit"]');
+
+            submitButton.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Đang xử lý...');
+
+            $.ajax({
+                url: '@Url.Action("PlaceOrder", "Cart")',
+                type: 'POST',
+                data: formData,
+                success: function (result) {
+                    if (result.success) {
+                        window.location.href = '/Cart/OrderSuccess?orderId=' + result.orderId;
+                    } else {
+                        alert(result.message);
+                        submitButton.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Đặt hàng');
+                    }
+                },
+                error: function () {
+                    alert('Lỗi kết nối đến server!');
+                    submitButton.prop('disabled', false).html('<i class="fas fa-check-circle"></i> Đặt hàng');
+                }
+            });
+        });
+    </script>
+}
+
+
+
+
+
+

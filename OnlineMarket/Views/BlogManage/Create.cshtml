@@ -1,0 +1,53 @@
+﻿@model OnlineMarket.Models.BlogPost
+@{
+    ViewBag.Title = "Đăng bài viết";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc layout Admin
+}
+
+<div class="container mt-5">
+    <h2>Viết bài mới</h2>
+
+    @using (Html.BeginForm("Create", "BlogManage", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+    <div class="card p-4">
+        <div class="mb-3">
+            <label>Tiêu đề bài viết</label>
+            <input type="text" name="TieuDe" class="form-control" required />
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Ảnh đại diện</label>
+                <input type="file" name="uploadHinh" class="form-control" accept="image/*" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label>Chuyên mục (Để lọc)</label>
+                <select name="LoaiTin" class="form-control">
+                    <option value="health">Sức khỏe</option>
+                    <option value="nutrition">Dinh dưỡng</option>
+                    <option value="import">Nhập khẩu</option>
+                    <option value="recipe">Công thức</option>
+                    <option value="tips">Mẹo vặt</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Tác giả</label>
+            <input type="text" name="TacGia" class="form-control" placeholder="Ví dụ: Dr. Lan Trinh" />
+        </div>
+
+        <div class="mb-3">
+            <label>Mô tả ngắn (Hiện ở trang danh sách)</label>
+            <textarea name="MoTaNgan" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Nội dung chi tiết</label>
+            <textarea name="NoiDung" class="form-control" rows="10"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Đăng bài</button>
+    </div>
+    }
+</div>

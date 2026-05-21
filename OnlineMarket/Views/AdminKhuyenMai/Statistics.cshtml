@@ -1,0 +1,129 @@
+﻿@model OnlineMarket.Models.KhuyenMaiStatisticsViewModel
+@{
+    ViewBag.Title = "Thống kê khuyến mãi: " + Model.KhuyenMai.TENKM;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar"></i> Thống kê: @Model.KhuyenMai.TENKM</h2>
+        <a href="@Url.Action("Index", "AdminKhuyenMai")" class="btn btn-light">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <!-- Thông tin khuyến mãi -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-tag"></i> Thông tin khuyến mãi</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="text-center p-3 border rounded">
+                        <h4 class="text-primary">@Model.TotalUsage</h4>
+                        <p class="mb-0 text-muted">Tổng số lần sử dụng</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3 border rounded">
+                        <h4 class="text-success">@Model.TotalRevenue.ToString("N0")đ</h4>
+                        <p class="mb-0 text-muted">Tổng doanh thu</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3 border rounded">
+                        <h4 class="text-warning">
+                            @(Model.KhuyenMai.SOLANDASUDUNG ?? 0)/@(Model.KhuyenMai.SOLANSUDUNG?.ToString() ?? "∞")
+                        </h4>
+                        <p class="mb-0 text-muted">Số lần đã sử dụng/Tối đa</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center p-3 border rounded">
+                        <h4 class="text-danger">@Model.KhuyenMai.TRANGTHAI</h4>
+                        <p class="mb-0 text-muted">Trạng thái</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ sử dụng theo tháng -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Sử dụng theo tháng</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tháng</th>
+                                <th>Số lần sử dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.UsageByMonth)
+                            {
+                                <tr>
+                                    <td>@item.Month</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success"
+                                                 style="width: @(item.UsageCount * 10)%; max-width: 100%">
+                                                @item.UsageCount
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn hàng gần đây -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-receipt"></i> Đơn hàng gần đây</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Ngày đặt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders)
+                                    {
+                                        <tr>
+                                            <td>#@order.MADH</td>
+                                            <td>@order.NguoiDung?.HOTEN</td>
+                                            <td>@order.TongThanhToan?.ToString("N0")đ</td>
+                                            <td>@order.NGAYDAT?.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted">Chưa có đơn hàng nào sử dụng khuyến mãi này</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

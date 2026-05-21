@@ -1,0 +1,180 @@
+﻿@model OnlineMarket.Models.AdminDashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e3f2fd; color: #2196f3;">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="stat-number">@Model.TotalProducts</div>
+                <div class="stat-title">Tổng sản phẩm</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-number">@Model.TotalOrders</div>
+                <div class="stat-title">Tổng đơn hàng</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff3e0; color: #ff9800;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">@Model.TotalUsers</div>
+                <div class="stat-title">Tổng người dùng</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fce4ec; color: #e91e63;">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-number">@Model.TotalRevenue.ToString("N0")đ</div>
+                <div class="stat-title">Tổng doanh thu</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doanh thu theo tháng -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="table-container">
+                <h5 class="mb-3"><i class="fas fa-chart-line"></i> Doanh thu theo tháng</h5>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tháng</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.MonthlyRevenue)
+                        {
+                            <tr>
+                                <td>@item.Month</td>
+                                <td class="text-success">@item.Revenue.ToString("N0")đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sản phẩm bán chạy -->
+        <div class="col-md-4">
+            <div class="table-container">
+                <h5 class="mb-3"><i class="fas fa-fire"></i> Top sản phẩm bán chạy</h5>
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Đã bán</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TopSellingProducts)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>
+                                    <span class="badge bg-primary">@item.QuantitySold</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Đơn hàng mới -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Đơn hàng mới</h5>
+                    <a href="@Url.Action("Orders", "Account")" class="btn btn-sm btn-primary">
+                        Xem tất cả
+                    </a>
+                </div>
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.NewOrders)
+                        {
+                            <tr>
+                                <td>#@order.MADH</td>
+                                <td>@order.HoTenNhanHang</td>
+                                <td>@order.TongThanhToan.ToString()đ</td>
+                                <td>
+                                    <span class="badge bg-warning">@order.TRANG_THAI</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sản phẩm sắp hết hàng -->
+        <div class="col-md-6">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Sản phẩm sắp hết hàng</h5>
+                    <a href="@Url.Action("Products", "Account")" class="btn btn-sm btn-primary">
+                        Xem tất cả
+                    </a>
+                </div>
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Tồn kho</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.LowStockProducts)
+                        {
+                            <tr>
+                                <td>@product.TENSP</td>
+                                <td>
+                                    <span class="badge @(product.SOLUONGTON < 5 ? "bg-danger" : "bg-warning")">
+                                        @product.SOLUONGTON
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @(product.TRANGTHAI == "Còn hàng" ? "bg-success" : "bg-danger")">
+                                        @product.TRANGTHAI
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

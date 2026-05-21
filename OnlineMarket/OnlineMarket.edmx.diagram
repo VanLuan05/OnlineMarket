@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="52234b25c762403a8171f2c94fed2d32" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.ChiTietDonHang" Width="1.5" PointX="8.25" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.DanhGia" Width="1.5" PointX="11.25" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.DanhMuc" Width="1.5" PointX="3.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.DonHang" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.GioHang" Width="1.5" PointX="8.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.KHUYENMAI" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.NguoiDung" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.SanPham" Width="1.5" PointX="6" PointY="4.625" IsExpanded="true" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__ChiTietDon__MADH__52593CB8" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__ChiTietDon__MASP__534D60F1" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__DanhGia__MAND__5FB337D6" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__DanhGia__MASP__60A75C0F" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__SanPham__MADM__4222D4EF" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__DonHang__MaKM__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__DonHang__MAND__4D94879B" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__GioHang__MAND__59063A47" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__GioHang__MASP__59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__SanPham__MAKM__4316F928" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="QL_OnlineMarketModel.DiaChiNguoiDung" Width="1.5" PointX="3" PointY="11.25" />
+        <AssociationConnector Association="QL_OnlineMarketModel.FK__DiaChiNgu__Nguoi__7A672E12" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,173 @@
+﻿@model OnlineMarket.DonHang
+
+@{
+    ViewBag.Title = "Theo Dõi Đơn Hàng";
+    var timeline = ViewBag.Timeline as List<OnlineMarket.Models.TimelineItem>;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>📊 Theo Dõi Đơn Hàng #@Model.MADH</h2>
+
+            <!-- Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Lộ trình đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        @if (timeline != null)
+                        {
+                            foreach (var item in timeline)
+                            {
+                                <div class="timeline-item @(item.IsCompleted ? "completed" : "") @(item.IsCurrent ? "current" : "")">
+                                    <div class="timeline-icon">
+                                        @Html.Raw(item.Icon)
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">@item.Title</h6>
+                                        <p class="mb-1 text-muted">@item.Description</p>
+                                        @if (item.Date.HasValue)
+                                        {
+                                            <small class="text-muted">@item.Date.Value.ToString()</small>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin đơn hàng -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Mã đơn hàng:</strong> #@Model.MADH<br>
+                            <strong>Ngày đặt:</strong> @Model.NGAYDAT.ToString()<br>
+                            <strong>Trạng thái:</strong>
+                            <span class="badge @GetStatusBadgeClass(Model.TrangThaiChiTiet)">
+                                @Model.TrangThaiChiTiet
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Tổng tiền:</strong> @(Model.TONGTIEN?.ToString("N0") ?? "0")đ<br>
+                            <strong>Phí vận chuyển:</strong> @(Model.PhiGiaoHang?.ToString("N0") ?? "0")đ<br>
+                            <strong>Tổng thanh toán:</strong> <span class="text-success">@(Model.TongThanhToan?.ToString("N0") ?? "0")đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Thông tin giao hàng -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🚚 Thông tin giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>@Model.HoTenNhanHang</strong><br>
+                        📞 @Model.SDTNGUOINHAN
+                    </p>
+                    <p class="mb-0 text-muted">
+                        @Model.DIACHIGIAOHANG<br>
+                        @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh
+                    </p>
+                </div>
+            </div>
+
+            <!-- Hình thức thanh toán -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">💳 Hình thức thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">@Model.HinhThucThanhToan</p>
+                </div>
+            </div>
+
+            <!-- Hỗ trợ -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">📞 Cần hỗ trợ?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">Hotline: <strong>1900 1000</strong></p>
+                    <p class="mb-0">Email: support@onlinemarket.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding: 15px 0;
+        border-left: 2px solid #dee2e6;
+        margin-left: 20px;
+    }
+
+        .timeline-item.completed {
+            border-left-color: #28a745;
+        }
+
+        .timeline-item.current {
+            border-left-color: #007bff;
+        }
+
+    .timeline-icon {
+        position: absolute;
+        left: -35px;
+        top: 15px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .timeline-item.completed .timeline-icon {
+        border-color: #28a745;
+        background: #28a745;
+        color: white;
+    }
+
+    .timeline-item.current .timeline-icon {
+        border-color: #007bff;
+        background: #007bff;
+        color: white;
+    }
+
+    .timeline-content {
+        margin-left: 10px;
+    }
+</style>
+
+@* ĐỊNH NGHĨA FUNCTIONS TRONG VIEW *@
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        if (status == "Đang xử lý") return "badge-warning";
+        if (status == "Đang giao") return "badge-info";
+        if (status == "Hoàn tất") return "badge-success";
+        if (status == "Hủy") return "badge-danger";
+        return "badge-secondary";
+    }
+}

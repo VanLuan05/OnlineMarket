@@ -1,0 +1,61 @@
+﻿@model IEnumerable<OnlineMarket.Models.BlogPost>
+@{
+    ViewBag.Title = "Quản lý Tin tức";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Hoặc layout admin của bạn
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Quản lý Tin tức</h2>
+        <a href="@Url.Action("Create")" class="btn btn-success">
+            <i class="fas fa-plus"></i> Viết bài mới
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="100">Hình ảnh</th>
+                        <th>Tiêu đề</th>
+                        <th>Chuyên mục</th>
+                        <th>Ngày đăng</th>
+                        <th>Lượt xem</th>
+                        <th width="150">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            <img src="@Url.Content("~/Content/img/blog/" + item.AnhBia)" style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
+                        </td>
+                        <td>
+                            <strong>@item.TieuDe</strong><br />
+                            <small class="text-muted">Tác giả: @item.TacGia</small>
+                        </td>
+                        <td>
+                            @{
+                                    string badgeClass = "bg-secondary";
+                                    if(item.LoaiTin == "health") { badgeClass = "bg-danger"; }
+                                    else if(item.LoaiTin == "nutrition") { badgeClass = "bg-success"; }
+                                    else if(item.LoaiTin == "recipe") { badgeClass = "bg-warning text-dark"; }
+                            }
+                            <span class="badge @badgeClass">@item.LoaiTin</span>
+                        </td>
+                        <td>@item.NgayDang.ToString("dd/MM/yyyy")</td>
+                        <td>@item.LuotXem</td>
+                        <td>
+                            <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-outline-danger btn-sm" onclick="return confirm('Xóa bài này?');">
+                                <i class="fas fa-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,184 @@
+﻿@model List<OnlineMarket.KHUYENMAI>
+@{
+    ViewBag.Title = "Quản lý Khuyến mãi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tags"></i> Quản lý Khuyến mãi</h2>
+        <div>
+            <a href="@Url.Action("Create", "AdminKhuyenMai")" class="btn btn-success">
+                <i class="fas fa-plus"></i> Tạo khuyến mãi mới
+            </a>
+            <a href="@Url.Action("Import", "AdminKhuyenMai")" class="btn btn-info ml-2">
+                <i class="fas fa-file-import"></i> Import nhiều mã
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Form tìm kiếm và lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            @using (Html.BeginForm("Index", "AdminKhuyenMai", FormMethod.Get, new { @class = "row g-3" }))
+            {
+                <div class="col-md-4">
+                    <select class="form-control" name="status">
+                        @foreach (var status in ViewBag.StatusList)
+                        {
+                            <option value="@status.Value" selected="@(status.Value == ViewBag.SelectedStatus)">
+                                @status.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search"
+                           placeholder="Tìm theo mã, mô tả..."
+                           value="@ViewBag.Search">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bảng khuyến mãi -->
+    <div class="table-container">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã KM</th>
+                    <th>Mã khuyến mãi</th>
+                    <th>Loại</th>
+                    <th>Giá trị</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var km in Model)
+                {
+                    <tr>
+                        <td>@km.MAKM</td>
+                        <td>
+                            <strong>@km.TENKM</strong>
+                            <br>
+                            <small class="text-muted">@km.MOTA</small>
+                        </td>
+                        <td>
+                            @switch (km.LOAI)
+                            {
+                                case "Percentage":
+                                    <span class="badge bg-info">Giảm %</span>
+                                    break;
+                                case "Fixed":
+                                    <span class="badge bg-warning">Giảm tiền</span>
+                                    break;
+                                case "Freeship":
+                                    <span class="badge bg-success">Freeship</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">@km.LOAI</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (km.LOAI == "Percentage")
+                            {
+                                <span class="text-danger">Giảm @km.PHANTRAMGIAM%</span>
+                                if (km.GIATRITOIDA.HasValue)
+                                {
+                                    <br>
+                                    <small class="text-muted">Tối đa: @km.GIATRITOIDA.Value.ToString()đ</small>
+                                }
+                            }
+                            else if (km.LOAI == "Fixed")
+                            {
+                                <span class="text-danger">Giảm @km.GIATRIGIAM.ToString()đ</span>
+                            }
+                            else if (km.LOAI == "Freeship")
+                            {
+                                <span class="text-success">Miễn phí vận chuyển</span>
+                            }
+
+                            @if (km.DIEUKIENAPDUNG.HasValue)
+                            {
+                                <br>
+                                <small class="text-muted">ĐH tối thiểu: @km.DIEUKIENAPDUNG.Value.ToString()đ</small>
+                            }
+                        </td>
+                        <td>@km.NGAYBATDAU.ToString()</td>
+                        <td>@km.NGAYKETTHUC.ToString()</td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                @(km.SOLANDASUDUNG ??0)/10@(km.SOLANSUDUNG.ToString() ?? "10")
+                            </span>
+                        </td>
+                        <td>
+                            @{
+                                var statusClass = "bg-secondary";
+                                if (km.TRANGTHAI == "Active") { statusClass = "bg-success"; }
+                                else if (km.TRANGTHAI == "Inactive") { statusClass = "bg-danger"; }
+                                else if (km.TRANGTHAI == "Expired") { statusClass = "bg-warning"; }
+                            }
+
+                            <span class="badge @statusClass">@km.TRANGTHAI</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="@Url.Action("Edit", "AdminKhuyenMai", new { id = km.MAKM })"
+                                   class="btn btn-sm btn-primary" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="@Url.Action("Statistics", "AdminKhuyenMai", new { id = km.MAKM })"
+                                   class="btn btn-sm btn-info" title="Thống kê">
+                                    <i class="fas fa-chart-bar"></i>
+                                </a>
+                                <button onclick="deleteKhuyenMai(@km.MAKM, '@km.TENKM')"
+                                        class="btn btn-sm btn-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function deleteKhuyenMai(id, name) {
+            if (confirm(`Bạn có chắc chắn muốn xóa khuyến mãi "${name}"?`)) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "AdminKhuyenMai")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (result) {
+                        if (result.success) {
+                            alert(result.message);
+                            location.reload();
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,144 @@
+﻿@model List<OnlineMarket.SanPham>
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-box"></i> Quản lý sản phẩm</h2>
+        <a href="@Url.Action("ProductCreate", "Account")" class="btn btn-success">
+            <i class="fas fa-plus"></i> Thêm sản phẩm mới
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Form tìm kiếm và lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            @using (Html.BeginForm("Products", "Account", FormMethod.Get, new { @class = "row g-3" }))
+            {
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search" placeholder="Tìm kiếm sản phẩm..."
+                           value="@ViewBag.Search">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control" name="categoryId">
+                        <option value="0">Tất cả danh mục</option>
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <option value="@category.MADM"
+                                    selected="@(ViewBag.CategoryId == category.MADM)">
+                                @category.TENDM
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bảng sản phẩm -->
+    <div class="table-container">
+        <table class="table table-hover data-table">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.MASP</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(product.URL_ANH))
+                            {
+                                <img src="@product.URL_ANH" alt="@product.TENSP"
+                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                            }
+                            else
+                            {
+                                <div style="width: 60px; height: 60px; background: #f8f9fa;
+                                            border-radius: 5px; display: flex;
+                                            align-items: center; justify-content: center;">
+                                    <i class="fas fa-image text-muted"></i>
+                                </div>
+                            }
+                        </td>
+                        <td>
+                            <strong>@product.TENSP</strong>
+                            <br>
+                            <small class="text-muted">@(product.MOTA?.Length > 50 ? product.MOTA.Substring(0, 50) + "..." : product.MOTA)</small>
+                        </td>
+                        <td>@product.DanhMuc.TENDM</td>
+                        <td class="text-success">@product.GIA.ToString()đ</td>
+                        <td>
+                            <span class="badge @(product.SOLUONGTON > 10 ? "bg-success" : product.SOLUONGTON > 0 ? "bg-warning" : "bg-danger")">
+                                @product.SOLUONGTON
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @(product.TRANGTHAI == "Còn hàng" ? "bg-success" : "bg-danger")">
+                                @product.TRANGTHAI
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="@Url.Action("ProductEdit", "Account", new { id = product.MASP })"
+                                   class="btn btn-sm btn-primary" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="deleteProduct(@product.MASP, '@product.TENSP')"
+                                        class="btn btn-sm btn-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function deleteProduct(id, name) {
+            if (confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${name}"?`)) {
+                $.ajax({
+                    url: '@Url.Action("ProductDelete", "Account")',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (result) {
+                        if (result.success) {
+                            alert(result.message);
+                            location.reload();
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+}

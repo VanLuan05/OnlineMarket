@@ -1,0 +1,821 @@
+﻿@model IEnumerable<OnlineMarket.Models.BlogPost>
+@{
+    ViewBag.Title = "Blog - Tin Tức";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #2e8b57;
+        --secondary-color: #ff6b6b;
+        --accent-color: #4ecdc4;
+        --dark-color: #2c3e50;
+        --light-color: #f8f9fa;
+        --text-color: #333;
+        --text-light: #6c757d;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+
+    /* Blog Hero Section */
+    .blog-hero {
+        background: linear-gradient(135deg, rgba(46, 139, 87, 0.9), rgba(78, 205, 196, 0.8)),
+                    url('@Url.Content("~/Content/img/blog/hero-bg.jpg")') center/cover no-repeat;
+        color: white;
+        padding: 100px 0 60px;
+        text-align: center;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-hero:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom/cover no-repeat;
+    }
+
+    .blog-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        opacity: 0.95;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Animated Heading */
+    .heading {
+        text-align: center;
+        margin: 60px 0;
+        position: relative;
+    }
+
+    .heading .title-text {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        position: relative;
+        padding: 0 30px;
+        display: inline-block;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .heading .title-text:before,
+    .heading .title-text:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 2px;
+    }
+
+    .heading .title-text:before {
+        right: 100%;
+        margin-right: 20px;
+    }
+
+    .heading .title-text:after {
+        left: 100%;
+        margin-left: 20px;
+    }
+
+    /* Blog Content */
+    .blog-content {
+        padding: 30px 0 80px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+
+    /* Blog Filter */
+    .blog-filter {
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        padding: 0 20px;
+    }
+
+    .filter-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 12px 25px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 50px;
+        font-weight: 600;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+
+    .filter-btn i {
+        font-size: 0.9rem;
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Blog Card */
+    .blog-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-15px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .blog-card:hover .blog-image:after {
+        opacity: 0.3;
+    }
+
+    /* Blog Image */
+    .blog-image {
+        height: 250px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+
+    .blog-card:hover .blog-image img {
+        transform: scale(1.1);
+    }
+
+    .blog-image:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        mix-blend-mode: multiply;
+    }
+
+    /* Category Badge */
+    .category-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: var(--secondary-color);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    /* Blog Info */
+    .blog-info {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    .blog-date {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .blog-read-time {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .blog-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 15px;
+        line-height: 1.4;
+        flex-grow: 1;
+        transition: color 0.3s ease;
+    }
+
+    .blog-card:hover .blog-title {
+        color: var(--primary-color);
+    }
+
+    .blog-excerpt {
+        color: var(--text-light);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Blog Footer */
+    .blog-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+    }
+
+    .blog-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .author-info h5 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--dark-color);
+    }
+
+    .author-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+
+    /* Read More Button */
+    .read-more-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .read-more-btn:hover {
+        transform: translateX(10px);
+        box-shadow: 0 8px 25px rgba(46, 139, 87, 0.3);
+    }
+
+    /* Pagination */
+    .blog-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 60px;
+        padding: 20px;
+    }
+
+    .pagination-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .pagination-btn:hover,
+    .pagination-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    /* Featured Post */
+    .featured-post {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+    }
+
+    .featured-image {
+        height: 400px;
+    }
+
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .featured-content {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .featured-badge {
+        background: var(--secondary-color);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        display: inline-block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        width: fit-content;
+    }
+
+    .featured-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    /* Newsletter */
+    .newsletter-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        padding: 60px 20px;
+        border-radius: 20px;
+        margin: 80px auto 40px;
+        max-width: 800px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newsletter-section:before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') center/cover no-repeat;
+        animation: float 20s linear infinite;
+    }
+
+    @@keyframes float {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .newsletter-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .newsletter-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 15px;
+        max-width: 500px;
+        margin: 30px auto 0;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 15px 25px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .newsletter-btn {
+        background: var(--dark-color);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .newsletter-btn:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    /* Loading Animation */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        display: none;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 992px) {
+        .featured-post {
+            grid-template-columns: 1fr;
+        }
+
+        .featured-image {
+            height: 300px;
+        }
+
+        .blog-hero h1 {
+            font-size: 2.8rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .blog-grid {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+        }
+
+        .blog-hero {
+            padding: 80px 0 40px;
+        }
+
+        .blog-hero h1 {
+            font-size: 2.2rem;
+        }
+
+        .heading .title-text {
+            font-size: 2.2rem;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .filter-container {
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .blog-footer {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .featured-title {
+            font-size: 1.8rem;
+        }
+
+        .heading .title-text {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<section class="blog-hero">
+    <div class="container">
+        <h1>Khám Phá Thế Giới Trái Cây</h1>
+        <p>Kiến thức bổ ích từ chuyên gia</p>
+    </div>
+</section>
+
+<main class="blog-content">
+    <div class="heading"><span class="title-text">TIN TỨC MỚI NHẤT</span></div>
+
+    <div class="blog-filter">
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">Tất cả</button>
+            <button class="filter-btn" data-filter="health">Sức khỏe</button>
+            <button class="filter-btn" data-filter="nutrition">Dinh dưỡng</button>
+            <button class="filter-btn" data-filter="import">Nhập khẩu</button>
+            <button class="filter-btn" data-filter="recipe">Công thức</button>
+            <button class="filter-btn" data-filter="tips">Mẹo vặt</button>
+        </div>
+    </div>
+
+    <div class="blog-grid">
+        @foreach (var item in Model)
+        {
+        <article class="blog-card" data-category="@item.LoaiTin">
+            <div class="blog-image">
+                <img src="@Url.Content("~/Content/img/blog/" + item.AnhBia)" alt="@item.TieuDe">
+
+                @{
+                        string badgeName = "Tin tức";
+                        if (item.LoaiTin == "health") { badgeName = "Sức khỏe"; }
+                        else if (item.LoaiTin == "nutrition") { badgeName = "Dinh dưỡng"; }
+                        else if (item.LoaiTin == "import") { badgeName = "Nhập khẩu"; }
+                        else if (item.LoaiTin == "recipe") { badgeName = "Công thức"; }
+                        else if (item.LoaiTin == "tips") { badgeName = "Mẹo vặt"; }
+                }
+                <span class="category-badge">@badgeName</span>
+            </div>
+
+            <div class="blog-info">
+                <div class="blog-meta">
+                    <span class="blog-date"><i class="far fa-calendar"></i> @item.NgayDang.ToString("dd/MM/yyyy")</span>
+                    <span class="blog-read-time"><i class="far fa-eye"></i> @item.LuotXem xem</span>
+                </div>
+                <h3 class="blog-title">@item.TieuDe</h3>
+                <p class="blog-excerpt">@item.MoTaNgan</p>
+            </div>
+
+            <div class="blog-footer">
+                <div class="blog-author">
+                    <div class="author-avatar">@((item.TacGia ?? "A").Substring(0,1))</div>
+                    <div class="author-info"><h5>@item.TacGia</h5></div>
+                </div>
+            </div>
+        </article>
+        }
+    </div>
+</main>
+
+@section scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const blogCards = document.querySelectorAll('.blog-card, .featured-post');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Show loading animation
+                    document.getElementById('loading').style.display = 'block';
+
+                    // Filter blog cards
+                    setTimeout(() => {
+                        blogCards.forEach(card => {
+                            const category = card.getAttribute('data-category');
+
+                            if (filterValue === 'all' || category === filterValue) {
+                                card.style.display = 'block';
+                                setTimeout(() => {
+                                    card.style.opacity = '1';
+                                    card.style.transform = 'translateY(0)';
+                                }, 100);
+                            } else {
+                                card.style.opacity = '0';
+                                card.style.transform = 'translateY(20px)';
+                                setTimeout(() => {
+                                    card.style.display = 'none';
+                                }, 300);
+                            }
+                        });
+
+                        // Hide loading animation
+                        document.getElementById('loading').style.display = 'none';
+                    }, 500);
+                });
+            });
+
+            // Add hover effects
+            blogCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+
+            // Newsletter form submission
+            const newsletterForm = document.querySelector('.newsletter-form');
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+
+                // Simulate subscription
+                const submitBtn = this.querySelector('button');
+                const originalText = submitBtn.textContent;
+
+                submitBtn.textContent = 'Đang đăng ký...';
+                submitBtn.disabled = true;
+
+                setTimeout(() => {
+                    alert('Cảm ơn bạn đã đăng ký nhận tin! Chúng tôi sẽ gửi thông tin mới nhất đến email: ' + email);
+                    newsletterForm.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1500);
+            });
+
+            // Infinite scroll simulation
+            let currentPage = 1;
+            const loadingDiv = document.getElementById('loading');
+
+            function loadMorePosts() {
+                loadingDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    // In real application, this would be an AJAX call
+                    console.log('Loading page ' + (currentPage + 1));
+
+                    // Simulate adding new posts
+                    const blogGrid = document.querySelector('.blog-grid');
+                    const newPost = document.createElement('article');
+                    newPost.className = 'blog-card';
+                    newPost.innerHTML = `
+                        <div class="blog-image">
+                            <img src="https://images.unsplash.com/photo-1519996529931-28324d5a630e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Bài viết mới">
+                            <span class="category-badge">Mới</span>
+                        </div>
+                        <div class="blog-info">
+                            <div class="blog-meta">
+                                <span class="blog-date"><i class="far fa-calendar"></i> Hôm nay</span>
+                                <span class="blog-read-time"><i class="far fa-clock"></i> 3 phút đọc</span>
+                            </div>
+                            <h3 class="blog-title">Bài Viết Mới Được Thêm</h3>
+                            <p class="blog-excerpt">Đây là bài viết mới được tải thêm khi bạn cuộn xuống.</p>
+                        </div>
+                        <div class="blog-footer">
+                            <div class="blog-author">
+                                <div class="author-avatar">NM</div>
+                                <div class="author-info">
+                                    <h5>Ngọc Mai</h5>
+                                    <p>Biên tập viên</p>
+                                </div>
+                            </div>
+                            <a href="#" class="read-more-btn">Xem thêm <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    `;
+
+                    blogGrid.appendChild(newPost);
+                    loadingDiv.style.display = 'none';
+                    currentPage++;
+                }, 2000);
+            }
+
+            // Detect scroll to bottom
+            window.addEventListener('scroll', function() {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                    if (currentPage < 3) { // Limit to 3 pages for demo
+                        loadMorePosts();
+                    }
+                }
+            });
+
+            // Pagination buttons
+            const paginationBtns = document.querySelectorAll('.pagination-btn:not(:first-child):not(:last-child)');
+            paginationBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    loadMorePosts();
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            const searchBtn = document.querySelector('.search-box button');
+
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    blogCards.forEach(card => {
+                        const title = card.querySelector('.blog-title').textContent.toLowerCase();
+                        const excerpt = card.querySelector('.blog-excerpt').textContent.toLowerCase();
+
+                        if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+        });
+
+        function prevPage() {
+            alert('Chuyển đến trang trước');
+        }
+
+        function nextPage() {
+            alert('Chuyển đến trang tiếp theo');
+        }
+    </script>
+}

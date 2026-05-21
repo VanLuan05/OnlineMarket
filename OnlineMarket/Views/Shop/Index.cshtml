@@ -1,0 +1,282 @@
+﻿@model List<OnlineMarket.SanPham>
+
+@{
+    ViewBag.Title = "Cửa Hàng - Fruit Store";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Khai báo biến để tránh null reference
+    var search = ViewBag.Search as string ?? "";
+    var categoryId = ViewBag.CategoryId as int?;
+    var categories = ViewBag.Categories as List<OnlineMarket.DanhMuc> ?? new List<OnlineMarket.DanhMuc>();
+    var priceSort = ViewBag.PriceSort as string ?? "";
+    var nameSort = ViewBag.NameSort as string ?? "";
+    var popularSort = ViewBag.PopularSort as string ?? "";
+}
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang Chủ</a></li>
+                <li class="breadcrumb-item active">Cửa Hàng</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="shop-section py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar Filter -->
+            <div class="col-lg-3 mb-4">
+                <div class="card filter-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-filter"></i> Bộ Lọc</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search -->
+                        <div class="mb-4">
+                            <h6>Tìm Kiếm</h6>
+                            @using (Html.BeginForm("Index", "Shop", FormMethod.Get, new { @class = "search-form" }))
+                            {
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Tìm sản phẩm..." value="@search">
+                                    <button class="btn btn-outline-primary" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="categoryId" value="@categoryId" />
+                                <input type="hidden" name="sortOrder" value="@priceSort" />
+                            }
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="mb-4">
+                            <h6>Danh Mục</h6>
+                            <div class="list-group">
+                                <a href="@Url.Action("Index", "Shop")"
+                                   class="list-group-item list-group-item-action @(!categoryId.HasValue ? "active" : "")">
+                                    Tất Cả Danh Mục
+                                </a>
+                                @foreach (var category in categories)
+                                {
+                                    <a href="@Url.Action("Index", "Shop", new { categoryId = category.MADM })"
+                                       class="list-group-item list-group-item-action @(categoryId == category.MADM ? "active" : "")">
+                                        @(category.TENDM ?? "Danh mục không có tên")
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Sort -->
+                        <div class="mb-4">
+                            <h6>Sắp Xếp</h6>
+                            <div class="list-group">
+                                <a href="@Url.Action("Index", "Shop", new { sortOrder = "" })"
+                                   class="list-group-item list-group-item-action @(string.IsNullOrEmpty(priceSort) ? "active" : "")">
+                                    Mặc Định
+                                </a>
+                                <a href="@Url.Action("Index", "Shop", new { sortOrder = "price_asc" })"
+                                   class="list-group-item list-group-item-action @(priceSort == "price_asc" ? "active" : "")">
+                                    Giá: Thấp đến Cao
+                                </a>
+                                <a href="@Url.Action("Index", "Shop", new { sortOrder = "price_desc" })"
+                                   class="list-group-item list-group-item-action @(priceSort == "price_desc" ? "active" : "")">
+                                    Giá: Cao đến Thấp
+                                </a>
+                                <a href="@Url.Action("Index", "Shop", new { sortOrder = "name_asc" })"
+                                   class="list-group-item list-group-item-action @(nameSort == "name_asc" ? "active" : "")">
+                                    Tên: A-Z
+                                </a>
+                                <a href="@Url.Action("Index", "Shop", new { sortOrder = "popular_desc" })"
+                                   class="list-group-item list-group-item-action @(popularSort == "popular_desc" ? "active" : "")">
+                                    Bán Chạy Nhất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="col-lg-9">
+                <!-- Page Title -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h3 mb-0">
+                        @if (categoryId.HasValue)
+                        {
+                            var currentCategory = categories.FirstOrDefault(c => c.MADM == categoryId);
+                            if (currentCategory != null && !string.IsNullOrEmpty(currentCategory.TENDM))
+                            {
+                                @currentCategory.TENDM
+                            }
+                            else
+                            {
+                                <text>Sản Phẩm</text>
+                            }
+                        }
+                        else
+                        {
+                            <text>Tất Cả Sản Phẩm</text>
+                        }
+                    </h2>
+                    <span class="text-muted">@(Model?.Count ?? 0) sản phẩm</span>
+                </div>
+
+                <!-- Search Results Info -->
+                @if (!string.IsNullOrEmpty(search))
+                {
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-search"></i> Kết quả tìm kiếm cho: "<strong>@search</strong>"
+                        <a href="@Url.Action("Index", "Shop")" class="float-end">Xem tất cả</a>
+                    </div>
+                }
+
+                <!-- Products -->
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row">
+                        @foreach (var product in Model)
+                        {
+                            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                                <div class="card product-card h-100">
+                                    <div class="position-relative">
+                                        <img src="@product.URL_ANH"
+                                             class="card-img-top"
+                                             alt="@product.TENSP"
+                                             style="height: 200px; object-fit: cover;">
+                                        @if ((product.LUOTMUA ?? 0) > 100)
+                                        {
+                                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">Bán Chạy</span>
+                                        }
+                                        @if ((product.GIA) < 50000)
+                                        {
+                                            <span class="badge bg-success position-absolute top-0 end-0 m-2">Giá Tốt</span>
+                                        }
+                                    </div>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">@(product.TENSP ?? "Tên sản phẩm")</h5>
+
+                                        <!-- Rating -->
+                                        <div class="product-rating mb-2">
+                                            @{
+                                                int rating = 5; // Mặc định 5 sao
+                                                for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="fas fa-star @(i <= rating ? "text-warning" : "text-muted")"></i>
+                                                }
+                                            }
+                                            <small class="text-muted">(@(product.LUOTMUA ?? 0) lượt mua)</small>
+                                        </div>
+
+                                        <!-- Price -->
+                                        <div class="product-price mb-3">
+                                            <strong class="text-danger">@string.Format("{0:N0}đ", product.GIA)</strong>
+                                            <small class="text-muted d-block">/@(product.DONVITINH ?? "kg")</small>
+                                        </div>
+
+                                        <!-- Stock & Button -->
+                                        <div class="mt-auto">
+                                            @if (product.TRANGTHAI == "Còn hàng")
+                                            {
+                                                <button class="btn btn-primary w-100 add-to-cart"
+                                                        data-product-id="@product.MASP"
+                                                        data-product-name="@product.TENSP"
+                                                        data-product-price="@product.GIA">
+                                                    <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-secondary w-100" disabled>
+                                                    @(product.TRANGTHAI ?? "Không xác định")
+                                                </button>
+                                            }
+                                            <a href="@Url.Action("Details", "Shop", new { id = product.MASP })"
+                                               class="btn btn-outline-primary w-100 mt-2">
+                                                <i class="fas fa-eye"></i> Xem Chi Tiết
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>Không tìm thấy sản phẩm nào</h4>
+                        <p class="text-muted">Hãy thử tìm kiếm với từ khóa khác hoặc danh mục khác.</p>
+                        <a href="@Url.Action("Index", "Shop")" class="btn btn-primary">Xem Tất Cả Sản Phẩm</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Thêm vào giỏ hàng
+            $(document).on('click', '.add-to-cart', function () {
+                const productId = $(this).data('product-id');
+                const productName = $(this).data('product-name');
+
+                // Kiểm tra CartController có tồn tại không
+                const cartUrl = '@Url.Action("AddToCart", "Cart")';
+                if (!cartUrl) {
+                    showAlert('error', 'Chức năng giỏ hàng chưa khả dụng!');
+                    return;
+                }
+
+                $.post(cartUrl, {
+                    productId: productId,
+                    quantity: 1
+                }).done(function (response) {
+                    if (response && response.success) {
+                        showAlert('success', `Đã thêm "${productName}" vào giỏ hàng!`);
+                        if (response.cartCount) {
+                            updateCartCount(response.cartCount);
+                        }
+                    } else {
+                        showAlert('error', response ? response.message : 'Có lỗi xảy ra!');
+                    }
+                }).fail(function () {
+                    showAlert('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng!');
+                });
+            });
+
+            // Hiển thị thông báo
+            function showAlert(type, message) {
+                // Xóa alert cũ nếu có
+                $('.alert-position-fixed').remove();
+
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+                const alertHtml = `<div class="alert ${alertClass} alert-dismissible fade show alert-position-fixed"
+                                    style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+                                    ${message}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                 </div>`;
+                $('body').append(alertHtml);
+                setTimeout(() => {
+                    $('.alert-position-fixed').alert('close');
+                }, 3000);
+            }
+
+            // Cập nhật số lượng giỏ hàng
+            function updateCartCount(count) {
+                const cartCount = $('#cart-count');
+                if (cartCount.length) {
+                    cartCount.text(count);
+                }
+            }
+        });
+    </script>
+}

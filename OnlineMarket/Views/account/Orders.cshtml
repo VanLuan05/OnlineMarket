@@ -1,0 +1,94 @@
+﻿@model List<OnlineMarket.DonHang>
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-shopping-cart"></i> Quản lý đơn hàng</h2>
+
+    <!-- Form tìm kiếm và lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            @using (Html.BeginForm("Orders", "Account", FormMethod.Get, new { @class = "row g-3" }))
+            {
+                <div class="col-md-4">
+                    <select class="form-control" name="status">
+                        @foreach (var status in ViewBag.StatusList)
+                        {
+                            <option value="@status.Value" selected="@(status.Value == ViewBag.SelectedStatus)">
+                                @status.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search"
+                           placeholder="Tìm theo tên, số điện thoại hoặc mã đơn..."
+                           value="@ViewBag.Search">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Lọc
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bảng đơn hàng -->
+    <div class="table-container">
+        <table class="table table-hover data-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>SĐT</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>#@order.MADH</strong>
+                            <br>
+                            <small class="text-muted">@order.NguoiDung.TENDANGNHAP</small>
+                        </td>
+                        <td>@order.HoTenNhanHang</td>
+                        <td>@order.SDTNGUOINHAN</td>
+                        <td>@order.NGAYDAT.ToString()</td>
+                        <td class="text-success">@order.TongThanhToan.ToString()đ</td>
+                        <td>
+                            @{
+                                var statusClass = "bg-secondary";
+                                if (order.TRANG_THAI == "Chờ xác nhận") { statusClass = "bg-warning"; }
+                                else if (order.TRANG_THAI == "Đã xác nhận") { statusClass = "bg-info"; }
+                                else if (order.TRANG_THAI == "Đang giao") { statusClass = "bg-primary"; }
+                                else if (order.TRANG_THAI == "Hoàn thành") { statusClass = "bg-success"; }
+                                else if (order.TRANG_THAI == "Đã hủy") { statusClass = "bg-danger"; }
+                            }
+                            <span class="badge @statusClass">@order.TRANG_THAI</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="@Url.Action("OrderDetails", "Account", new { id = order.MADH })"
+                                   class="btn btn-sm btn-info" title="Chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="@Url.Action("PrintInvoice", "Account", new { id = order.MADH })"
+                                   target="_blank" class="btn btn-sm btn-secondary" title="In hóa đơn">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

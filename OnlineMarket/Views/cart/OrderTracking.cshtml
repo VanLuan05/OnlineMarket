@@ -1,0 +1,150 @@
+﻿@model OnlineMarket.DonHang
+@{
+    ViewBag.Title = "Theo Dõi Đơn Hàng";
+    var timeline = ViewBag.Timeline as List<OnlineMarket.Models.TimelineItem>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🚚 Theo Dõi Đơn Hàng #@Model.MADH</h2>
+        <a href="@Url.Action("OrderHistory", "Cart")" class="btn btn-outline-secondary">
+            ↩️ Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Timeline -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📊 Lộ trình đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    @if (timeline != null && timeline.Any())
+                    {
+                        <div class="timeline">
+                            @foreach (var item in timeline)
+                            {
+                                <div class="timeline-item @(item.IsCompleted ? "completed" : "") @(item.IsCurrent ? "current" : "")">
+                                    <div class="timeline-icon">
+                                        @Html.Raw(item.Icon)
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">@item.Title</h6>
+                                        <p class="mb-1 text-muted">@item.Description</p>
+                                        @if (item.Date.HasValue)
+                                        {
+                                            <small class="text-muted">@item.Date.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Đang cập nhật thông tin vận chuyển...</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Thông tin đơn hàng -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">📦 Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Mã đơn hàng:</strong> #@Model.MADH</p>
+                    <p>
+                        <strong>Trạng thái:</strong>
+                        <span class="badge @GetStatusBadgeClass(Model.TrangThaiChiTiet)">
+                            @Model.TrangThaiChiTiet
+                        </span>
+                    </p>
+                    <p><strong>Ngày đặt:</strong> @Model.NGAYDAT.ToString()</p>
+                </div>
+            </div>
+
+            <!-- Thông tin giao hàng -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📍 Thông tin giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>@Model.HoTenNhanHang</strong></p>
+                    <p class="mb-1">📞 @Model.SDTNGUOINHAN</p>
+                    <p class="mb-0 small">
+                        @Model.DIACHIGIAOHANG<br>
+                        @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding: 15px 0;
+        border-left: 2px solid #dee2e6;
+        margin-left: 20px;
+    }
+
+        .timeline-item.completed {
+            border-left-color: #28a745;
+        }
+
+        .timeline-item.current {
+            border-left-color: #007bff;
+        }
+
+    .timeline-icon {
+        position: absolute;
+        left: -35px;
+        top: 15px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .timeline-item.completed .timeline-icon {
+        border-color: #28a745;
+        background: #28a745;
+        color: white;
+    }
+
+    .timeline-item.current .timeline-icon {
+        border-color: #007bff;
+        background: #007bff;
+        color: white;
+    }
+
+    .timeline-content {
+        margin-left: 10px;
+    }
+</style>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        if (status == "Đang xử lý") return "badge-warning";
+        if (status == "Đang giao") return "badge-info";
+        if (status == "Hoàn tất") return "badge-success";
+        if (status == "Hủy") return "badge-danger";
+        return "badge-secondary";
+    }
+}

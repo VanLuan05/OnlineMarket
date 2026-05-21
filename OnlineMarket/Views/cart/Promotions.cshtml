@@ -1,0 +1,181 @@
+﻿@model List<OnlineMarket.KHUYENMAI>
+
+@{
+    ViewBag.Title = "Khuyến mãi & Voucher";
+}
+
+<div class="container mt-4">
+    <h2><i class="fas fa-gift"></i> Khuyến mãi & Voucher</h2>
+    <p class="text-muted">Chọn mã phù hợp và áp dụng khi thanh toán</p>
+
+    <!-- Mã mặc định -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-star"></i> Mã giảm giá phổ biến</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var promo in ViewBag.DefaultPromotions)
+                {
+                    <div class="col-md-3 mb-3">
+                        <div class="promo-card border rounded p-3 text-center"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer;"
+                             onclick="copyToClipboard('@promo.Code')">
+                            <h4 class="mb-2">@promo.Code</h4>
+                            <h5 class="mb-2">@promo.Title</h5>
+                            <p class="small mb-2">@promo.Description</p>
+                            <small><i class="far fa-clock"></i> HSD: @promo.Expiry</small>
+                            <div class="mt-2">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-copy"></i> Sao chép mã
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Khuyến mãi từ database -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-tags"></i> Khuyến mãi đặc biệt</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="row">
+                    @foreach (var km in Model)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="voucher-card border rounded p-3"
+                                 style="background: #fff; border-left: 5px solid #28a745 !important;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="text-success mb-1">@km.TENKM</h5>
+                                        @if (km.PHANTRAMGIAM.HasValue)
+                                        {
+                                            <h3 class="text-danger">Giảm @km.PHANTRAMGIAM%</h3>
+                                        }
+                                    </div>
+                                    <span class="badge badge-success">Active</span>
+                                </div>
+
+                                <p class="text-muted mb-2">@km.MOTA</p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar-alt"></i>
+                                        @if (km.NGAYBATDAU.HasValue && km.NGAYKETTHUC.HasValue)
+                                        {
+                                            <span>@km.NGAYBATDAU.Value.ToString("dd/MM") - @km.NGAYKETTHUC.Value.ToString("dd/MM/yyyy")</span>
+                                        }
+                                    </small>
+                                    <button class="btn btn-outline-success btn-sm"
+                                            onclick="copyToClipboard('@km.TENKM')">
+                                        <i class="fas fa-copy"></i> Lấy mã
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-center text-muted">Hiện không có khuyến mãi nào</p>
+            }
+        </div>
+    </div>
+
+    <!-- Hướng dẫn sử dụng -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-question-circle"></i> Hướng dẫn sử dụng</h5>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li>Chọn mã khuyến mãi phù hợp</li>
+                <li>Nhấn "Sao chép mã" hoặc "Lấy mã"</li>
+                <li>Thêm sản phẩm vào giỏ hàng</li>
+                <li>Đến trang Thanh toán</li>
+                <li>Dán mã vào ô "Mã giảm giá" và nhấn Áp dụng</li>
+                <li>Hoàn tất đơn hàng để hưởng ưu đãi</li>
+            </ol>
+            <div class="text-center">
+                <a href="@Url.Action("Checkout", "Cart")" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i> Đi đến thanh toán
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Sao chép mã vào clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Đã sao chép mã: ' + text + '\n\nHãy dán mã này khi thanh toán!');
+
+                // Tự động điều hướng đến trang checkout nếu có sản phẩm trong giỏ
+                $.ajax({
+                    url: '@Url.Action("GetCartCount", "Cart")',
+                    type: 'GET',
+                    success: function(count) {
+                        if (count > 0) {
+                            if (confirm('Bạn có muốn đến trang thanh toán để áp dụng mã ngay?')) {
+                                window.location.href = '@Url.Action("Checkout", "Cart")?discountCode=' + text;
+                            }
+                        }
+                    }
+                });
+            }, function(err) {
+                alert('Không thể sao chép mã: ' + err);
+            });
+        }
+
+        // Kiểm tra số lượng sản phẩm trong giỏ
+        $.ajax({
+            url: '@Url.Action("GetCartCount", "Cart")',
+            type: 'GET',
+            success: function(count) {
+                if (count > 0) {
+                    $('.promo-card, .voucher-card').css('cursor', 'pointer');
+                } else {
+                    $('.promo-card, .voucher-card').css('cursor', 'not-allowed');
+                    $('.promo-card, .voucher-card').click(function(e) {
+                        e.preventDefault();
+                        alert('Vui lòng thêm sản phẩm vào giỏ hàng trước khi sử dụng mã giảm giá!');
+                    });
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .promo-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+            .promo-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        .voucher-card {
+            transition: transform 0.3s;
+            min-height: 180px;
+        }
+
+            .voucher-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            }
+    </style>
+}

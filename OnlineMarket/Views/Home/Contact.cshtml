@@ -1,0 +1,219 @@
+﻿
+@{
+    ViewBag.Title = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+
+    /* body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fff;
+    } */
+    h1 {
+        text-align: center;
+        margin: 30px 0 30px 0;
+    }
+
+    .container {
+        display: flex;
+        gap: 20px;
+    }
+
+    .left-panel {
+        width: 35%;
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+        .left-panel h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+    .map {
+        flex: 1;
+    }
+
+    iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+        border-radius: 10px;
+    }
+
+    .store-details {
+        margin-top: 20px;
+        background: #fff;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+        .store-details h3 {
+            margin: 0 0 5px 0;
+        }
+</style>
+
+<h1>Hệ thống cửa hàng</h1>
+<div class="container">
+    <div class="left-panel">
+        <h2>Tìm cửa hàng</h2>
+
+        <div class="form-group">
+            <label for="city">Chọn tỉnh thành</label>
+            <select id="city">
+                <option>-- Chọn tỉnh/thành --</option>
+                <option>Thành Phố Hồ Chí Minh</option>
+                <option>Hà Nội</option>
+                <option>Đà Nẵng</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="district">Chọn quận/huyện</label>
+            <select id="district">
+                <option>-- Chọn quận/huyện --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="store">Chọn cửa hàng</label>
+            <select id="store">
+                <option>-- Chọn cửa hàng --</option>
+            </select>
+        </div>
+
+        <div id="store-details" class="store-details"></div>
+    </div>
+
+    <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7450.308453424238!2d106.6261096748053!3d10.806220389344332!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752be2853ce7cd%3A0x4111b3b3c2aca14a!2zMTQwIMSQLiBMw6ogVHLhu41uZyBU4bqlbiwgVMOieSBUaOG6oW5oLCBUw6JuIFBow7osIEjhu5MgQ2jDrSBNaW5oIDcwMDAwMCwgVmlldG5hbQ!5e1!3m2!1sen!2sus!4v1749089738949!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+</div>
+
+
+<script>
+    const data = {
+      "Thành Phố Hồ Chí Minh": {
+        "Tân Phú": [
+          {
+            name: "Fruitstore 141 Lê Trọng Tấn",
+            address: "Số 141, Lê Trọng Tấn, Q. Tân Phú, TP. Hồ Chí Minh",
+            map: "https://www.google.com/maps?q=Số+141+Lê+Trọng+Tấn,+Tân+Phú,+Hồ+Chí+Minh&output=embed"
+          },
+          {
+            name: "Fruitstore 350 Lê Trọng Tấn",
+            address: "Số 350, Lê Trọng Tấn, Q. Tân Phú, TP. Hồ Chí Minh",
+            map: "https://www.google.com/maps?q=Số+350+Lê+Trọng+Tấn,+Tân+Phú,+Hồ+Chí+Minh&output=embed"
+          }
+        ],
+        "Quận 1": [
+          {
+            name: "Fruitstore 01 Lê Duẩn",
+            address: "01 Lê Duẩn, Quận 1, TP. Hồ Chí Minh",
+            map: "https://www.google.com/maps?q=01+Lê+Duẩn,+Quận+1,+TPHCM&output=embed"
+          }
+        ]
+      },
+      "Hà Nội": {
+        "Ba Đình": [
+          {
+            name: "Fruitstore 20 Kim Mã",
+            address: "20 Kim Mã, Ba Đình, Hà Nội",
+            map: "https://www.google.com/maps?q=20+Kim+Mã,+Ba+Đình,+Hà+Nội&output=embed"
+          }
+        ]
+      },
+      "Đà Nẵng": {
+        "Hải Châu": [
+          {
+            name: "Fruitstore 123 Nguyễn Văn Linh",
+            address: "123 Nguyễn Văn Linh, Hải Châu, Đà Nẵng",
+            map: "https://www.google.com/maps?q=123+Nguyễn+Văn+Linh,+Hải+Châu,+Đà+Nẵng&output=embed"
+          }
+        ]
+      }
+    };
+
+    const citySelect = document.getElementById("city");
+    const districtSelect = document.getElementById("district");
+    const storeSelect = document.getElementById("store");
+    const storeDetails = document.getElementById("store-details");
+    const mapFrame = document.getElementById("map-frame");
+
+    citySelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      districtSelect.innerHTML = '<option>-- Chọn quận/huyện --</option>';
+      storeSelect.innerHTML = '<option>-- Chọn cửa hàng --</option>';
+      storeDetails.innerHTML = "";
+      mapFrame.src = "https://maps.google.com/maps?q=Việt Nam&output=embed";
+
+      if (data[city]) {
+        for (let district in data[city]) {
+          const option = document.createElement("option");
+          option.value = district;
+          option.textContent = district;
+          districtSelect.appendChild(option);
+        }
+      }
+    });
+
+    districtSelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      const district = districtSelect.value;
+      storeSelect.innerHTML = '<option>-- Chọn cửa hàng --</option>';
+      storeDetails.innerHTML = "";
+      mapFrame.src = "https://maps.google.com/maps?q=Việt Nam&output=embed";
+
+      if (data[city] && data[city][district]) {
+        data[city][district].forEach((store, index) => {
+          const option = document.createElement("option");
+          option.value = index;
+          option.textContent = store.name;
+          storeSelect.appendChild(option);
+        });
+      }
+    });
+
+    storeSelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      const district = districtSelect.value;
+      const storeIndex = storeSelect.value;
+
+      if (data[city] && data[city][district] && data[city][district][storeIndex]) {
+        const store = data[city][district][storeIndex];
+        storeDetails.innerHTML = `
+          <h3>${store.name}</h3>
+          <p><strong>Địa chỉ:</strong> ${store.address}</p>
+          <p><strong>Giờ mở cửa:</strong> 8:30 - 22:00</p>
+          <p><strong>Điện thoại:</strong> 0987 066 888</p>
+        `;
+        mapFrame.src = store.map;
+      }
+    });
+</script>
+<script src="script.js"></script>

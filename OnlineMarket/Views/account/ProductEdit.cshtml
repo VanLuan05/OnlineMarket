@@ -1,0 +1,141 @@
+﻿@model SanPham
+@{
+    ViewBag.Title = "Chỉnh sửa sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; 
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Chỉnh sửa sản phẩm</h2>
+
+            <!-- Hiển thị thông báo lỗi tổng -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                </div>
+            }
+
+            <!-- Hiển thị thông báo thành công từ TempData -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @using (Html.BeginForm("ProductEdit", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.MASP)
+
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!-- Tên sản phẩm -->
+                                <div class="form-group mb-3">
+                                    @Html.LabelFor(model => model.TENSP, "Tên sản phẩm", new { @class = "form-label fw-bold" })
+                                    @Html.TextBoxFor(model => model.TENSP, new { @class = "form-control", placeholder = "Nhập tên sản phẩm" })
+                                    @Html.ValidationMessageFor(model => model.TENSP, "", new { @class = "text-danger small" })
+                                </div>
+
+                                <!-- Mô tả -->
+                                <div class="form-group mb-3">
+                                    @Html.LabelFor(model => model.MOTA, "Mô tả", new { @class = "form-label fw-bold" })
+                                    @Html.TextAreaFor(model => model.MOTA, new { @class = "form-control", rows = 4, placeholder = "Nhập mô tả sản phẩm" })
+                                    @Html.ValidationMessageFor(model => model.MOTA, "", new { @class = "text-danger small" })
+                                </div>
+
+                                <div class="row">
+                                    <!-- Giá -->
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            @Html.LabelFor(model => model.GIA, "Giá (VNĐ)", new { @class = "form-label fw-bold" })
+                                            @Html.TextBoxFor(model => model.GIA, new { @class = "form-control", type = "number", min = "0", step = "1000", placeholder = "Ví dụ: 50000" })
+                                            @Html.ValidationMessageFor(model => model.GIA, "", new { @class = "text-danger small" })
+                                        </div>
+                                    </div>
+
+                                    <!-- Số lượng tồn -->
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            @Html.LabelFor(model => model.SOLUONGTON, "Số lượng tồn", new { @class = "form-label fw-bold" })
+                                            @Html.TextBoxFor(model => model.SOLUONGTON, new { @class = "form-control", type = "number", min = "0", placeholder = "0" })
+                                            @Html.ValidationMessageFor(model => model.SOLUONGTON, "", new { @class = "text-danger small" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Danh mục -->
+                                <div class="form-group mb-3">
+                                    @Html.LabelFor(model => model.MADM, "Danh mục", new { @class = "form-label fw-bold" })
+                                    @Html.DropDownListFor(model => model.MADM, new SelectList(ViewBag.Categories, "MADM", "TENDM"), "-- Chọn danh mục --", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.MADM, "", new { @class = "text-danger small" })
+                                </div>
+                            </div>
+
+                            <!-- Cột ảnh -->
+                            <div class="col-md-4">
+                                <!-- Ảnh hiện tại -->
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Ảnh hiện tại</label>
+                                    <div class="text-center">
+                                        @if (!string.IsNullOrEmpty(Model.URL_ANH))
+                                        {
+                                            <img src="@Model.URL_ANH" class="img-thumbnail" style="max-height: 200px;" alt="Ảnh sản phẩm" />
+                                            
+                                        }
+                                        else
+                                        {
+                                            <div class="text-muted p-4 border rounded">Chưa có ảnh</div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Upload ảnh mới -->
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Thay ảnh mới (nếu muốn)</label>
+                                    <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                                    <small class="form-text text-muted">Chỉ chấp nhận file ảnh (jpg, png, gif).</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút hành động -->
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Cập nhật sản phẩm
+                            </button>
+                            <a href="@Url.Action("Products", "Account")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <!-- Script để tự động cập nhật trạng thái nếu cần -->
+    <script>
+        $(document).ready(function () {
+            // Tự động ẩn thông báo sau 5 giây
+            setTimeout(function () {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // Có thể thêm script tính toán trạng thái tự động nếu muốn
+            $('#SOLUONGTON').on('change', function () {
+                var ton = parseInt($(this).val());
+                if (ton > 0) {
+                    // Có thể tự động set TRANGTHAI nếu cần
+                }
+            });
+        });
+    </script>
+}

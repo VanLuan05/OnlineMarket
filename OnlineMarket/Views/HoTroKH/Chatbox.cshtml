@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Chatbox Hỗ Trợ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-comments me-2"></i>Chatbox Hỗ Trợ Trực Tuyến</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-comment-dots fa-4x text-primary mb-3"></i>
+                        <h4>Chào mừng bạn đến với chat hỗ trợ!</h4>
+                        <p class="text-muted">Chat ngay với chúng tôi để được tư vấn và hỗ trợ nhanh chóng</p>
+                    </div>
+
+                    <div class="chatbox-container p-4 border rounded bg-light">
+                        <!-- Chatbase script sẽ được load ở đây -->
+                        <div id="chatbase-widget" class="text-center">
+                            <p class="mb-3">Đang tải chatbox...</p>
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5><i class="fas fa-info-circle me-2 text-info"></i>Thông tin hỗ trợ</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-clock me-2"></i>Thời gian hỗ trợ: 24/7</li>
+                            <li><i class="fas fa-phone me-2"></i>Hotline: 1900 1234 (8:00 - 22:00)</li>
+                            <li><i class="fas fa-envelope me-2"></i>Email: support@fruitstore.com</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Script chatbase của bạn -->
+    <script>
+        (function () {
+            if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+                window.chatbase = (...arguments) => {
+                    if (!window.chatbase.q) {
+                        window.chatbase.q = []
+                    }
+                    window.chatbase.q.push(arguments)
+                };
+                window.chatbase = new Proxy(window.chatbase, {
+                    get(target, prop) {
+                        if (prop === "q") {
+                            return target.q
+                        }
+                        return (...args) => target(prop, ...args)
+                    }
+                })
+            }
+
+            const onLoad = function () {
+                const script = document.createElement("script");
+                script.src = "https://www.chatbase.co/embed.min.js";
+                script.id = "ZOPcsIkIn74PDTE4341Yf";
+                script.domain = "www.chatbase.co";
+                document.body.appendChild(script);
+
+                // Hiển thị thông báo khi chatbox đã tải
+                setTimeout(() => {
+                    document.getElementById('chatbase-widget').innerHTML =
+                        '<p class="text-success">Chatbox đã sẵn sàng! Vui lòng nhập câu hỏi của bạn bên dưới.</p>';
+                }, 2000);
+            };
+
+            if (document.readyState === "complete") {
+                onLoad()
+            } else {
+                window.addEventListener("load", onLoad)
+            }
+        })();
+    </script>
+}

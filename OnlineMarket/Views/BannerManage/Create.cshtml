@@ -1,0 +1,39 @@
+﻿@model OnlineMarket.Models.Banner
+@{
+    ViewBag.Title = "Thêm Banner";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Thêm Banner Mới</h2>
+
+    @using (Html.BeginForm("Create", "BannerManage", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+    @Html.AntiForgeryToken()
+
+    <div class="card p-4">
+        <div class="mb-3">
+            <label class="form-label">Tên Banner</label>
+            <input type="text" name="TenBanner" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hình ảnh</label>
+            <input type="file" name="uploadHinh" class="form-control" required accept="image/*" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Mô tả ngắn</label>
+            <textarea name="MoTa" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Thứ tự hiển thị</label>
+            <input type="number" name="ThuTu" class="form-control" value="1" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Lưu lại</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại</a>
+    </div>
+    }
+</div>
