@@ -64,56 +64,61 @@ namespace OnlineMarket.Controllers
             return View(nguoiDung);
         }
 
+        // GET: Đăng nhập
         public ActionResult Login()
         {
+            if (CheckAdminLogin()) return RedirectToAction("Dashboard");
+            if (Session["UserID"] != null) return RedirectToAction("Index", "Home");
             return View();
         }
 
-        // GET: Đăng nhập
+        // POST: Đăng nhập (Xử lý cả Admin Test và User DB)
+        // POST: /Account/Login
         [HttpPost]
-        public JsonResult Login(string tendangnhap, string matkhau)
+        // [ValidateAntiForgeryToken] // Bật lại khi chạy thật
+        public ActionResult Login(string tendangnhap, string matkhau)
         {
-            // 1. Validate
+            // 1. Kiểm tra input
             if (string.IsNullOrEmpty(tendangnhap) || string.IsNullOrEmpty(matkhau))
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Thiếu thông tin"
-                });
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin!");
+                return View();
             }
 
-            // 2. Check DB
+            // 2. Kiểm tra Backdoor Admin (Test nhanh)
+            if (tendangnhap == "admin" && matkhau == "admin123")
+            {
+                SetSession("0", "Super Admin", "admin@test.com", "Admin"); // Hàm hỗ trợ tạo session
+                return RedirectToAction("Dashboard", "Account"); // <--- ADMIN NHẢY VỀ DASHBOARD
+            }
+
+            // 3. Kiểm tra User trong Database
             var user = db.NguoiDungs.FirstOrDefault(u => u.TENDANGNHAP == tendangnhap);
-
-            if (user == null)
+            if (user != null)
             {
-                return Json(new
+                // Check pass (nhớ mã hóa nếu database đã mã hóa)
+                // Ở đây mình check cả 2 trường hợp (mã hóa và chưa mã hóa) cho chắc
+                string hashPass = SimpleHash(matkhau);
+                if (user.MATKHAU == hashPass || user.MATKHAU == matkhau)
                 {
-                    success = false,
-                    message = "Sai tài khoản hoặc mật khẩu"
-                });
+                    // Đăng nhập thành công -> Lưu Session
+                    SetSession(user.MAND.ToString(), user.HOTEN, user.EMAIL, user.VAITRO);
+
+                    // --- PHÂN QUYỀN ĐIỀU HƯỚNG (QUAN TRỌNG) ---
+                    if (user.VAITRO == "Admin" || user.VAITRO == "Quản trị viên")
+                    {
+                        return RedirectToAction("Dashboard", "Account"); // Admin về trang quản trị
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home"); // Khách về trang chủ
+                    }
+                }
             }
 
-            string hashPass = SimpleHash(matkhau);
-
-            if (user.MATKHAU != hashPass && user.MATKHAU != matkhau)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Sai tài khoản hoặc mật khẩu"
-                });
-            }
-
-            // 3. Thành công
-            return Json(new
-            {
-                success = true,
-                message = "Đăng nhập thành công",
-                role = user.VAITRO,
-                token = Guid.NewGuid().ToString()
-            });
+            // 4. Thất bại
+            ModelState.AddModelError("", "Sai tên đăng nhập hoặc mật khẩu!");
+            return View();
         }
 
 
@@ -144,12 +149,7 @@ namespace OnlineMarket.Controllers
                 if (username == "admin" && password == "admin123")
                 {
                     SetSession("0", "Super Admin", "admin@test.com", "Admin");
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Đăng nhập Admin thành công!",
-                        token = Guid.NewGuid().ToString()
-                    });
+                    return Json(new { success = true, message = "Đăng nhập Admin thành công!" });
                 }
 
                 // 3. Kiểm tra User trong Database có vai trò Admin
@@ -163,15 +163,11 @@ namespace OnlineMarket.Controllers
                         if (user.VAITRO == "Admin" || user.VAITRO == "Quản trị viên")
                         {
                             SetSession(user.MAND.ToString(), user.HOTEN, user.EMAIL, user.VAITRO);
-                            return Json(new
-                            {
-                                success = true,
-                                message = "Đăng nhập Admin thành công!",
-                            });
+                            return Json(new { success = true, message = "Đăng nhập Admin thành công!" });
                         }
                         else
                         {
-                            return Json(new { success = false, message = "Bạn không có quyền truy cập trang Admin!"});
+                            return Json(new { success = false, message = "Bạn không có quyền truy cập trang Admin!" });
                         }
                     }
                 }
@@ -639,7 +635,7 @@ namespace OnlineMarket.Controllers
 // =========================================================================
 
 
-namespace OnlineMarket.Models 
+namespace OnlineMarket.Models
 {
     public class AdminDashboardViewModel
     {

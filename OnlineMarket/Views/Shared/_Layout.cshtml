@@ -2,240 +2,327 @@
 @using System.Linq
 
 @{
-    // 1. Khởi tạo biến đếm bằng 0
+    // Giữ nguyên logic tính số lượng giỏ hàng của bạn
     int totalQuantity = 0;
-
-    // 2. Kiểm tra nếu người dùng đã đăng nhập (Có Session UserID)
     if (Session["UserID"] != null)
     {
         try
         {
-            // Lấy UserID từ Session
             int userId = Convert.ToInt32(Session["UserID"]);
-
-            // 3. Kết nối Database để đếm số lượng trong bảng GioHang
             using (var db = new QL_OnlineMarketEntities())
             {
-                // Tính tổng cột SOLUONG của user đó
                 var sum = db.GioHangs
                             .Where(g => g.MAND == userId)
-                            .Sum(g => (int?)g.SOLUONG); // Dùng int? để tránh lỗi nếu null
-
-                totalQuantity = sum ?? 0; // Nếu null thì bằng 0
+                            .Sum(g => (int?)g.SOLUONG);
+                totalQuantity = sum ?? 0;
             }
         }
-        catch
-        {
-            // Nếu có lỗi kết nối thì cứ để là 0
-            totalQuantity = 0;
-        }
+        catch { totalQuantity = 0; }
     }
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruit-Store</title>
-
+    <title>@ViewBag.Title - Fruit Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .brand-color {
+            color: #05a569 !important;
+        }
+
+        .bg-brand {
+            background-color: #05a569 !important;
+        }
+
+        /* Navbar Styling */
+        .custom-navbar {
+            background: #ffffff;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+            padding: 10px 18px !important;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+            .nav-link:hover, .nav-link.active {
+                color: #05a569 !important;
+            }
+
+        /* User & Cart Icons */
+        .icon-btn {
+            position: relative;
+            color: #333;
+            text-decoration: none;
+            padding: 8px;
+            display: inline-flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+            .icon-btn:hover {
+                color: #05a569;
+            }
+
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: -5px;
+            background: #ee4d2d;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Dropdown Styling */
+        .dropdown-menu {
+            border: 1px solid #ebebeb;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 10px 0;
+            margin-top: 15px;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #444;
+            display: flex;
+            align-items: center;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #05a569;
+            }
+
+            .dropdown-item svg {
+                margin-right: 12px;
+            }
+
+        /* Footer Styling */
+        .modern-footer {
+            background: #ffffff;
+            padding: 60px 0 30px;
+            border-top: 1px solid #ebebeb;
+            margin-top: 40px;
+        }
+
+        .footer-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-text, .footer-link {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+
+            .footer-link:hover {
+                color: #05a569;
+                transform: translateX(3px);
+            }
+
+        .footer-bottom {
+            background: #fafafa;
+            padding: 20px 0;
+            border-top: 1px solid #ebebeb;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 36px;
+            height: 36px;
+            background: #f5f5f5;
+            color: #555;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+            .social-icons a:hover {
+                background: #05a569;
+                color: #fff;
+            }
+    </style>
 </head>
 <body>
-    <section id="header">
-        <a href="@Url.Action("Index", "Home")"><img src="@Url.Content("~/Content/img/logo.jpg")" class="logo" alt="Logo"></a>
 
-        <div>
-            <ul id="navbar">
-                <li><a class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" && ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")" href="@Url.Action("Index", "Home")">Home</a></li>
-                <li><a href="@Url.Action("Index", "Shop")">Shop</a></li>
-                <li><a href="@Url.Action("Index", "Blog")">Blog</a></li>
-                <li><a href="@Url.Action("About", "Home")">About</a></li>
-                <li><a href="@Url.Action("Contact", "Home")">Contact</a></li>
+    <div class="bg-brand text-white text-center py-2" style="font-size: 13px; font-weight: 500;">
+        Giao hàng miễn phí toàn quốc cho đơn hàng từ 500.000đ!
+    </div>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user"></i>
-                        @if (Session["UserName"] != null)
-                        {
-                        <span>@Session["UserName"]</span>
-                        }
-                        else if (Request.IsAuthenticated)
-                        {
-                        <span>@User.Identity.Name</span>
-                        }
-                        else
-                        {
-                        <span>Tài khoản</span>
-                        }
-                    </a>
-
-                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        @if (Session["UserName"] != null || Request.IsAuthenticated)
-                        {
-                            <li>
-                                <div class="dropdown-header">
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar me-2">
-                                            <i class="fa-solid fa-user-circle fa-lg text-primary"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">@(Session["UserName"] ?? User.Identity.Name)</h6>
-
-                                            <small class="text-muted">
-                                                @(Session["UserRole"] != null ? Session["UserRole"].ToString() : "Thành viên")
-                                            </small>
-                                            <small>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "HoTroKH")">
-                                                    <i class="fas fa-headset me-2 text-info"></i> Hỗ trợ khách hàng
-                                                </a>
-                                            </small>
-                                           
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-
-                            /* --- LOGIC HIỂN THỊ RIÊNG CHO ADMIN --- */
-                            if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin" || Session["UserRole"].ToString() == "Quản trị viên"))
-                            {
-                                <li>
-                                    <a class="dropdown-item fw-bold text-danger" href="@Url.Action("Dashboard", "Account")">
-                                        <i class="fas fa-tachometer-alt me-2"></i> Vào trang quản trị
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                            }
-                            /* -------------------------------------- */
-
-
-                            if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "User" || Session["UserRole"].ToString() == "Customer"))
-                            {
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Index", "HoTroKH")">
-                                        <i class="fas fa-headset me-2 text-info"></i> Hỗ trợ khách hàng
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                            }
-
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("Logout", "Account")">
-                                    <i class="fa-solid fa-right-from-bracket me-2 text-danger"></i> Đăng xuất
-                                </a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li>
-                                <div class="dropdown-header">
-                                    <i class="fas fa-user-secret me-2"></i>
-                                    <span>Khách vãng lai</span>
-                                </div>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">
-                                    <i class="fa-solid fa-sign-in-alt me-2 text-success"></i> Đăng nhập
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("Register", "Account")">
-                                    <i class="fa-solid fa-user-plus me-2 text-primary"></i> Đăng ký
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("LoginAM", "Account")">
-                                    <i class="fa-solid fa-user-shield me-2 text-dark"></i> Quản trị viên
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("Index", "HoTroKH")">
-                                    <i class="fas fa-headset me-2 text-info"></i> Hỗ trợ khách hàng
-                                </a>
-                            </li>
-
-                        }
-                    </ul>
-                </li>
-
-                <li id="lg-bag">
-                    <a href="@Url.Action("Index", "Cart")">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span id="cart-count" class="badge bg-danger">@totalQuantity</span>
-                    </a>
-                </li>
-                <a href="#" id="close"><i class="fa-solid fa-xmark"></i></a>
-            </ul>
-        </div>
-
-        <div id="mobile">
-            <a href="@Url.Action("Index", "Cart")">
-                <i class="fa-solid fa-cart-shopping"></i>
+    <nav class="navbar navbar-expand-lg custom-navbar sticky-top shadow-sm py-2 py-lg-3">
+        <div class="container">
+            <a class="navbar-brand me-4" href="@Url.Action("Index", "Home")">
+                <img src="@Url.Content("~/Content/img/logo.jpg")" height="45" alt="Fruit Store Logo">
             </a>
-            <i id="bar" class="fas fa-outdent"></i>
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <svg width="28" height="28" fill="none" stroke="#333" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" && ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")" href="@Url.Action("Index", "Home")">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "Shop")">Cửa Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "Blog")">Blog</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("About", "Home")">Giới Thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Contact", "Home")">Liên Hệ</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+                    <div class="nav-item dropdown">
+                        <a class="icon-btn dropdown-toggle text-decoration-none" href="#" data-bs-toggle="dropdown">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                            <span class="ms-2 d-lg-none d-xl-inline fw-semibold text-dark" style="font-size: 14px;">
+                                @(Session["UserName"] ?? (Request.IsAuthenticated ? User.Identity.Name : "Tài khoản"))
+                            </span>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
+                            @if (Session["UserName"] != null || Request.IsAuthenticated)
+                            {
+                                <li class="px-3 py-2 border-bottom mb-2">
+                                    <div class="fw-bold text-dark">@(Session["UserName"] ?? User.Identity.Name)</div>
+                                    <div class="text-muted" style="font-size: 12px;">@(Session["UserRole"] ?? "Thành viên")</div>
+                                </li>
+
+                                if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin" || Session["UserRole"].ToString() == "Quản trị viên"))
+                                {
+                                    <li><a class="dropdown-item brand-color fw-bold" href="@Url.Action("Dashboard", "Account")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg> Trang quản trị</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                }
+
+                                <li><a class="dropdown-item" href="@Url.Action("OrderHistory", "Cart")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z" /><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8" /></svg> Đơn hàng của tôi</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "HoTroKH")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg> Hỗ trợ khách hàng</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg> Đăng xuất</a></li>
+                            }
+                            else
+                            {
+                                <li><a class="dropdown-item" href="@Url.Action("Login", "Account")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" /></svg> Đăng nhập</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Register", "Account")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg> Đăng ký</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "HoTroKH")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg> Hỗ trợ khách hàng</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("LoginAM", "Account")"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg> Dành cho Quản trị</a></li>
+                            }
+                        </ul>
+                    </div>
+
+                    <a href="@Url.Action("Index", "Cart")" class="icon-btn">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        <span id="cart-count" class="cart-badge">@totalQuantity</span>
+                    </a>
+                </div>
+            </div>
         </div>
-    </section>
+    </nav>
 
     <main>
         @Html.Partial("_ChatboxPartial")
         @RenderBody()
     </main>
 
-    <footer id="section-p1">
-        <div class="col">
-            <img class="logo" src="@Url.Content("~/Content/img/logo.jpg")" alt="Footer Logo">
-            <h4>Thông Tin Liên Hệ</h4>
-            <p><strong>Địa chỉ: </strong>VietNam, HCM city, Quan Binh Tan</p>
-            <p><strong>Số điện thoại: </strong>+326371255 (84+)</p>
-            <p><strong>Giờ: </strong>09:00 - 18:00</p>
-            <div class="follow">
-                <h4>Theo chúng tôi</h4>
-                <div class="icon">
-                    <i class="fab fa-facebook"></i>
-                    <i class="fab fa-tiktok"></i>
-                    <i class="fab fa-instagram"></i>
+    <footer class="modern-footer">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <img src="@Url.Content("~/Content/img/logo.jpg")" height="50" alt="Footer Logo" class="mb-4">
+                    <p class="footer-text"><svg width="16" height="16" class="me-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg> TP. HCM, Quận Bình Tân, Việt Nam</p>
+                    <p class="footer-text"><svg width="16" height="16" class="me-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg> +84 32 637 1255</p>
+                    <p class="footer-text"><svg width="16" height="16" class="me-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> 09:00 - 18:00 Hàng ngày</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="footer-title">Về Chúng Tôi</h4>
+                    <a href="@Url.Action("About", "Home")" class="footer-link">Giới thiệu cửa hàng</a>
+                    <a href="@Url.Action("Contact", "Home")" class="footer-link">Liên hệ hợp tác</a>
+                    <a href="@Url.Action("Index", "Blog")" class="footer-link">Tin tức - Khuyến mãi</a>
+                    <a href="@Url.Action("Index", "Shop")" class="footer-link">Sản phẩm mới nhất</a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="footer-title">Chăm Sóc Khách Hàng</h4>
+                    <a href="#" class="footer-link">Trung tâm hỗ trợ</a>
+                    <a href="#" class="footer-link">Chính sách giao hàng</a>
+                    <a href="#" class="footer-link">Chính sách đổi trả</a>
+                    <a href="#" class="footer-link">Điều khoản sử dụng</a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="footer-title">Tải Ứng Dụng</h4>
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        <img src="@Url.Content("~/Content/img/pay/app.jpg")" alt="App Store" style="height: 35px; object-fit: contain; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;">
+                        <img src="@Url.Content("~/Content/img/pay/play.jpg")" alt="Google Play" style="height: 35px; object-fit: contain; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;">
+                    </div>
+                    <h4 class="footer-title" style="font-size: 14px;">Thanh Toán An Toàn</h4>
+                    <img src="@Url.Content("~/Content/img/pay/pay.png")" alt="Payment Methods" style="height: 25px; object-fit: contain;">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <p class="mb-3 mb-md-0">© 2024 Fruit Store. All rights reserved. Designed by SangT2.</p>
+                <div class="social-icons">
+                    <a href="#"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg></a>
+                    <a href="#"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg></a>
+                    <a href="#"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z" /><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" /></svg></a>
                 </div>
             </div>
-        </div>
-
-        <div class="col">
-            <h4>Liên Hệ</h4>
-            <a href="@Url.Action("About", "Home")">Về chúng tôi</a>
-            <a href="#">Thông tin giao hàng</a>
-            <a href="#">Chính sách bảo mật</a>
-            <a href="#">Điều khoản & Điều kiện</a>
-            <a href="@Url.Action("Contact", "Home")">Liên hệ chúng tôi</a>
-        </div>
-
-       
-
-        <div class="col install">
-            <h4>Tải Ứng Dụng</h4>
-            <p>Từ App Store hay Ch Play</p>
-            <div class="row">
-                <img src="@Url.Content("~/Content/img/pay/app.jpg")" alt="App Store">
-                <img src="@Url.Content("~/Content/img/pay/play.jpg")" alt="Google Play">
-            </div>
-            <p>Cổng thanh toán</p>
-            <img src="@Url.Content("~/Content/img/pay/pay.png")" alt="Payment Methods">
-        </div>
-
-        <div class="copyright">
-            <p>© SangT2, LapTrinhWeb</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @Scripts.Render("~/bundles/jquery")
-    <script src="@Url.Content("~/Scripts/script.js")"></script>
     @RenderSection("scripts", required: false)
+
 </body>
 </html>

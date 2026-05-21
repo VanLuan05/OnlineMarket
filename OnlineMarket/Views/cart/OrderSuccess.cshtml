@@ -1,116 +1,221 @@
-﻿@model OnlineMarket.DonHang
+﻿@{
+    ViewBag.Title = "Đặt hàng thành công - Fruit Store";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 
-@{
-    ViewBag.Title = "Đặt Hàng Thành Công";
+    // Lấy mã đơn hàng từ tham số URL (orderId) mà hàm PlaceOrder ở JS truyền sang
+    var orderId = ViewBag.OrderId ?? Request.QueryString["orderId"] ?? "Đang cập nhật";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-success">
-                <div class="card-body text-center py-5">
-                    <!-- Biểu tượng thành công -->
-                    <div class="text-success mb-4">
-                        <i class="fas fa-check-circle" style="font-size: 5rem;"></i>
-                    </div>
+<style>
+    body {
+        background-color: #f8f9fc;
+    }
 
-                    <h2 class="card-title text-success">🎉 Đặt Hàng Thành Công!</h2>
-                    <p class="card-text lead">Cảm ơn bạn đã đặt hàng tại OnlineMarket</p>
+    .success-wrapper {
+        padding: 60px 0;
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-                    <!-- Thông tin đơn hàng -->
-                    <div class="alert alert-success mt-4">
-                        <div class="row text-left">
-                            <div class="col-md-6">
-                                <p><strong>Mã đơn hàng:</strong> #@Model.MADH</p>
-                                <p><strong>Ngày đặt:</strong> @Model.NGAYDAT.ToString()</p>
-                                <p><strong>Trạng thái:</strong> <span class="badge badge-warning">@Model.TrangThaiChiTiet</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Tổng tiền:</strong> @(Model.TONGTIEN?.ToString("N0") ?? "0")đ</p>
-                                <p><strong>Phí vận chuyển:</strong> @(Model.PhiGiaoHang?.ToString("N0") ?? "0")đ</p>
-                                <p><strong>Tổng thanh toán:</strong> <span class="text-success font-weight-bold">@(Model.TongThanhToan?.ToString("N0") ?? "0")đ</span></p>
-                            </div>
-                        </div>
-                    </div>
+    .success-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 50px 40px;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        border-top: 6px solid #198754;
+    }
 
-                    <!-- Thông tin giao hàng -->
-                    <div class="card mt-3">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">🚚 Thông tin giao hàng</h5>
-                        </div>
-                        <div class="card-body text-left">
-                            <p class="mb-1"><strong>@Model.HoTenNhanHang</strong></p>
-                            <p class="mb-1">📞 @Model.SDTNGUOINHAN</p>
-                            <p class="mb-0 text-muted">
-                                @Model.DIACHIGIAOHANG<br>
-                                @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh
-                            </p>
-                        </div>
-                    </div>
+    /* Animation cho Icon Success */
+    .success-icon-wrap {
+        width: 110px;
+        height: 110px;
+        background: rgba(25, 135, 84, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        animation: pulse 2s infinite;
+    }
 
-                    <!-- Timeline đơn giản -->
-                    <div class="card mt-3">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">📊 Tiến trình đơn hàng</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                     role="progressbar"
-                                     style="width: 25%;"
-                                     aria-valuenow="25"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100">
-                                    Đang xử lý
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <small class="text-muted">
-                                    Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.
-                                    Bạn sẽ nhận được thông báo khi đơn hàng được giao.
-                                </small>
-                            </div>
-                        </div>
-                    </div>
+    .success-icon {
+        color: #198754;
+        font-size: 4rem;
+        animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
 
-                    <!-- Các nút hành động -->
-                    <div class="mt-4">
-                        <a href="@Url.Action("Tracking", "Order", new { id = Model.MADH })" class="btn btn-primary btn-lg">
-                            📊 Theo dõi đơn hàng
-                        </a>
-                        <a href="@Url.Action("History", "Order")" class="btn btn-outline-secondary btn-lg">
-                            📦 Lịch sử đơn hàng
-                        </a>
-                        <a href="@Url.Action("Index", "Shop")" class="btn btn-success btn-lg">
-                            🛒 Tiếp tục mua sắm
-                        </a>
-                    </div>
+    @@keyframes scaleIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
 
-                    <!-- Thông báo quan trọng -->
-                    <div class="alert alert-info mt-4">
-                        <h6>📌 Lưu ý quan trọng:</h6>
-                        <ul class="mb-0 pl-3">
-                            <li>Bạn có thể theo dõi trạng thái đơn hàng bất kỳ lúc nào</li>
-                            <li>Nhân viên sẽ liên hệ với bạn để xác nhận đơn hàng trong vòng 24h</li>
-                            <li>Liên hệ hotline <strong>1900 1000</strong> nếu cần hỗ trợ</li>
-                        </ul>
-                    </div>
-                </div>
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 20px rgba(25, 135, 84, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+        }
+    }
+
+    .success-title {
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 2.2rem;
+    }
+
+    .success-text {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    /* Box hiển thị mã đơn hàng */
+    .order-code-box {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 15px 30px;
+        margin-bottom: 35px;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+        .order-code-box:hover {
+            border-color: #198754;
+            background: #f0fdf4;
+        }
+
+        .order-code-box span {
+            color: #8795a1;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .order-code-box h5 {
+            margin: 8px 0 0;
+            font-weight: 800;
+            color: #198754;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+        }
+
+    /* Nhóm Nút bấm */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-track {
+        background-color: #198754;
+        color: white;
+        border-radius: 50px;
+        padding: 14px 32px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-track:hover {
+            background-color: #157347;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(25, 135, 84, 0.3);
+            color: white;
+        }
+
+    .btn-home {
+        background-color: #f1f3f5;
+        color: #495057;
+        border-radius: 50px;
+        padding: 14px 32px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-home:hover {
+            background-color: #e2e6ea;
+            transform: translateY(-3px);
+            color: #212529;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+    /* Box hỗ trợ dưới cùng */
+    .support-info {
+        margin-top: 45px;
+        padding-top: 25px;
+        border-top: 1px solid #f1f3f5;
+        color: #8795a1;
+        font-size: 0.95rem;
+    }
+
+        .support-info a {
+            color: #198754;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+            .support-info a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="success-wrapper">
+    <div class="container d-flex justify-content-center">
+        <div class="success-card">
+
+            <div class="success-icon-wrap">
+                <i class="fas fa-check-circle success-icon"></i>
             </div>
+
+            <h1 class="success-title">Đặt hàng thành công!</h1>
+            <p class="success-text">
+                Cảm ơn bạn đã tin tưởng và mua sắm tại <strong>Online Market</strong>.<br />
+                Đơn hàng của bạn đã được ghi nhận và sẽ được xử lý trong thời gian sớm nhất.
+            </p>
+
+            <div class="order-code-box">
+                <span>Mã đơn hàng của bạn</span>
+                <h5>#@orderId</h5>
+            </div>
+
+            <div class="action-buttons">
+                <a href="@Url.Action("OrderHistory", "Cart")" class="btn btn-track text-decoration-none">
+                    <i class="fas fa-file-invoice me-2"></i> Quản lý đơn hàng
+                </a>
+                <a href="@Url.Action("Index", "Shop")" class="btn btn-home text-decoration-none">
+                    <i class="fas fa-shopping-bag me-2"></i> Tiếp tục mua sắm
+                </a>
+            </div>
+
+            <div class="support-info">
+                Bạn cần hỗ trợ thêm? Vui lòng liên hệ Hotline: <a href="tel:19001234">1900 1234</a><br />
+                hoặc gửi email về <a href="mailto:support@onlinemarket.com">support@onlinemarket.com</a>.
+            </div>
+
         </div>
     </div>
 </div>
-
-<style>
-    .progress-bar {
-        font-weight: bold;
-    }
-
-    .card {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-
-    .border-success {
-        border-width: 2px;
-    }
-</style>

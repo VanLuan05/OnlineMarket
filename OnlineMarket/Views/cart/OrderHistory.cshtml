@@ -1,181 +1,246 @@
 ﻿@model IEnumerable<OnlineMarket.DonHang>
 
 @{
-    ViewBag.Title = "Đơn Hàng Của Tôi";
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📦 Đơn Hàng Của Tôi</h2>
-        <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary">
-            🛒 Quay lại giỏ hàng
-        </a>
-    </div>
+<style>
+    body {
+        background-color: #f5f5f5;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-    @if (!Model.Any())
-    {
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <div class="text-muted mb-3">
-                    <i class="fas fa-box-open" style="font-size: 4rem;"></i>
+    .brand-color {
+        color: #05a569 !important;
+    }
+
+    /* Sidebar */
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        color: #333;
+        text-decoration: none;
+        padding: 10px 0;
+        font-size: 14.5px;
+        transition: 0.2s;
+    }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            color: #05a569;
+            font-weight: 500;
+        }
+
+    .sidebar-icon {
+        width: 24px;
+        margin-right: 12px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Tabs Lọc Đơn Hàng */
+    .shopee-tabs {
+        display: flex;
+        background: #fff;
+        border-radius: 2px;
+        overflow-x: auto;
+        margin-bottom: 12px;
+        border: 1px solid #ebebeb;
+    }
+
+    .shopee-tab {
+        flex: 1;
+        text-align: center;
+        padding: 16px 0;
+        color: #555;
+        text-decoration: none;
+        font-size: 15px;
+        border-bottom: 2px solid transparent;
+        transition: 0.2s;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+        .shopee-tab:hover {
+            color: #05a569;
+        }
+
+        .shopee-tab.active {
+            color: #05a569;
+            border-bottom: 2px solid #05a569;
+        }
+
+    /* Card Đơn Hàng */
+    .order-card {
+        background: #fff;
+        border: 1px solid #ebebeb;
+        border-radius: 2px;
+        margin-bottom: 12px;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid #ebebeb;
+    }
+
+    .order-item-row {
+        display: flex;
+        padding: 15px 20px;
+        border-bottom: 1px solid #ebebeb;
+        align-items: center;
+    }
+
+    .order-item-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 1px solid #e1e1e1;
+        margin-right: 15px;
+        border-radius: 2px;
+    }
+
+    /* Nút bấm phẳng */
+    .btn-brand {
+        background: #05a569;
+        color: #fff;
+        border: 1px solid #05a569;
+        border-radius: 2px;
+        padding: 8px 25px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .btn-brand:hover {
+            background: #048b58;
+            color: #fff;
+        }
+
+    .btn-outline {
+        background: #fff;
+        color: #555;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        padding: 8px 25px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .btn-outline:hover {
+            background: #fafafa;
+            border-color: #05a569;
+            color: #05a569;
+        }
+</style>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-2 d-none d-lg-block">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-10">
+                <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 45px; height: 45px;">
+                    <svg width="24" height="24" fill="none" stroke="#555" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 </div>
-                <h4 class="text-muted">Chưa có đơn hàng nào</h4>
-                <p class="text-muted">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
-                <a href="@Url.Action("Index", "Shop")" class="btn btn-primary btn-lg">
-                    🛍️ Mua sắm ngay
+                <div>
+                    <div class="fw-bold" style="font-size: 14px;">@User.Identity.Name</div>
+                    <a href="#" class="text-muted text-decoration-none" style="font-size: 13px;"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-1"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>Sửa hồ sơ</a>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column">
+                <a href="#" class="sidebar-link">
+                    <span class="sidebar-icon"><svg width="20" height="20" fill="none" stroke="#2563eb" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></span>
+                    Tài khoản của tôi
+                </a>
+                <a href="@Url.Action("OrderHistory", "Cart")" class="sidebar-link active">
+                    <span class="sidebar-icon"><svg width="20" height="20" fill="none" stroke="#05a569" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z" /><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8" /></svg></span>
+                    Đơn mua
+                </a>
+                <a href="#" class="sidebar-link">
+                    <span class="sidebar-icon"><svg width="20" height="20" fill="none" stroke="#ea580c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg></span>
+                    Thông báo
                 </a>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var donHang in Model)
+
+        <div class="col-lg-10">
+
+            <div class="shopee-tabs">
+                <a class="shopee-tab active">Tất cả</a>
+                <a class="shopee-tab">Chờ thanh toán</a>
+                <a class="shopee-tab">Vận chuyển</a>
+                <a class="shopee-tab">Đang giao</a>
+                <a class="shopee-tab">Hoàn thành</a>
+                <a class="shopee-tab">Đã hủy</a>
+            </div>
+
+            @if (Model != null && Model.Any())
             {
-                <div class="col-lg-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Đơn hàng #@donHang.MADH</h5>
-                            <span class="badge @GetStatusBadgeClass(donHang.TrangThaiChiTiet)">
-                                @donHang.TrangThaiChiTiet
-                            </span>
+                foreach (var order in Model.OrderByDescending(o => o.NGAYDAT))
+                {
+                    var firstItem = order.ChiTietDonHangs?.FirstOrDefault();
+                    var moreCount = (order.ChiTietDonHangs?.Count ?? 0) - 1;
+
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold text-dark me-2">Fruit Store</span>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-1 px-2 py-1 fw-normal" style="font-size: 11px;">Mall</span>
+                            </div>
+                            <div class="brand-color text-uppercase" style="font-size: 14px; font-weight: 500;">
+                                @order.TRANG_THAI
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <!-- Thông tin cơ bản -->
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <small class="text-muted">Ngày đặt</small>
-                                    <p class="mb-0 font-weight-bold">@donHang.NGAYDAT.ToString()</p>
+
+                        @if (firstItem != null)
+                        {
+                            <div class="order-item-row">
+                                <img src="@firstItem.SanPham.URL_ANH" class="order-item-img" alt="Product" />
+                                <div class="flex-grow-1">
+                                    <div class="text-dark" style="font-size: 15px;">@firstItem.SanPham.TENSP</div>
+                                    <div class="text-muted mt-1" style="font-size: 13px;">Phân loại hàng: Mặc định</div>
+                                    <div class="text-dark mt-1" style="font-size: 13px;">x@(firstItem.SOLUONG)</div>
                                 </div>
-                               
-                            </div>
-
-                            <!-- Tiến trình đơn giản -->
-                            <div class="mb-3">
-                                <div class="progress" style="height: 8px;">
-                                    @if (donHang.TrangThaiChiTiet == "Hoàn tất")
-                                    {
-                                        <div class="progress-bar bg-success" style="width: 100%"></div>
-                                    }
-                                    else if (donHang.TrangThaiChiTiet == "Đang giao")
-                                    {
-                                        <div class="progress-bar bg-info" style="width: 75%"></div>
-                                    }
-                                    else if (donHang.TrangThaiChiTiet == "Đang xử lý")
-                                    {
-                                        <div class="progress-bar bg-warning" style="width: 50%"></div>
-                                    }
-                                    else if (donHang.TrangThaiChiTiet == "Hủy")
-                                    {
-                                        <div class="progress-bar bg-danger" style="width: 100%"></div>
-                                    }
+                                <div class="text-end">
+                                    <span class="brand-color" style="font-size: 15px;">@string.Format("{0:N0}đ", firstItem.THANHTIEN ?? (firstItem.SanPham.GIA * firstItem.SOLUONG))</span>
                                 </div>
-                                <small class="text-muted">@GetProgressText(donHang.TrangThaiChiTiet)</small>
                             </div>
+                        }
 
-                            <!-- Thông tin sản phẩm (SỬA: Loại bỏ phần truy cập database) -->
-                            <div class="mb-3">
-                                <small class="text-muted">Số lượng sản phẩm</small>
-                                <p class="mb-0 font-weight-bold">
-                                    @donHang.ChiTietDonHangs.Count sản phẩm
-                                </p>
+                        @if (moreCount > 0)
+                        {
+                            <div class="text-center py-2 border-bottom text-muted" style="font-size: 13px; background-color: #fafafa;">
+                                Xem thêm @moreCount sản phẩm khác...
                             </div>
+                        }
 
-                            <!-- Thông tin giao hàng -->
-                            <div class="mb-3">
-                                <small class="text-muted">Giao đến</small>
-                                <p class="mb-0 small text-truncate" title="@donHang.DIACHIGIAOHANG, @donHang.PhuongXa, @donHang.QuanHuyen">
-                                    📍 @donHang.DIACHIGIAOHANG, @donHang.PhuongXa
-                                </p>
+                        <div class="p-3 bg-white">
+                            <div class="d-flex justify-content-end align-items-center mb-3">
+                                <span class="text-dark me-2" style="font-size: 14px;">Thành tiền:</span>
+                                <span class="brand-color fw-bold" style="font-size: 20px;">@string.Format("{0:N0}đ", order.TongThanhToan ?? order.TONGTIEN)</span>
                             </div>
-
-                            <!-- Tổng tiền -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <strong>Tổng thanh toán:</strong>
-                                <strong class="text-success">@(donHang.TongThanhToan.ToString())đ</strong>
-                            </div>
-
-                            <!-- Các nút hành động -->
-                            <div class="d-grid gap-2">
-                                <a href="@Url.Action("OrderDetails", "Cart", new { id = donHang.MADH })" class="btn btn-primary btn-sm">
-                                    👁️ Xem chi tiết
-                                </a>
-                                @if (donHang.TrangThaiChiTiet == "Đang xử lý")
-                                {
-                                    <button class="btn btn-outline-danger btn-sm btn-cancel-order" data-order-id="@donHang.MADH">
-                                        ❌ Hủy đơn
-                                    </button>
-                                }
-                                else if (donHang.TrangThaiChiTiet == "Đang giao")
-                                {
-                                    <a href="@Url.Action("OrderTracking", "Cart", new { id = donHang.MADH })" class="btn btn-info btn-sm">
-                                        🚚 Theo dõi
-                                    </a>
-                                }
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted" style="font-size: 12px;">Mã đơn: #@order.MADH</span>
+                                <div class="d-flex gap-2">
+                                    @if (order.TRANG_THAI == "Hoàn tất")
+                                    {
+                                        <a href="#" class="btn-brand">Mua lại</a>
+                                    }
+                                    <a href="@Url.Action("OrderDetails", "Cart", new { id = order.MADH })" class="btn-outline">Xem chi tiết đơn hàng</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="bg-white py-5 text-center border rounded-1">
+                    <svg width="100" height="100" fill="none" stroke="#ddd" stroke-width="1" viewBox="0 0 24 24" class="mb-3"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
+                    <div class="text-muted" style="font-size: 15px;">Chưa có đơn hàng</div>
                 </div>
             }
         </div>
-    }
+    </div>
 </div>
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            // Xử lý hủy đơn hàng
-            $('.btn-cancel-order').click(function () {
-                var orderId = $(this).data('order-id');
-                if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-                    $.ajax({
-                        url: '@Url.Action("CancelOrder", "Cart")',
-                        type: 'POST',
-                        data: { id: orderId },
-                        success: function (result) {
-                            if (result.success) {
-                                alert(result.message);
-                                location.reload();
-                            } else {
-                                alert(result.message);
-                            }
-                        },
-                        error: function () {
-                            alert('Có lỗi xảy ra khi hủy đơn hàng!');
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-}
-
-@functions {
-    // Lấy class badge theo trạng thái
-    public string GetStatusBadgeClass(string status)
-    {
-        if (status == "Đang xử lý") return "badge-warning";
-        if (status == "Đang giao") return "badge-info";
-        if (status == "Hoàn tất") return "badge-success";
-        if (status == "Hủy") return "badge-danger";
-        return "badge-secondary";
-    }
-
-    // Lấy text mô tả tiến trình - SỬA LỖI SWITCH
-    public string GetProgressText(string status)
-    {
-        switch (status)
-        {
-            case "Đang xử lý":
-                return "Đơn hàng đang được xử lý";
-            case "Đang giao":
-                return "Đơn hàng đang được giao";
-            case "Hoàn tất":
-                return "Giao hàng thành công";
-            case "Hủy":
-                return "Đơn hàng đã hủy";
-            default:
-                return "Đang cập nhật";
-        }
-    }
-}

@@ -1,561 +1,355 @@
 ﻿@{
-    ViewBag.Title = "Dịch Vụ Hỗ Trợ Khách Hàng";
+    ViewBag.Title = "Trung tâm hỗ trợ - Fruit Store";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- CSS riêng cho trang hỗ trợ -->
 <style>
-    /* Customer Support Section */
-    .support-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .brand-color {
+        color: #05a569 !important;
+    }
+
+    .bg-brand {
+        background-color: #05a569 !important;
+    }
+
+    /* Hero Section */
+    .support-hero {
+        background: linear-gradient(135deg, #05a569 0%, #048b58 100%);
         padding: 60px 0;
+        text-align: center;
+        color: white;
+        margin-bottom: -50px;
+        padding-bottom: 90px;
     }
 
-    .section-title {
-        color: #2c3e50;
-        font-weight: 700;
-        margin-bottom: 50px;
+    .search-support {
+        max-width: 600px;
+        margin: 0 auto;
         position: relative;
-        padding-bottom: 15px;
     }
 
-    .section-title:after {
-        content: '';
+        .search-support input {
+            border-radius: 50px;
+            padding: 15px 25px 15px 50px;
+            border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-size: 15px;
+        }
+
+            .search-support input:focus {
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                outline: none;
+            }
+
+    .search-icon {
         position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, #3498db, #2ecc71);
-        border-radius: 2px;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
     }
 
-    .support-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        transition: all 0.4s ease;
-        border: none;
+    /* Contact Cards */
+    .contact-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: 1px solid #ebebeb;
         height: 100%;
-        overflow: hidden;
-        position: relative;
-        z-index: 1;
+        transition: transform 0.2s;
     }
 
-    .support-card:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
-        z-index: 2;
-    }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            border-color: #05a569;
+        }
 
-    .support-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .support-icon {
-        width: 80px;
-        height: 80px;
+    .contact-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: #f0fdf4;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 25px;
-        font-size: 2rem;
-        color: white;
-        background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
-        box-shadow: 0 8px 20px rgba(var(--card-color-1-rgb), 0.3);
+        margin: 0 auto 20px;
+        color: #05a569;
     }
 
-    .support-card h4 {
-        color: #2c3e50;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .support-card p {
-        color: #7f8c8d;
-        line-height: 1.6;
-        margin-bottom: 25px;
-    }
-
-    /* Quick Support Bar */
-    .quick-support-bar {
-        background: linear-gradient(90deg, #3498db, #2ecc71);
-        color: white;
-        padding: 20px 0;
-        margin-bottom: 40px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-    }
-
-    .quick-support-item {
-        text-align: center;
-        padding: 15px;
-        transition: transform 0.3s ease;
-    }
-
-    .quick-support-item:hover {
-        transform: translateY(-5px);
-    }
-
-    .quick-support-icon {
-        font-size: 2rem;
+    .contact-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
         margin-bottom: 10px;
-        display: inline-block;
     }
 
-    .quick-support-text h5 {
+    .contact-desc {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .contact-info {
+        font-size: 16px;
         font-weight: 600;
-        margin-bottom: 5px;
+        color: #05a569;
+        text-decoration: none;
     }
 
     /* FAQ Section */
-    .faq-section {
-        background: white;
-        border-radius: 15px;
-        padding: 40px;
-        margin-top: 60px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    .section-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
     }
 
-    .faq-title {
-        color: #2c3e50;
-        margin-bottom: 30px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f1f1f1;
+    .faq-accordion .accordion-item {
+        border: 1px solid #ebebeb;
+        border-radius: 8px !important;
+        margin-bottom: 12px;
+        overflow: hidden;
     }
 
-    .accordion-button {
+    .faq-accordion .accordion-button {
         font-weight: 600;
-        color: #2c3e50;
-        background: #f8f9fa;
-        border: none;
+        color: #444;
+        padding: 18px 20px;
+        background-color: #fff;
         box-shadow: none;
     }
 
-    .accordion-button:not(.collapsed) {
-        background: #3498db;
+        .faq-accordion .accordion-button:not(.collapsed) {
+            color: #05a569;
+            background-color: #f0fdf4;
+        }
+
+        .faq-accordion .accordion-button::after {
+            background-size: 1rem;
+        }
+
+    .faq-accordion .accordion-body {
+        color: #555;
+        font-size: 14.5px;
+        line-height: 1.7;
+        padding: 20px;
+        background-color: #fff;
+    }
+
+    /* Form Styles */
+    .form-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 8px;
+        border: 1px solid #ebebeb;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 12px 15px;
+        font-size: 14.5px;
+        background-color: #fbfbfc;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #05a569;
+            box-shadow: 0 0 0 0.2rem rgba(5, 165, 105, 0.15);
+            background-color: #fff;
+        }
+
+    .form-label {
+        font-weight: 500;
+        color: #444;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .btn-submit {
+        background-color: #05a569;
         color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        width: 100%;
+        transition: 0.2s;
     }
 
-    .accordion-button:focus {
-        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
-    }
-
-    /* Responsive Design */
-    @@media (max-width: 768px) {
-        .support-section {
-            padding: 40px 0;
+        .btn-submit:hover {
+            background-color: #048b58;
         }
-
-        .support-card {
-            margin-bottom: 30px;
-        }
-
-        .quick-support-bar {
-            padding: 15px 0;
-        }
-
-        .faq-section {
-            padding: 25px;
-        }
-    }
 </style>
 
-<!-- Main Content -->
-<section class="support-section">
+<div class="support-hero">
     <div class="container">
-        <!-- Page Header -->
-        <div class="text-center mb-5">
-            <h1 class="section-title">Dịch Vụ Hỗ Trợ Khách Hàng</h1>
-            <p class="lead text-muted">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7 với các dịch vụ chuyên nghiệp và tận tâm</p>
-        </div>
+        <h1 class="fw-bold mb-3" style="font-size: 32px;">Xin chào, chúng tôi có thể giúp gì cho bạn?</h1>
+        <p class="mb-4" style="opacity: 0.9;">Nhập từ khóa tìm kiếm hoặc xem các câu hỏi thường gặp bên dưới</p>
 
-        <!-- Quick Support Bar -->
-        <div class="quick-support-bar">
-            <div class="row text-center">
-                <div class="col-md-3 col-6">
-                    <div class="quick-support-item">
-                        <div class="quick-support-icon">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <div class="quick-support-text">
-                            <h5>Hotline</h5>
-                            <p class="mb-0">1900 1234</p>
-                        </div>
-                    </div>
+        <div class="search-support">
+            <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            <input type="text" class="form-control form-control-lg" placeholder="Ví dụ: Phí vận chuyển, chính sách đổi trả...">
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <div class="row g-4 mb-5 position-relative" style="z-index: 10;">
+        <div class="col-lg-4 col-md-6">
+            <div class="contact-card">
+                <div class="contact-icon-wrapper">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="quick-support-item">
-                        <a href="@Url.Action("Chatbox", "HoTroKH")" class="text-white text-decoration-none">
-                            <div class="quick-support-icon">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <div class="quick-support-text">
-                                <h5>Chat Online</h5>
-                                <p class="mb-0">Trực tuyến 24/7</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="quick-support-item">
-                        <div class="quick-support-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="quick-support-text">
-                            <h5>Email</h5>
-                            <p class="mb-0">support@fruitstore.com</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="quick-support-item">
-                        <a href="@Url.Action("GuiYeuCau", "HoTroKH")" class="text-white text-decoration-none">
-                            <div class="quick-support-icon">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <div class="quick-support-text">
-                                <h5>Gửi Yêu Cầu</h5>
-                                <p class="mb-0">Phản hồi trong 24h</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+                <h3 class="contact-title">Gọi Hotline</h3>
+                <p class="contact-desc">Hỗ trợ nhanh chóng các vấn đề về đơn hàng, hủy đơn hoặc phản ánh dịch vụ.</p>
+                <a href="tel:0326371255" class="contact-info">032 637 1255</a>
             </div>
         </div>
 
-        <!-- Main Support Services -->
-        <div class="row g-4">
-            <!-- Chatbox Support -->
-            <div class="col-lg-4 col-md-6">
-                <div class="support-card p-4" style="--card-color-1: #3498db; --card-color-2: #2980b9; --card-color-1-rgb: 52, 152, 219;">
-                    <div class="support-icon">
-                        <i class="fas fa-comment-dots"></i>
-                    </div>
-                    <h4 class="text-center">Chatbox Trực Tuyến</h4>
-                    <p class="text-center">Trò chuyện trực tiếp với nhân viên hỗ trợ để được giải đáp mọi thắc mắc nhanh chóng và hiệu quả.</p>
-                    <ul class="list-unstyled mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hỗ trợ 24/7 kể cả ngày lễ</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Phản hồi tức thì</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Lưu trữ lịch sử chat</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="@Url.Action("Chatbox", "HoTroKH")" class="btn btn-primary btn-lg">
-                            <i class="fas fa-comments me-2"></i>Mở Chatbox Ngay
-                        </a>
-                    </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="contact-card">
+                <div class="contact-icon-wrapper">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" ry="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                 </div>
-            </div>
-
-            <!-- Hotline Support -->
-            <div class="col-lg-4 col-md-6">
-                <div class="support-card p-4" style="--card-color-1: #2ecc71; --card-color-2: #27ae60; --card-color-1-rgb: 46, 204, 113;">
-                    <div class="support-icon">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <h4 class="text-center">Hotline Hỗ Trợ</h4>
-                    <p class="text-center">Liên hệ qua điện thoại để được tư vấn trực tiếp và giải quyết vấn đề một cách cá nhân hóa.</p>
-                    <div class="hotline-info text-center mb-4">
-                        <h2 class="text-success fw-bold mb-3">
-                            <i class="fas fa-phone me-2"></i>1900 1234
-                        </h2>
-                        <p class="text-muted mb-1">(Miễn phí cước gọi)</p>
-                        <p class="mb-0"><small><i class="fas fa-clock me-1"></i>Thứ 2 - Chủ nhật: 8:00 - 22:00</small></p>
-                    </div>
-                    <div class="text-center">
-                        <a href="tel:19001234" class="btn btn-success btn-lg">
-                            <i class="fas fa-phone me-2"></i>Gọi Ngay
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Support Request -->
-            <div class="col-lg-4 col-md-6">
-                <div class="support-card p-4" style="--card-color-1: #f39c12; --card-color-2: #e67e22; --card-color-1-rgb: 243, 156, 18;">
-                    <div class="support-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h4 class="text-center">Gửi Yêu Cầu Hỗ Trợ</h4>
-                    <p class="text-center">Gửi yêu cầu chi tiết và chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất.</p>
-                    <ul class="list-unstyled mb-4">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Phản hồi trong vòng 24h</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Đính kèm file hỗ trợ</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Theo dõi tiến độ xử lý</li>
-                    </ul>
-                    <div class="text-center">
-                        <a href="@Url.Action("GuiYeuCau", "HoTroKH")" class="btn btn-warning btn-lg">
-                            <i class="fas fa-paper-plane me-2"></i>Gửi Yêu Cầu
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Return Policy -->
-            <div class="col-lg-6 col-md-6">
-                <div class="support-card p-4" style="--card-color-1: #9b59b6; --card-color-2: #8e44ad; --card-color-1-rgb: 155, 89, 182;">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="support-icon me-4" style="width: 60px; height: 60px;">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-2">Chính Sách Đổi Trả</h4>
-                            <p class="text-muted">Đảm bảo quyền lợi mua sắm của bạn với chính sách đổi trả minh bạch và linh hoạt.</p>
-                        </div>
-                    </div>
-                    <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-calendar-check fa-lg text-purple"></i>
-                                </div>
-                                <div>
-                                    <h6>Thời gian đổi trả</h6>
-                                    <p class="mb-0 text-muted">Đổi trả trong vòng 7 ngày kể từ khi nhận hàng</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-box fa-lg text-purple"></i>
-                                </div>
-                                <div>
-                                    <h6>Điều kiện sản phẩm</h6>
-                                    <p class="mb-0 text-muted">Sản phẩm còn nguyên tem mác, chưa qua sử dụng</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-file-invoice fa-lg text-purple"></i>
-                                </div>
-                                <div>
-                                    <h6>Hoá đơn mua hàng</h6>
-                                    <p class="mb-0 text-muted">Hoá đơn mua hàng còn nguyên vẹn, đầy đủ thông tin</p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="text-end">
-                        <a href="@Url.Action("ChinhSachDoiTra", "HoTroKH")" class="btn btn-outline-purple">
-                            <i class="fas fa-file-alt me-2"></i>Xem Chi Tiết
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Refund Policy -->
-            <div class="col-lg-6 col-md-6">
-                <div class="support-card p-4" style="--card-color-1: #e74c3c; --card-color-2: #c0392b; --card-color-1-rgb: 231, 76, 60;">
-                    <div class="d-flex align-items-start mb-4">
-                        <div class="support-icon me-4" style="width: 60px; height: 60px;">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-2">Chính Sách Hoàn Tiền</h4>
-                            <p class="text-muted">Quy trình hoàn tiền nhanh chóng, minh bạch và đảm bảo quyền lợi khách hàng.</p>
-                        </div>
-                    </div>
-                    <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-percentage fa-lg text-danger"></i>
-                                </div>
-                                <div>
-                                    <h6>Hoàn tiền 100%</h6>
-                                    <p class="mb-0 text-muted">Hoàn tiền 100% nếu sản phẩm có lỗi từ nhà sản xuất</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-clock fa-lg text-danger"></i>
-                                </div>
-                                <div>
-                                    <h6>Thời gian xử lý</h6>
-                                    <p class="mb-0 text-muted">Xử lý hoàn tiền: 3-5 ngày làm việc</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mb-3">
-                            <div class="d-flex">
-                                <div class="me-3">
-                                    <i class="fas fa-wallet fa-lg text-danger"></i>
-                                </div>
-                                <div>
-                                    <h6>Phương thức hoàn tiền</h6>
-                                    <p class="mb-0 text-muted">Hoàn tiền qua tài khoản ngân hàng hoặc ví điện tử</p>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="text-end">
-                        <a href="@Url.Action("ChinhSachHoanTien", "HoTroKH")" class="btn btn-outline-danger">
-                            <i class="fas fa-file-alt me-2"></i>Xem Chi Tiết
-                        </a>
-                    </div>
-                </div>
+                <h3 class="contact-title">Gửi Email</h3>
+                <p class="contact-desc">Dành cho các yêu cầu hợp tác, khiếu nại hoặc cần đính kèm hình ảnh/hóa đơn.</p>
+                <a href="mailto:support@fruitstore.vn" class="contact-info">support@fruitstore.vn</a>
             </div>
         </div>
 
-        <!-- FAQ Section -->
-        <div class="faq-section">
-            <h3 class="faq-title"><i class="fas fa-question-circle me-2"></i>Câu Hỏi Thường Gặp</h3>
-            <div class="accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Làm thế nào để đổi trả hàng?
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Bạn có thể đổi trả hàng trong vòng 7 ngày kể từ khi nhận hàng. Sản phẩm cần còn nguyên tem mác, chưa qua sử dụng và có hoá đơn mua hàng. Liên hệ hotline 1900 1234 để được hướng dẫn cụ thể.
-                        </div>
-                    </div>
+        <div class="col-lg-4 col-md-6 d-none d-lg-block">
+            <div class="contact-card">
+                <div class="contact-icon-wrapper">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                 </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Thời gian hoàn tiền là bao lâu?
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Thời gian xử lý hoàn tiền thường từ 3-5 ngày làm việc sau khi yêu cầu được chấp nhận. Tiền sẽ được hoàn lại qua phương thức thanh toán mà bạn đã sử dụng khi mua hàng.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Làm thế nào để theo dõi đơn hàng?
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Bạn có thể theo dõi đơn hàng bằng cách đăng nhập vào tài khoản, vào mục "Đơn hàng của tôi" hoặc liên hệ hotline 1900 1234 với mã đơn hàng để được cập nhật trạng thái.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingFour">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                            Chatbox hỗ trợ hoạt động 24/7 không?
-                        </button>
-                    </h2>
-                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">
-                            Chatbox của chúng tôi hoạt động 24/7, kể cả ngày lễ. Tuy nhiên, trong khung giờ 22:00 - 8:00, hỗ trợ có thể qua chatbot tự động. Chúng tôi sẽ phản hồi sớm nhất khi có nhân viên trực.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact Info -->
-        <div class="row mt-5">
-            <div class="col-md-8 mx-auto">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <h4 class="card-title mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Thông Tin Liên Hệ Bổ Sung</h4>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-map-marker-alt fa-2x text-danger me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Địa chỉ</h6>
-                                        <p class="mb-0 text-muted">VietNam, HCM city, Quan Binh Tan</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-envelope fa-2x text-warning me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Email hỗ trợ</h6>
-                                        <p class="mb-0 text-muted">support@fruitstore.com</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="mt-3 text-muted">Ngoài các phương thức hỗ trợ trên, bạn cũng có thể gửi phản hồi qua email hoặc trực tiếp tại cửa hàng.</p>
-                    </div>
-                </div>
+                <h3 class="contact-title">Đến Cửa Hàng</h3>
+                <p class="contact-desc">Đến trực tiếp cửa hàng để được xem sản phẩm tươi sạch và hỗ trợ nhanh nhất.</p>
+                <span class="contact-info text-dark" style="font-size: 15px;">Quận Bình Tân, TP.HCM</span>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Thêm CSS cho button tùy chỉnh -->
-<style>
-    .btn-outline-purple {
-        color: #9b59b6;
-        border-color: #9b59b6;
-    }
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <h2 class="section-title">
+                <svg width="24" height="24" class="me-2 brand-color" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                Câu Hỏi Thường Gặp
+            </h2>
 
-        .btn-outline-purple:hover {
-            background-color: #9b59b6;
-            color: white;
-        }
+            <div class="accordion faq-accordion" id="faqAccordion">
 
-    .text-purple {
-        color: #9b59b6;
-    }
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            1. Thời gian giao hàng mất bao lâu?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Đối với khu vực nội thành TP.HCM, chúng tôi hỗ trợ giao hàng hỏa tốc trong vòng <strong>2 giờ</strong>. Các khu vực ngoại thành hoặc tỉnh lân cận thời gian giao hàng dự kiến từ 1 - 2 ngày làm việc.
+                        </div>
+                    </div>
+                </div>
 
-    .accordion-button:not(.collapsed)::after {
-        filter: brightness(0) invert(1);
-    }
-</style>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            2. Tôi có thể kiểm tra hàng trước khi nhận không?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Vì sản phẩm là nông sản và trái cây tươi, Fruit Store <strong>luôn khuyến khích</strong> khách hàng kiểm tra kỹ trạng thái sản phẩm ngay khi nhân viên giao hàng mang tới. Nếu có dập nát hoặc hỏng, bạn có quyền từ chối nhận hàng.
+                        </div>
+                    </div>
+                </div>
 
-@section scripts {
-    <script>
-        // Thêm hiệu ứng khi scroll đến phần tử
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animation cho các card khi scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            3. Cửa hàng có hỗ trợ xuất hóa đơn VAT không?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Có. Vui lòng điền thông tin Công ty (Tên công ty, MST, Địa chỉ) vào ô <strong>Ghi chú</strong> ở bước Thanh toán. Chúng tôi sẽ gửi hóa đơn điện tử qua email cho bạn trong vòng 24h sau khi đơn hàng giao thành công.
+                        </div>
+                    </div>
+                </div>
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                            4. Chính sách đổi trả hàng như thế nào?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Trong trường hợp hàng hóa bị hỏng hóc do lỗi vận chuyển hoặc không đúng mô tả, khách hàng vui lòng chụp ảnh và báo ngay qua Hotline hoặc Email trong vòng <strong>12 giờ</strong> kể từ lúc nhận hàng để được đổi trả miễn phí.
+                        </div>
+                    </div>
+                </div>
 
-            // Áp dụng animation cho các card
-            document.querySelectorAll('.support-card').forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(card);
-            });
+            </div>
+        </div>
 
-            // Xử lý click cho quick support items
-            document.querySelectorAll('.quick-support-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    this.style.transform = 'translateY(-5px) scale(1.05)';
-                    setTimeout(() => {
-                        this.style.transform = 'translateY(-5px)';
-                    }, 150);
-                });
-            });
-        });
-    </script>
-}
+        <div class="col-lg-6">
+            <h2 class="section-title">
+                <svg width="24" height="24" class="me-2 brand-color" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                Gửi Yêu Cầu Hỗ Trợ
+            </h2>
+
+            <div class="form-card">
+                @using (Html.BeginForm("GuiYeuCau", "HoTroKH", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" name="HoTen" class="form-control" placeholder="Nhập họ tên" required value="@(Request.IsAuthenticated ? User.Identity.Name : "")">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" name="SoDienThoai" class="form-control" placeholder="Nhập SĐT" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Chủ đề hỗ trợ</label>
+                            <select name="ChuDe" class="form-select">
+                                <option value="Hỏi đáp về sản phẩm">Hỏi đáp về sản phẩm</option>
+                                <option value="Vấn đề về Đơn hàng/Vận chuyển">Vấn đề về Đơn hàng/Vận chuyển</option>
+                                <option value="Báo lỗi khiếu nại">Báo lỗi - Khiếu nại dịch vụ</option>
+                                <option value="Hợp tác kinh doanh">Liên hệ hợp tác kinh doanh</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                            <textarea name="NoiDung" class="form-control" rows="4" placeholder="Vui lòng mô tả chi tiết vấn đề bạn đang gặp phải (Kèm mã đơn hàng nếu có)..." required></textarea>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn-submit d-flex justify-content-center align-items-center">
+                                <svg width="20" height="20" class="me-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                                Gửi Yêu Cầu
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

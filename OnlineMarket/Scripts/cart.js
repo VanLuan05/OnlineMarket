@@ -34,7 +34,9 @@ class CartManager {
 
     handleDecreaseQuantity(e) {
         console.log("Decrease clicked");
-        const input = $(e.target).closest('.input-group').find('.quantity-input');
+        // Sử dụng e.currentTarget để bắt chính xác thẻ button, 
+        // và closest('.qty-selector') theo giao diện mới
+        const input = $(e.currentTarget).closest('.qty-selector').find('.quantity-input');
         const currentVal = parseInt(input.val());
         if (currentVal > 1) {
             input.val(currentVal - 1);
@@ -44,9 +46,11 @@ class CartManager {
 
     handleIncreaseQuantity(e) {
         console.log("Increase clicked");
-        const input = $(e.target).closest('.input-group').find('.quantity-input');
+        // Tương tự, cập nhật selector cho nút Tăng
+        const input = $(e.currentTarget).closest('.qty-selector').find('.quantity-input');
         const currentVal = parseInt(input.val());
         const maxVal = parseInt(input.attr('max'));
+
         if (currentVal < maxVal) {
             input.val(currentVal + 1);
             this.updateQuantity(input);
@@ -102,13 +106,16 @@ class CartManager {
             if (response.success) {
                 this.updateCartSummary(response);
                 this.updateCartCount(response.cartCount);
-                this.showAlert('success', response.message);
 
-                // Cập nhật thành tiền cho dòng đó
+                // Ẩn dòng thông báo Thành công để tránh làm phiền khi KH click liên tục
+                // this.showAlert('success', response.message); 
+
+                // Lấy đơn giá từ cột thứ 3 của bảng thay vì dùng class cũ
                 const itemRow = $(`.cart-item[data-cart-id="${cartId}"]`);
-                const priceText = itemRow.find('.product-price strong').text();
+                const priceText = itemRow.find('td:nth-child(3)').text().trim();
                 const price = parseInt(priceText.replace(/[^0-9]/g, ''));
                 const thanhTien = price * quantity;
+
                 itemRow.find('.thanh-tien').text(this.formatCurrency(thanhTien));
 
             } else {
@@ -193,24 +200,27 @@ class CartManager {
     showAlert(type, message) {
         $('.alert-position-fixed').remove();
 
-        const alertClass = type === 'success' ? 'alert-success' :
-            type === 'error' ? 'alert-danger' : 'alert-warning';
+        // Nâng cấp Toast Alert sang xịn xò giống trang Shop
+        const alertClass = type === 'success' ? 'bg-success text-white' :
+            type === 'error' ? 'bg-danger text-white' : 'bg-warning text-dark';
         const iconClass = type === 'success' ? 'fa-check-circle' :
             type === 'error' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
 
         const alertHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show alert-position-fixed"
-                 style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                <i class="fas ${iconClass} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="alert ${alertClass} alert-dismissible fade show alert-position-fixed shadow-lg"
+                 style="position: fixed; top: 30px; right: 30px; z-index: 9999; min-width: 320px; border-radius: 10px; border: none;">
+                <div class="d-flex align-items-center">
+                    <i class="fas ${iconClass} fs-4 me-3"></i>
+                    <div class="fw-medium">${message}</div>
+                </div>
+                <button type="button" class="btn-close ${type !== 'warning' ? 'btn-close-white' : ''}" data-bs-dismiss="alert" style="top: 50%; transform: translateY(-50%);"></button>
             </div>
         `;
 
         $('body').append(alertHtml);
 
         setTimeout(() => {
-            $('.alert-position-fixed').alert('close');
+            $('.alert-position-fixed').fadeOut(500, function () { $(this).remove(); });
         }, 3000);
     }
 }
