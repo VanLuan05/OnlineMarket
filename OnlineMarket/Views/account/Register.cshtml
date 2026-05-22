@@ -1,413 +1,271 @@
-﻿@model OnlineMarket.NguoiDung
+﻿@* Bạn có thể giữ nguyên khai báo @model cũ của dự án ở dòng đầu tiên nếu có *@
+
 @{
-    Layout = null;
+    ViewBag.Title = "Đăng Ký Tài Khoản - Fruit Store";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký - Fruit Store</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* CSS code phải nằm trong thẻ style */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+<style>
+    /* ===== Modern Register Page Styles ===== */
+    .register-section {
+        background: #f5f5fa;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        padding: 50px 0;
+    }
+    .register-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        border: none;
+    }
+    /* Khối banner thương hiệu bên trái */
+    .register-left {
+        background: linear-gradient(135deg, #05a569 0%, #037a4e 100%);
+        color: #fff;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        min-height: 550px;
+    }
+    .register-left h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 35px;
+        line-height: 1.4;
+    }
+    /* Khối form nhập liệu bên phải */
+    .register-right {
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .register-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 6px;
+    }
+    .register-subtitle {
+        color: #787878;
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+    /* Custom khung nhập liệu bao gồm icon */
+    .form-group-custom {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    .form-group-custom i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #adadad;
+        font-size: 16px;
+        transition: color 0.2s;
+    }
+    .form-control-custom {
+        padding: 13px 15px 13px 46px;
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #333;
+        width: 100%;
+        transition: all 0.2s;
+        background-color: #fcfcfc;
+    }
+    .form-control-custom:focus {
+        background-color: #fff;
+        border-color: #05a569;
+        box-shadow: 0 0 0 4px rgba(5, 165, 105, 0.15);
+        outline: none;
+    }
+    /* Hiệu ứng đổi màu icon khi focus vào ô nhập liệu */
+    .form-control-custom:focus + i {
+        color: #05a569;
+    }
+    /* Nút Đăng ký kích thước lớn chuẩn e-commerce */
+    .btn-register-submit {
+        background: #05a569;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%;
+        transition: background 0.2s;
+        cursor: pointer;
+        margin-top: 10px;
+        box-shadow: 0 4px 12px rgba(5, 165, 105, 0.2);
+    }
+    .btn-register-submit:hover {
+        background: #048a57;
+        color: #fff;
+    }
+    /* Các dòng liệt kê tính năng phía bên trái */
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .feature-icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .feature-text h5 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+    }
+    .feature-text p {
+        font-size: 13px;
+        margin: 0;
+        opacity: 0.85;
+    }
+    /* Responsive cho các thiết bị di động */
+    @@media (max-width: 991px) {
+        .register-left {
+            display: none;
         }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .register-right {
+            padding: 35px 20px;
         }
+    }
+</style>
 
-        .register-container {
-            width: 100%;
-            max-width: 500px;
-        }
+<div class="register-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11">
+                <div class="card register-card">
+                    <div class="row g-0">
 
-        .register-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+                        <div class="col-md-5 d-none d-lg-block">
+                            <div class="register-left">
+                                <h2>Ch&#224;o mừng b&#7841;n &#273;&#7871;n v&#7899;i<br>Fruit Store</h2>
 
-        .register-header {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+                                <div class="feature-item">
+                                    <div class="feature-icon-box">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <h5>Tr&#225;i c&#226;y t&#432;&#417;i s&#7841;ch</h5>
+                                        <p>100% s&#7843;n ph&#7849;m t&#432;&#417;i ngon m&#7895;i ng&#224;y</p>
+                                    </div>
+                                </div>
 
-            .register-header::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-                transform: rotate(45deg);
-            }
+                                <div class="feature-item">
+                                    <div class="feature-icon-box">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <h5>Giao h&#224;ng ho&#7843; t&#7889;c</h5>
+                                        <p>Nh&#7853;n h&#224;ng nhanh ch&#243;ng trong v&#242;ng 2h</p>
+                                    </div>
+                                </div>
 
-            .register-header h2 {
-                font-weight: 700;
-                margin-bottom: 0.5rem;
-                position: relative;
-                z-index: 1;
-            }
-
-            .register-header p {
-                opacity: 0.9;
-                margin: 0;
-                position: relative;
-                z-index: 1;
-            }
-
-        .register-body {
-            padding: 2.5rem 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .form-control {
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-            .form-control:focus {
-                border-color: #28a745;
-                box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-                transform: translateY(-2px);
-            }
-
-            .form-control::placeholder {
-                color: #a0aec0;
-            }
-
-        .input-icon {
-            position: relative;
-        }
-
-            .input-icon i {
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #718096;
-                z-index: 2;
-            }
-
-            .input-icon .form-control {
-                padding-left: 45px;
-            }
-
-        .btn-register {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-weight: 700;
-            font-size: 18px;
-            color: white;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-            .btn-register:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
-            }
-
-            .btn-register:active {
-                transform: translateY(-1px);
-            }
-
-        .text-danger {
-            font-size: 14px;
-            margin-top: 5px;
-            display: block;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-        }
-
-            .login-link a {
-                color: #28a745;
-                text-decoration: none;
-                font-weight: 600;
-                transition: color 0.3s ease;
-            }
-
-                .login-link a:hover {
-                    color: #20c997;
-                    text-decoration: underline;
-                }
-
-        .back-home {
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-            .back-home a {
-                color: #718096;
-                text-decoration: none;
-                transition: color 0.3s ease;
-            }
-
-                .back-home a:hover {
-                    color: #2d3748;
-                }
-
-        .footer {
-            text-align: center;
-            margin-top: 2rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-        }
-
-        /* Responsive - sửa media query */
-        @@media (max-width: 576px) {
-            .register-body {
-                padding: 2rem 1.5rem;
-            }
-
-            .register-header {
-                padding: 2rem 1.5rem;
-            }
-        }
-
-        /* Animation - sửa keyframes */
-        .fade-in {
-            animation: fadeIn 0.8s ease-in;
-        }
-
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Password strength */
-        .password-strength {
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-    </style>
-</head>
-<body>
-    <div class="register-container fade-in">
-        <div class="register-card">
-            <div class="register-header">
-                <h2><i class="fas fa-user-plus me-2"></i>Đăng Ký</h2>
-                <p>Tham gia cùng chúng tôi ngay hôm nay!</p>
-            </div>
-
-            <div class="register-body">
-                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "register-form", id = "registerForm" }))
-                {
-                    @Html.AntiForgeryToken()
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.TENDANGNHAP, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-user"></i>
-                            @Html.TextBoxFor(m => m.TENDANGNHAP, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Nhập tên đăng nhập",
-                                required = "required"
-                            })
+                                <div class="feature-item">
+                                    <div class="feature-icon-box">
+                                        <i class="fas fa-tags"></i>
+                                    </div>
+                                    <div class="feature-text">
+                                        <h5>&#431;u &#273;&#227;i th&#224;nh vi&#234;n</h5>
+                                        <p>T&#237;ch &#273;i&#7BB;m v&#224; nh&#7853;n nhi&#7873;u voucher h&#7845;p d&#7851;n</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        @Html.ValidationMessageFor(m => m.TENDANGNHAP, "", new { @class = "text-danger" })
+
+                        <div class="col-md-12 col-lg-7">
+                            <div class="register-right">
+                                <div class="register-title">&#272;&#259;ng K&#253; T&#224;i Kho&#7843;n</div>
+                                <div class="register-subtitle">Vui l&#242;ng &#273;i&#7873;n &#273;&#7847;y &#273;&#7911; th&#244;ng tin &#273;&#7875; tr&#7903; th&#224;nh th&#224;nh vi&#234;n</div>
+
+                                @* Đường dẫn Form và các thuộc tính bạn kiểm tra lại xem có trùng khớp với AccountController của bạn không *@
+                                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm", @class = "needs-validation" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    if (!Html.ViewData.ModelState.IsValid)
+                                    {
+                                        <div class="alert alert-danger py-2 px-3 mb-3" style="font-size: 13px; border-radius: 6px;">
+                                            @Html.ValidationSummary(true, "", new { @class = "text-danger m-0" })
+                                        </div>
+                                    }
+
+                                    <div class="form-group-custom">
+                                        <input type="text" id="HOTEN" name="HOTEN" class="form-control-custom" placeholder="H&#7885; v&#224; t&#234;n" required value="@Request.Form["HOTEN"]" />
+                                        <i class="fas fa-user-circle"></i>
+                                        @Html.ValidationMessage("HOTEN", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="text" id="TENDANGNHAP" name="TENDANGNHAP" class="form-control-custom" placeholder="T&#234;n &#273;&#259;ng nh&#7853;p" required value="@Request.Form["TENDANGNHAP"]" />
+                                        <i class="fas fa-user"></i>
+                                        @Html.ValidationMessage("TENDANGNHAP", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="email" id="EMAIL" name="EMAIL" class="form-control-custom" placeholder="Email" required value="@Request.Form["EMAIL"]" />
+                                        <i class="fas fa-envelope"></i>
+                                        @Html.ValidationMessage("EMAIL", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="tel" id="SODIENTHOAI" name="SODIENTHOAI" class="form-control-custom" placeholder="S&#7889; &#273;i&#7877;n tho&#7841;i" required value="@Request.Form["SODIENTHOAI"]" />
+                                        <i class="fas fa-phone"></i>
+                                        @Html.ValidationMessage("SODIENTHOAI", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="text" id="DIACHI" name="DIACHI" class="form-control-custom" placeholder="&#272;&#7883;a ch&#7883;" value="@Request.Form["DIACHI"]" />
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        @Html.ValidationMessage("DIACHI", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="password" id="MATKHAU" name="MATKHAU" class="form-control-custom" placeholder="M&#7853;t kh&#7843;u" required />
+                                        <i class="fas fa-lock"></i>
+                                        @Html.ValidationMessage("MATKHAU", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <div class="form-group-custom">
+                                        <input type="password" id="NHAPLAIMATKHAU" name="NHAPLAIMATKHAU" class="form-control-custom" placeholder="Nh&#7853;p l&#7841;i m&#7853;t kh&#7843;u" required />
+                                        <i class="fas fa-check-double"></i>
+                                        @Html.ValidationMessage("NHAPLAIMATKHAU", "", new { @class = "text-danger", style = "font-size:12px; margin-top:4px; display:block;" })
+                                    </div>
+
+                                    <button type="submit" class="btn-register-submit">&#272;&#259;ng k&#253;</button>
+                                }
+
+                                <div class="text-center mt-4" style="font-size: 14px; color: #555;">
+                                    B&#7841;n &#273;&#227; c&#243; t&#224;i kho&#7843;n?
+                                    <a href="@Url.Action("Login", "Account")" class="text-success fw-bold text-decoration-none ms-1" style="color: #05a569 !important;">
+                                        &#272;&#259;ng nh&#7853;p ngay
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.HOTEN, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-id-card"></i>
-                            @Html.TextBoxFor(m => m.HOTEN, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Nhập họ tên đầy đủ",
-                                required = "required"
-                            })
-                        </div>
-                        @Html.ValidationMessageFor(m => m.HOTEN, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.EMAIL, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-envelope"></i>
-                            @Html.TextBoxFor(m => m.EMAIL, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Nhập email của bạn",
-                                type = "email",
-                                required = "required"
-                            })
-                        </div>
-                        @Html.ValidationMessageFor(m => m.EMAIL, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.MATKHAU, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-lock"></i>
-                            @Html.PasswordFor(m => m.MATKHAU, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Tạo mật khẩu mạnh",
-                                required = "required",
-                                id = "password"
-                            })
-                        </div>
-                        <div class="password-strength">
-                            <div class="strength-bar" id="passwordStrength"></div>
-                        </div>
-                        @Html.ValidationMessageFor(m => m.MATKHAU, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.SODIENTHOAI, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-phone"></i>
-                            @Html.TextBoxFor(m => m.SODIENTHOAI, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Nhập số điện thoại",
-                                type = "tel"
-                            })
-                        </div>
-                        @Html.ValidationMessageFor(m => m.SODIENTHOAI, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(m => m.DIACHI, new { @class = "form-label" })
-                        <div class="input-icon">
-                            <i class="fas fa-home"></i>
-                            @Html.TextBoxFor(m => m.DIACHI, new
-                            {
-                                @class = "form-control",
-                                placeholder = "Nhập địa chỉ nhận hàng"
-                            })
-                        </div>
-                        @Html.ValidationMessageFor(m => m.DIACHI, "", new { @class = "text-danger" })
-                    </div>
-
-                    @Html.HiddenFor(m => m.VAITRO, new { @Value = "Khách hàng" })
-
-                    <button type="submit" class="btn-register">
-                        <i class="fas fa-user-plus me-2"></i>Đăng Ký Tài Khoản
-                    </button>
-                }
-
-                <div class="login-link">
-                    <p>Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập ngay</a></p>
-                </div>
-
-                <div class="back-home">
-                    <a href="@Url.Action("Index", "Home")">
-                        <i class="fas fa-arrow-left me-1"></i>Quay lại trang chủ
-                    </a>
                 </div>
             </div>
-        </div>
-
-        <div class="footer">
-            <p>&copy; 2024 Fruit Store. All rights reserved.</p>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Password strength indicator
-        document.getElementById('password').addEventListener('input', function () {
-            const password = this.value;
-            const strengthBar = document.getElementById('passwordStrength');
-            let strength = 0;
-
-            if (password.length >= 8) strength += 25;
-            if (/[A-Z]/.test(password)) strength += 25;
-            if (/[0-9]/.test(password)) strength += 25;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-
-            strengthBar.style.width = strength + '%';
-
-            if (strength < 50) {
-                strengthBar.style.background = '#e53e3e';
-            } else if (strength < 75) {
-                strengthBar.style.background = '#ed8936';
-            } else {
-                strengthBar.style.background = '#38a169';
-            }
-        });
-
-        // Form validation
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
-            const password = document.getElementById('password').value;
-            if (password.length < 6) {
-                e.preventDefault();
-                alert('Mật khẩu phải có ít nhất 6 ký tự!');
-                return false;
-            }
-            return true;
-        });
-    </script>
-</body>
-</html>
+</div>

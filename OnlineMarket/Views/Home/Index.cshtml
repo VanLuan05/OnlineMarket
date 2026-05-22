@@ -46,37 +46,39 @@
             </a>
         </div>
 
-        <div class="pro-container">
+        <div class="row g-4">
             @if (Model != null)
             {
                 foreach (var item in Model)
                 {
-                    <div class="pro position-relative">
-                        <a href="@Url.Action("Details", "Shop", new { id = item.MASP })">
-                            <img src="@item.URL_ANH" alt="@item.TENSP" style="border-radius: 10px;">
-                        </a>
-                        <div class="des">
-                            <h5>
-                                <a href="@Url.Action("Details", "Shop", new { id = item.MASP })" style="text-decoration: none; color: inherit;">
-                                    @item.TENSP
-                                </a>
-                            </h5>
-                            <div class="star text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6">
+                        <div class="pro position-relative h-100 d-flex flex-column">
+                            <a href="@Url.Action("Details", "Shop", new { id = item.MASP })" class="text-center">
+                                <img src="@item.URL_ANH" alt="@item.TENSP" class="img-fluid" style="border-radius: 10px; max-height: 200px; object-fit: cover; width: 100%;">
+                            </a>
+                            <div class="des d-flex flex-column flex-grow-1 mt-3">
+                                <h5 class="mb-2">
+                                    <a href="@Url.Action("Details", "Shop", new { id = item.MASP })" style="text-decoration: none; color: inherit; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                        @item.TENSP
+                                    </a>
+                                </h5>
+                                <div class="star text-warning mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h4 class="text-danger fw-bold mt-auto mb-0" style="font-size: 18px;">@string.Format("{0:N0}đ", item.GIA)</h4>
                             </div>
-                            <h4 class="text-danger fw-bold mt-2">@string.Format("{0:N0}đ", item.GIA)</h4>
-                        </div>
 
-                        <a href="javascript:void(0);"
-                           class="cart btn-add-to-cart-home"
-                           data-product-id="@item.MASP"
-                           data-product-name="@item.TENSP">
-                            <i class="fa-solid fa-cart-plus"></i>
-                        </a>
+                            <a href="javascript:void(0);"
+                               class="cart btn-add-to-cart-home shadow-sm"
+                               data-product-id="@item.MASP"
+                               data-product-name="@item.TENSP">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </a>
+                        </div>
                     </div>
                 }
             }
@@ -214,6 +216,43 @@
                     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
                     transform: translateY(-5px);
                 }
+            /* CSS Fix: Căn đều 2 bên và tối ưu chiều cao cho thẻ Sản phẩm */
+            .pro {
+                width: 100% !important; /* Ghi đè chiều rộng cũ để Bootstrap tự chia cột */
+                margin: 0 !important; /* Xóa margin cũ gây lệch Grid */
+                padding: 15px !important;
+                background: #fff;
+                border: 1px solid #ececec;
+                border-radius: 15px;
+                transition: all 0.3s ease;
+            }
+
+                .pro:hover {
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+                    transform: translateY(-5px);
+                    border-color: #05a569; /* Đổi màu viền khi đưa chuột vào */
+                }
+
+                /* Định dạng nút giỏ hàng nổi bật hơn */
+                .pro .cart {
+                    width: 40px;
+                    height: 40px;
+                    line-height: 40px;
+                    border-radius: 50px;
+                    background-color: #e8f6ea;
+                    color: #088178;
+                    border: 1px solid #cce7d0;
+                    position: absolute;
+                    bottom: 15px;
+                    right: 15px;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                }
+
+                    .pro .cart:hover {
+                        background-color: #088178;
+                        color: #fff;
+                    }
         </style>
     }
     <script>
