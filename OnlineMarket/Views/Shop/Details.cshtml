@@ -1,19 +1,17 @@
-﻿@model OnlineMarket.SanPham
+@model OnlineMarket.SanPham
 
 @{
     ViewBag.Title = "Chi Tiết Sản Phẩm - Fruit Store";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Lấy dữ liệu từ ViewBag - ĐẶT Ở ĐÂY
+    // Lấy dữ liệu từ ViewBag
     var danhGia = ViewBag.DanhGia as List<OnlineMarket.DanhGia>;
     var relatedProducts = ViewBag.RelatedProducts as List<OnlineMarket.SanPham>;
 
-    // KHỞI TẠO BIẾN với tên khác để tránh trùng
     var tongDanhGiaValue = 0;
     var trungBinhSaoValue = 0.0;
     var phanPhoiSaoValue = new int[5];
 
-    // Xử lý ViewBag.TongQuanDanhGia an toàn
     if (ViewBag.TongQuanDanhGia != null)
     {
         tongDanhGiaValue = ViewBag.TongQuanDanhGia.TongDanhGia;
@@ -22,356 +20,621 @@
     }
 }
 
+<style>
+    /* ===== Details Page Styles ===== */
+    .detail-breadcrumb {
+        background: #fff;
+        border-bottom: 1px solid #ebebeb;
+        padding: 12px 0;
+    }
+    .detail-breadcrumb .breadcrumb {
+        margin: 0;
+        background: transparent;
+        padding: 0;
+        font-size: 14px;
+    }
+    .detail-breadcrumb .breadcrumb a {
+        color: #888;
+        text-decoration: none;
+    }
+    .detail-breadcrumb .breadcrumb a:hover {
+        color: #05a569;
+    }
+    .detail-breadcrumb .breadcrumb-item.active {
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* Product Card */
+    .detail-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+        padding: 30px;
+        margin-top: 24px;
+    }
+
+    /* Product Image */
+    .detail-img-wrap {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center;
+        padding: 20px;
+        background: #fafafa;
+    }
+    .detail-img-wrap img {
+        max-width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+    }
+    .detail-img-wrap:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Product Title */
+    .detail-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #222;
+        line-height: 1.3;
+        margin-bottom: 10px;
+    }
+
+    /* Rating row */
+    .detail-rating {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-rating .fa-star {
+        font-size: 13px;
+    }
+
+    /* Price */
+    .detail-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ee4d2d;
+        margin-bottom: 4px;
+    }
+    .detail-price-unit {
+        font-size: 15px;
+        color: #999;
+        font-weight: 400;
+    }
+
+    /* Stock badge */
+    .detail-stock {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .detail-stock.in-stock {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .detail-stock.out-of-stock {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    /* Description */
+    .detail-desc {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.7;
+        margin: 16px 0;
+    }
+
+    /* Quantity */
+    .detail-qty-wrap {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .detail-qty-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #fafafa;
+        font-size: 16px;
+        color: #555;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+    .detail-qty-btn:hover {
+        background: #eee;
+    }
+    .detail-qty-input {
+        width: 50px;
+        height: 36px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        font-size: 15px;
+        font-weight: 600;
+        background: #fff;
+    }
+    .detail-qty-input:focus {
+        outline: none;
+    }
+    .detail-qty-input::-webkit-outer-spin-button,
+    .detail-qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Cart Button */
+    .btn-add-cart {
+        background: #05a569;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+    .btn-add-cart:hover {
+        background: #048a57;
+        color: #fff;
+    }
+    .btn-add-cart:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* Meta info */
+    .detail-meta {
+        font-size: 14px;
+        color: #888;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .detail-meta span {
+        margin-right: 24px;
+    }
+    .detail-meta strong {
+        color: #444;
+    }
+
+    /* Tabs */
+    .detail-tabs .nav-tabs {
+        border-bottom: 2px solid #eee;
+    }
+    .detail-tabs .nav-link {
+        font-size: 15px;
+        font-weight: 600;
+        color: #888;
+        border: none;
+        padding: 12px 20px;
+        transition: color 0.2s;
+    }
+    .detail-tabs .nav-link:hover {
+        color: #333;
+    }
+    .detail-tabs .nav-link.active {
+        color: #05a569;
+        border: none;
+        border-bottom: 2px solid #05a569;
+        background: transparent;
+    }
+    .detail-tab-content {
+        background: #fff;
+        border-radius: 0 0 12px 12px;
+        padding: 28px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    /* Feature cards in description */
+    .feature-card {
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid #eee;
+    }
+    .feature-card h6 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 12px;
+    }
+    .feature-card ul {
+        padding-left: 18px;
+        margin: 0;
+    }
+    .feature-card ul li {
+        font-size: 14px;
+        color: #666;
+        line-height: 2;
+    }
+
+    /* Review Summary */
+    .review-summary-box {
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 24px;
+        border: 1px solid #eee;
+    }
+    .review-big-score {
+        font-size: 48px;
+        font-weight: 700;
+        color: #222;
+        line-height: 1;
+    }
+    .review-stars .fa-star {
+        font-size: 16px;
+    }
+    .review-count-label {
+        font-size: 13px;
+        color: #999;
+    }
+
+    /* Rating bars */
+    .rating-bar-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6px;
+        font-size: 13px;
+        color: #666;
+    }
+    .rating-bar-label {
+        width: 30px;
+        text-align: right;
+    }
+    .rating-bar-track {
+        flex: 1;
+        height: 8px;
+        background: #eee;
+        border-radius: 4px;
+        margin: 0 10px;
+        overflow: hidden;
+    }
+    .rating-bar-fill {
+        height: 100%;
+        background: #ffc107;
+        border-radius: 4px;
+    }
+    .rating-bar-count {
+        width: 24px;
+        text-align: left;
+    }
+
+    /* Review item */
+    .review-item {
+        padding: 16px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .review-item:last-child {
+        border-bottom: none;
+    }
+    .review-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #05a569;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .review-author {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+    .review-date {
+        font-size: 12px;
+        color: #aaa;
+    }
+    .review-text {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+        margin-top: 8px;
+    }
+
+    /* Related Products */
+    .related-card {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fff;
+        transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .related-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+    .related-card .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+    .related-card .card-price {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ee4d2d;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #aaa;
+    }
+    .empty-state p {
+        font-size: 14px;
+        color: #aaa;
+    }
+</style>
+
 <!-- Breadcrumb -->
-<section class="breadcrumb-section bg-light py-3">
+<section class="detail-breadcrumb">
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang Chủ</a></li>
-                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Shop")">Cửa Hàng</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang ch&#7911;</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Shop")">C&#7917;a h&#224;ng</a></li>
                 <li class="breadcrumb-item active">@Model.TENSP</li>
             </ol>
         </nav>
     </div>
 </section>
 
-<!-- Product Details Section -->
-<section class="product-details-section py-5">
+<!-- Product Details -->
+<section class="pb-5" style="background: #f5f5f5;">
     <div class="container">
-        <div class="row">
-            <!-- Product Images -->
-            <div class="col-lg-6 mb-4">
-                <div class="product-image-main text-center mb-3">
-                    <img src="@Model.URL_ANH"
-                         alt="@Model.TENSP"
-                         class="img-fluid rounded"
-                         style="max-height: 500px; object-fit: cover;">
+        <div class="detail-card">
+            <div class="row">
+                <!-- Product Image -->
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="detail-img-wrap">
+                        <img src="@Model.URL_ANH" alt="@Model.TENSP">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Product Info -->
-            <div class="col-lg-6">
-                <div class="product-info">
-                    <h1 class="product-title mb-3">@Model.TENSP</h1>
+                <!-- Product Info -->
+                <div class="col-lg-7 ps-lg-4">
+                    <h1 class="detail-title">@Model.TENSP</h1>
 
                     <!-- Rating -->
-                    <div class="product-rating mb-3">
-                        <div class="stars">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <i class="fas fa-star text-warning"></i>
-                            }
-                        </div>
-                        <span class="ms-2 text-muted">(@(Model.LUOTMUA ?? 0) lượt mua)</span>
+                    <div class="detail-rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="fas fa-star @(i <= trungBinhSaoValue ? "text-warning" : "text-muted")"></i>
+                        }
+                        <span>@trungBinhSaoValue.ToString("0.0")</span>
+                        <span style="color:#ddd;">|</span>
+                        <span>@tongDanhGiaValue &#273;&#225;nh gi&#225;</span>
+                        <span style="color:#ddd;">|</span>
+                        <span>@(Model.LUOTMUA ?? 0) l&#432;&#7907;t mua</span>
                     </div>
 
                     <!-- Price -->
-                    <div class="product-price mb-4">
-                        <h2 class="text-danger mb-0">@string.Format("{0:N0}đ", Model.GIA)</h2>
-                        <small class="text-muted">/@Model.DONVITINH</small>
+                    <div class="mb-3">
+                        <span class="detail-price">@string.Format("{0:N0}", Model.GIA)&#273;</span>
+                        <span class="detail-price-unit"> / @Model.DONVITINH</span>
                     </div>
 
-                    <!-- Description -->
-                    <div class="product-description mb-4">
-                        <p>@Model.MOTA</p>
-                    </div>
-
-                    <!-- Stock Status -->
-                    <div class="product-stock mb-4">
+                    <!-- Stock -->
+                    <div class="mb-3">
                         @if (Model.TRANGTHAI == "Còn hàng")
                         {
-                            <span class="badge bg-success fs-6">
-                                <i class="fas fa-check-circle"></i> Còn hàng
-                            </span>
-                            <small class="text-muted ms-2">(@Model.SOLUONGTON sản phẩm có sẵn)</small>
+                            <span class="detail-stock in-stock">C&#242;n h&#224;ng &ndash; @Model.SOLUONGTON s&#7843;n ph&#7849;m</span>
                         }
                         else
                         {
-                            <span class="badge bg-danger fs-6">
-                                <i class="fas fa-times-circle"></i> Hết hàng
-                            </span>
+                            <span class="detail-stock out-of-stock">H&#7871;t h&#224;ng</span>
                         }
                     </div>
 
-                    <!-- Add to Cart -->
-                    <div class="product-actions">
-                        <!-- Hiển thị thông báo lỗi -->
+                    <!-- Description -->
+                    <div class="detail-desc">
+                        @Model.MOTA
+                    </div>
+
+                    <!-- Add to Cart Area -->
+                    <div class="mt-4">
                         @if (TempData["ErrorMessage"] != null)
                         {
                             <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
                                 @TempData["ErrorMessage"]
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         }
 
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <div class="quantity-controls">
-                                    <div class="input-group input-group-lg" style="width: 150px;">
-                                        <button class="btn btn-outline-secondary quantity-decrease" type="button">-</button>
-                                        <input type="number" class="form-control text-center quantity-input"
-                                               value="1" min="1" max="@Model.SOLUONGTON">
-                                        <button class="btn btn-outline-secondary quantity-increase" type="button">+</button>
-                                    </div>
-                                </div>
+                        <div class="d-flex align-items-center flex-wrap gap-3">
+                            <span class="text-muted" style="font-size:14px;">S&#7889; l&#432;&#7907;ng:</span>
+                            <div class="detail-qty-wrap">
+                                <button class="detail-qty-btn quantity-decrease" type="button">&minus;</button>
+                                <input type="number" class="detail-qty-input quantity-input" value="1" min="1" max="@Model.SOLUONGTON">
+                                <button class="detail-qty-btn quantity-increase" type="button">+</button>
                             </div>
-                            <div class="col">
-                                @if (Model.TRANGTHAI == "Còn hàng")
-                                {
-                                    <button class="btn btn-primary btn-lg w-100 add-to-cart"
-                                            data-product-id="@Model.MASP"
-                                            data-product-name="@Model.TENSP"
-                                            data-product-price="@Model.GIA">
-                                        <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ Hàng
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-secondary btn-lg w-100" disabled>
-                                        <i class="fas fa-times-circle"></i> Hết Hàng
-                                    </button>
-                                }
 
-                                <!-- NÚT VIẾT ĐÁNH GIÁ - ĐƠN GIẢN HÓA -->
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    <div class="mt-3">
-                                        <!-- LUÔN HIỂN THỊ NÚT, KIỂM TRA SẼ ĐƯỢC THỰC HIỆN TRONG CONTROLLER -->
-                                        <a href="@Url.Action("CreateReview", "Shop", new { productId = Model.MASP })"
-                                           class="btn btn-outline-warning w-100">
-                                            <i class="fas fa-pen"></i> Viết Đánh Giá
-                                        </a>
-                                        <small class="text-muted d-block text-center mt-1">
-                                            <i class="fas fa-info-circle"></i> Chỉ dành cho khách hàng đã mua sản phẩm
-                                        </small>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="mt-3">
-                                        <a href="@Url.Action("Login", "Account")" class="btn btn-outline-warning w-100">
-                                            <i class="fas fa-sign-in-alt"></i> Đăng nhập để đánh giá
-                                        </a>
-                                    </div>
-                                }
-                            </div>
+                            @if (Model.TRANGTHAI == "Còn hàng")
+                            {
+                                <button class="btn-add-cart add-to-cart"
+                                        data-product-id="@Model.MASP"
+                                        data-product-name="@Model.TENSP"
+                                        data-product-price="@Model.GIA">
+                                    Th&#234;m v&#224;o gi&#7887; h&#224;ng
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn-add-cart" disabled>
+                                    H&#7871;t h&#224;ng
+                                </button>
+                            }
                         </div>
                     </div>
-                    <!-- Product Meta -->
-                    <div class="product-meta mt-4 pt-4 border-top">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <small class="text-muted d-block">
-                                    <i class="fas fa-shopping-bag me-2"></i>
-                                    Danh mục: @(Model.DanhMuc?.TENDM ?? "Không xác định")
-                                </small>
-                            </div>
-                            <div class="col-md-6">
-                                <small class="text-muted d-block">
-                                    <i class="fas fa-tag me-2"></i>
-                                    Mã SP: #@Model.MASP
-                                </small>
-                            </div>
-                        </div>
+
+                    <!-- Write Review Button -->
+                    <div class="mt-3">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a href="@Url.Action("CreateReview", "Shop", new { productId = Model.MASP })"
+                               class="btn btn-outline-secondary btn-sm" style="border-radius:6px;">
+                                Vi&#7871;t &#273;&#225;nh gi&#225;
+                            </a>
+                            <small class="text-muted ms-2">Ch&#7881; d&#224;nh cho kh&#225;ch &#273;&#227; mua</small>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-outline-secondary btn-sm" style="border-radius:6px;">
+                                &#272;&#259;ng nh&#7853;p &#273;&#7875; &#273;&#225;nh gi&#225;
+                            </a>
+                        }
+                    </div>
+
+                    <!-- Meta -->
+                    <div class="detail-meta">
+                        <span><strong>Danh m&#7909;c:</strong> @(Model.DanhMuc?.TENDM ?? "Kh&#244;ng x&#225;c &#273;&#7883;nh")</span>
+                        <span><strong>M&#227; SP:</strong> #@Model.MASP</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Product Tabs -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="product-tabs">
-                    <ul class="nav nav-tabs" id="productTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
-                                    data-bs-target="#description" type="button" role="tab">
-                                Mô Tả Chi Tiết
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab"
-                                    data-bs-target="#reviews" type="button" role="tab">
-                                Đánh Giá (@tongDanhGiaValue)
-                            </button>
-                        </li>
-                    </ul>
+        <!-- Tabs -->
+        <div class="detail-tabs mt-4">
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="desc-tab" data-bs-toggle="tab"
+                            data-bs-target="#desc-pane" type="button" role="tab">
+                        M&#244; t&#7843; chi ti&#7871;t
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="review-tab" data-bs-toggle="tab"
+                            data-bs-target="#review-pane" type="button" role="tab">
+                        &#272;&#225;nh gi&#225; (@tongDanhGiaValue)
+                    </button>
+                </li>
+            </ul>
 
-                    <div class="tab-content p-4 border border-top-0" id="productTabsContent">
-                        <!-- Description Tab -->
-                        <div class="tab-pane fade show active" id="description" role="tabpanel">
-                            <h5>Thông Tin Sản Phẩm</h5>
-                            <p>@Model.MOTA</p>
+            <div class="tab-content detail-tab-content" id="productTabsContent">
+                <!-- Description Tab -->
+                <div class="tab-pane fade show active" id="desc-pane" role="tabpanel">
+                    <h5 style="font-size:16px; font-weight:700; color:#333; margin-bottom:12px;">Th&#244;ng tin s&#7843;n ph&#7849;m</h5>
+                    <p style="font-size:14px; color:#555; line-height:1.8;">@Model.MOTA</p>
 
-                            <div class="row mt-4">
-                                <div class="col-md-6">
-                                    <h6>Đặc điểm nổi bật:</h6>
-                                    <ul>
-                                        <li>Trái cây tươi ngon, chất lượng cao</li>
-                                        <li>Đảm bảo vệ sinh an toàn thực phẩm</li>
-                                        <li>Giao hàng nhanh chóng</li>
-                                        <li>Đóng gói cẩn thận</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Thông tin bảo quản:</h6>
-                                    <ul>
-                                        <li>Bảo quản nơi khô ráo, thoáng mát</li>
-                                        <li>Tránh ánh nắng trực tiếp</li>
-                                        <li>Nên sử dụng trong vòng 3-5 ngày</li>
-                                    </ul>
-                                </div>
+                    <div class="row mt-4 g-3">
+                        <div class="col-md-6">
+                            <div class="feature-card h-100">
+                                <h6>&#272;&#7863;c &#273;i&#7875;m n&#7893;i b&#7853;t</h6>
+                                <ul>
+                                    <li>Tr&#225;i c&#226;y t&#432;&#417;i ngon, ch&#7845;t l&#432;&#7907;ng cao</li>
+                                    <li>&#272;&#7843;m b&#7843;o v&#7879; sinh an to&#224;n th&#7921;c ph&#7849;m</li>
+                                    <li>Giao h&#224;ng nhanh ch&#243;ng</li>
+                                    <li>&#272;&#243;ng g&#243;i c&#7849;n th&#7853;n</li>
+                                </ul>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="feature-card h-100">
+                                <h6>B&#7843;o qu&#7843;n</h6>
+                                <ul>
+                                    <li>B&#7843;o qu&#7843;n n&#417;i kh&#244; r&#225;o, tho&#225;ng m&#225;t</li>
+                                    <li>Tr&#225;nh &#225;nh n&#7855;ng tr&#7921;c ti&#7871;p</li>
+                                    <li>N&#234;n s&#7917; d&#7909;ng trong v&#242;ng 3-5 ng&#224;y</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Reviews Tab -->
-                        <div class="tab-pane fade" id="reviews" role="tabpanel">
-                            <h5>Đánh Giá Từ Khách Hàng</h5>
+                <!-- Reviews Tab -->
+                <div class="tab-pane fade" id="review-pane" role="tabpanel">
+                    <!-- Review Summary -->
+                    <div class="review-summary-box mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 text-center">
+                                <div class="review-big-score">@trungBinhSaoValue.ToString("0.0")</div>
+                                <div class="review-stars my-2">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i <= trungBinhSaoValue ? "text-warning" : "text-muted")"></i>
+                                    }
+                                </div>
+                                <div class="review-count-label">@tongDanhGiaValue &#273;&#225;nh gi&#225;</div>
+                            </div>
+                            <div class="col-md-8">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    var soLuong = phanPhoiSaoValue[i - 1];
+                                    var phanTram = tongDanhGiaValue > 0 ? (soLuong * 100.0 / tongDanhGiaValue) : 0;
 
-                            <!-- Review Summary -->
-                            <div class="review-summary mb-4 p-4 bg-light rounded">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4 text-center">
-                                        <!-- SỬ DỤNG BIẾN ĐÃ KHAI BÁO Ở TRÊN -->
-                                        <h2 class="text-primary mb-0">@trungBinhSaoValue.ToString("0.0")</h2>
-                                        <div class="stars mb-2">
+                                    <div class="rating-bar-row">
+                                        <div class="rating-bar-label">@i</div>
+                                        <i class="fas fa-star text-warning" style="font-size:11px; margin:0 4px;"></i>
+                                        <div class="rating-bar-track">
+                                            <div class="rating-bar-fill" style="width: @phanTram%;"></div>
+                                        </div>
+                                        <div class="rating-bar-count">@soLuong</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    @if (danhGia != null && danhGia.Count > 0)
+                    {
+                        foreach (var review in danhGia)
+                        {
+                            <div class="review-item">
+                                <div class="d-flex gap-3">
+                                    <div class="review-avatar">
+                                        @((review.NguoiDung?.HOTEN ?? "K").Substring(0, 1).ToUpper())
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="review-author">@(review.NguoiDung?.HOTEN ?? "Kh&#225;ch h&#224;ng")</span>
+                                            <span class="review-date">@(review.NGAYDANHGIA?.ToString("dd/MM/yyyy HH:mm") ?? "")</span>
+                                        </div>
+                                        <div class="mt-1">
                                             @for (int i = 1; i <= 5; i++)
                                             {
-                                                <i class="fas fa-star @(i <= trungBinhSaoValue ? "text-warning" : "text-muted")"></i>
+                                                <i class="fas fa-star @(i <= review.SOSAO ? "text-warning" : "text-muted")" style="font-size:12px;"></i>
                                             }
                                         </div>
-                                        <small class="text-muted">Dựa trên @tongDanhGiaValue đánh giá</small>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <!-- Phân phối sao -->
-                                        <div class="rating-distribution">
-                                            @for (int i = 5; i >= 1; i--)
-                                            {
-                                                var soLuong = phanPhoiSaoValue[i - 1];
-                                                var phanTram = tongDanhGiaValue > 0 ? (soLuong * 100.0 / tongDanhGiaValue) : 0;
+                                        <div class="review-text">@review.NOIDUNG</div>
 
-                                                <div class="rating-item mb-2">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-2">
-                                                            <span class="text-muted">@i <i class="fas fa-star text-warning"></i></span>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <div class="progress" style="height: 8px;">
-                                                                <div class="progress-bar bg-warning" role="progressbar"
-                                                                     style="width: @phanTram%;"
-                                                                     aria-valuenow="@phanTram" aria-valuemin="0" aria-valuemax="100"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-2 text-end">
-                                                            <small class="text-muted">@soLuong</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            }
-                                        </div>
-
-                                        @if (tongDanhGiaValue == 0)
+                                        @if (!string.IsNullOrEmpty(review.HINHANH))
                                         {
-                                            <p class="mb-3 mt-3">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                                            <div class="mt-2">
+                                                <img src="@Url.Content("~/Content/img/reviews/" + review.HINHANH)"
+                                                     alt="Review image"
+                                                     style="max-height:100px; border-radius:6px; border:1px solid #eee; cursor:pointer;"
+                                                     onclick="openImageModal(this.src)">
+                                            </div>
                                         }
-
-                                        <!-- SỬA LỖI 2: THÊM productId CHO NÚT VIẾT ĐÁNH GIÁ -->
-                                        <button class="btn btn-outline-primary write-review-btn"
-                                                onclick="window.location.href='@Url.Action("CreateReview", "Shop", new { productId = Model.MASP })'">
-                                            <i class="fas fa-pen"></i> Viết Đánh Giá
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Reviews List -->
-                            <div class="reviews-list">
-                                @if (danhGia != null && danhGia.Count > 0)
-                                {
-                                    foreach (var review in danhGia)
-                                    {
-                                        <div class="review-item mb-4 p-3 border rounded">
-                                            <div class="review-header mb-2">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-6">
-                                                        <strong>@(review.NguoiDung?.HOTEN ?? "Khách hàng")</strong>
-                                                        <div class="stars">
-                                                            @for (int i = 1; i <= 5; i++)
-                                                            {
-                                                                <i class="fas fa-star @(i <= review.SOSAO ? "text-warning" : "text-muted")" style="font-size: 0.9rem;"></i>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 text-end">
-                                                        <small class="text-muted">
-                                                            @(review.NGAYDANHGIA?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa xác định")
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="review-content">
-                                                <p class="mb-2">@review.NOIDUNG</p>
-
-                                                @if (!string.IsNullOrEmpty(review.HINHANH))
-                                                {
-                                                    <div class="review-images mt-2">
-                                                        <img src="@Url.Content("~/Content/img/reviews/" + review.HINHANH)"
-                                                             alt="Review image"
-                                                             class="img-thumbnail me-2"
-                                                             style="max-height: 100px; cursor: pointer;"
-                                                             onclick="openImageModal(this.src)">
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <p class="text-muted text-center">Chưa có đánh giá nào cho sản phẩm này.</p>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Related Products -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3 class="section-title mb-4">Sản Phẩm Liên Quan</h3>
-                <div class="row">
-                    @if (relatedProducts != null && relatedProducts.Count > 0)
-                    {
-                        foreach (var relatedProduct in relatedProducts)
-                        {
-                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                <div class="card product-card h-100">
-                                    <img src="@relatedProduct.URL_ANH"
-                                         class="card-img-top" alt="@relatedProduct.TENSP"
-                                         style="height: 200px; object-fit: cover;">
-                                    <div class="card-body d-flex flex-column">
-                                        <h6 class="card-title">@relatedProduct.TENSP</h6>
-                                        <p class="card-text text-danger">@string.Format("{0:N0}đ", relatedProduct.GIA)</p>
-                                        <div class="mt-auto">
-                                            @if (relatedProduct.TRANGTHAI == "Còn hàng")
-                                            {
-                                                <button class="btn btn-outline-primary btn-sm w-100 add-to-cart"
-                                                        data-product-id="@relatedProduct.MASP"
-                                                        data-product-name="@relatedProduct.TENSP">
-                                                    Thêm vào giỏ
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-outline-secondary btn-sm w-100" disabled>
-                                                    Hết hàng
-                                                </button>
-                                            }
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -379,11 +642,60 @@
                     }
                     else
                     {
-                        <div class="col-12 text-center">
-                            <p class="text-muted">Không có sản phẩm liên quan</p>
+                        <div class="empty-state">
+                            <p>Ch&#432;a c&#243; &#273;&#225;nh gi&#225; n&#224;o. H&#227;y l&#224; ng&#432;&#7901;i &#273;&#7847;u ti&#234;n!</p>
                         </div>
                     }
                 </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="mt-5">
+            <h5 style="font-size:18px; font-weight:700; color:#333; margin-bottom:20px;">S&#7843;n ph&#7849;m li&#234;n quan</h5>
+            <div class="row g-3">
+                @if (relatedProducts != null && relatedProducts.Count > 0)
+                {
+                    foreach (var relatedProduct in relatedProducts)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="card related-card h-100">
+                                <img src="@relatedProduct.URL_ANH"
+                                     class="card-img-top" alt="@relatedProduct.TENSP"
+                                     style="height: 200px; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title text-truncate" title="@relatedProduct.TENSP">@relatedProduct.TENSP</h6>
+                                    <div class="card-price mb-2">@string.Format("{0:N0}", relatedProduct.GIA)&#273;</div>
+                                    <div class="mt-auto">
+                                        @if (relatedProduct.TRANGTHAI == "Còn hàng")
+                                        {
+                                            <button class="btn btn-sm w-100 add-to-cart"
+                                                    style="background:#05a569; color:#fff; border-radius:6px; font-weight:600;"
+                                                    data-product-id="@relatedProduct.MASP"
+                                                    data-product-name="@relatedProduct.TENSP">
+                                                Th&#234;m v&#224;o gi&#7887;
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-light w-100" disabled style="border-radius:6px;">
+                                                H&#7871;t h&#224;ng
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <p>Kh&#244;ng c&#243; s&#7843;n ph&#7849;m li&#234;n quan</p>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -394,76 +706,73 @@
         $(document).ready(function () {
             // Quantity controls
             $('.quantity-decrease').click(function () {
-                const input = $('.quantity-input');
-                const currentVal = parseInt(input.val());
-                if (currentVal > 1) {
-                    input.val(currentVal - 1);
-                }
+                var input = $('.quantity-input');
+                var val = parseInt(input.val());
+                if (val > 1) input.val(val - 1);
             });
 
             $('.quantity-increase').click(function () {
-                const input = $('.quantity-input');
-                const currentVal = parseInt(input.val());
-                const maxVal = parseInt(input.attr('max'));
-                if (currentVal < maxVal) {
-                    input.val(currentVal + 1);
+                var input = $('.quantity-input');
+                var val = parseInt(input.val());
+                var max = parseInt(input.attr('max'));
+                if (val < max) {
+                    input.val(val + 1);
                 } else {
-                    alert('Đã đạt số lượng tối đa trong kho!');
+                    showAlert('warning', '\u0110\u00e3 \u0111\u1ea1t s\u1ed1 l\u01b0\u1ee3ng t\u1ed1i \u0111a trong kho!');
                 }
             });
 
             // Add to cart
             $('.add-to-cart').click(function () {
-                const productId = $(this).data('product-id');
-                const productName = $(this).data('product-name');
-                const quantity = parseInt($('.quantity-input').val());
+                var productId = $(this).data('product-id');
+                var productName = $(this).data('product-name');
+                var quantity = parseInt($('.quantity-input').val()) || 1;
+                var btn = $(this);
+                var originalHtml = btn.html();
+
+                btn.html('\u0110ang th\u00eam...').prop('disabled', true);
 
                 $.post('@Url.Action("AddToCart", "Cart")', {
                     productId: productId,
                     quantity: quantity
                 }).done(function (response) {
                     if (response.success) {
-                        showAlert('success', `Đã thêm "${productName}" vào giỏ hàng!`);
+                        showAlert('success', '\u0110\u00e3 th\u00eam "' + productName + '" v\u00e0o gi\u1ecf h\u00e0ng!');
                         if (response.cartCount) {
-                            updateCartCount(response.cartCount);
+                            $('#cart-count').text(response.cartCount);
                         }
                     } else {
                         showAlert('error', response.message);
                     }
                 }).fail(function () {
-                    showAlert('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng!');
+                    showAlert('error', 'C\u00f3 l\u1ed7i x\u1ea3y ra!');
+                }).always(function () {
+                    btn.html(originalHtml).prop('disabled', false);
                 });
             });
 
-            // Write review - SỬA LẠI CHO ĐÚNG
-            $('.write-review-btn').click(function () {
-                // JavaScript sẽ không chạy vì đã dùng onclick trực tiếp
-                // Giữ lại để tránh lỗi
-            });
-
             function showAlert(type, message) {
-                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-                const alertHtml = `<div class="alert ${alertClass} alert-dismissible fade show alert-position-fixed"
-                                    style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
-                                    ${message}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                 </div>`;
-                $('body').append(alertHtml);
-                setTimeout(() => {
-                    $('.alert-position-fixed').alert('close');
-                }, 3000);
-            }
-
-            function updateCartCount(count) {
-                $('#cart-count').text(count);
-            }
-
-            // Thêm hàm mở modal xem ảnh
-            function openImageModal(src) {
-                // Có thể implement modal xem ảnh lớn ở đây
-                window.open(src, '_blank');
+                var cls = type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger');
+                var html = '<div class="alert ' + cls + ' alert-dismissible fade show" role="alert" ' +
+                    'style="position:fixed;top:20px;right:20px;z-index:1050;min-width:280px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">' +
+                    message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
+                var $el = $(html).appendTo('body');
+                setTimeout(function () {
+                    $el.removeClass('show');
+                    setTimeout(function () { $el.remove(); }, 200);
+                }, 3500);
             }
         });
+
+        function openImageModal(src) {
+            var $overlay = $('<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;">' +
+                '<img src="' + src + '" style="max-width:90%;max-height:90%;border-radius:6px;" />' +
+                '</div>');
+            $('body').append($overlay);
+            $overlay.click(function () {
+                $overlay.fadeOut(200, function () { $(this).remove(); });
+            });
+        }
     </script>
 }
