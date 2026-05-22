@@ -425,7 +425,6 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\HoTroKH\Chatbox.cshtml" />
     <Content Include="Views\HoTroKH\Index.cshtml" />
-    <Content Include="Views\Shared\_ChatboxPartial.cshtml" />
     <Content Include="Views\HoTroKH\GuiYeuCau.cshtml" />
     <Content Include="Views\account\ProductCreate.cshtml" />
     <Content Include="Views\account\ProductEdit.cshtml" />
