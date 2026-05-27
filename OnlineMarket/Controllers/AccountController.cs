@@ -30,9 +30,15 @@ namespace OnlineMarket.Controllers
 
         // POST: Đăng ký
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken] Tắt tạm để test trên Postman, bật lại khi chạy thật
         public ActionResult Register(NguoiDung nguoiDung)
         {
+            // 1. Kiểm tra input
+            if (string.IsNullOrEmpty(nguoiDung.TENDANGNHAP) || string.IsNullOrEmpty(nguoiDung.MATKHAU) || string.IsNullOrEmpty(nguoiDung.EMAIL) || string.IsNullOrEmpty(nguoiDung.HOTEN))
+            {
+                ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin!");
+                return View(nguoiDung);
+            }
             if (ModelState.IsValid)
             {
                 if (db.NguoiDungs.Any(u => u.EMAIL == nguoiDung.EMAIL))
@@ -492,7 +498,7 @@ namespace OnlineMarket.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult CategoryCreate(string TENDM)
         {
             if (!CheckAdminLogin()) return RedirectToAction("Login");
